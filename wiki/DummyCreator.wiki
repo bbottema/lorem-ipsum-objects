@@ -1,0 +1,13 @@
+#summary The DummyCreator is the main class for automatic object creation
+
+= Introduction =
+
+The DummyCreator contains the following static method to create a new object of the given class:
+{{{
+public static <T> T createDummyOfClass(final Class<T> clazz)
+}}}
+
+To call it, just use the class you want:
+{{{
+Integer integer =  DummyCreator.createDummyOfClass(Integer.class);
+}}}
