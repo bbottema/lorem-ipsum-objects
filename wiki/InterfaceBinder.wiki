@@ -1,0 +1,18 @@
+#summary Class to bind a Implementation to an Interface
+
+
+= Introduction =
+
+To tell the DummyCreator which implementation of an interface you want to use, you need to use the InterfaceBinder.
+
+= Howto Use =
+
+To bind a Implementation to an Interface you use the following code:
+{{{
+    InterfaceBinder.bind(Interface.class, Implementation.class);
+}}}
+
+If you want for example use ArrayList as implementation of the List interface, you use this:
+{{{
+    InterfaceBinder.bind(List.class, ArrayList.class);
+}}}
