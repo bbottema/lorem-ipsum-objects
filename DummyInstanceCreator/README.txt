@@ -36,7 +36,7 @@ solve this, you need to bind an implementation of the interface to the
 interface.
 
 This can be done by:
-    InterfaceBuilder.bind(List.class, ArrayList.class);
+    InterfaceBinder.bind(List.class, ArrayList.class);
 
 By doing this, you can bind every implementation to an interface you want.
 
