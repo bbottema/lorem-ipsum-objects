@@ -18,7 +18,7 @@ is divided into following sections:
   - applet
   - cleanup
 
-        -->
+-->
 <project xmlns:j2seproject1="http://www.netbeans.org/ns/j2se-project/1" xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3" xmlns:jaxrpc="http://www.netbeans.org/ns/j2se-project/jax-rpc" basedir=".." default="default" name="DummyInstanceCreator-impl">
     <fail message="Please build using Ant 1.7.1 or higher.">
         <condition>
@@ -28,9 +28,9 @@ is divided into following sections:
         </condition>
     </fail>
     <target depends="test,jar,javadoc" description="Build and test whole project." name="default"/>
-    <!-- 
+    <!--
                 ======================
-                INITIALIZATION SECTION 
+                INITIALIZATION SECTION
                 ======================
             -->
     <target name="-pre-init">
@@ -462,6 +462,7 @@ is divided into following sections:
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${build.classes.dir}" name="build.classes.dir.resolved"/>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
+
         <pathconvert property="run.classpath.with.dist.jar">
             <path path="${run.classpath}"/>
             <map from="${build.classes.dir.resolved}" to="${dist.jar.resolved}"/>
