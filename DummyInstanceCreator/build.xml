@@ -71,4 +71,8 @@
     nbproject/build-impl.xml file. 
 
     -->
+
+     <target name="-post-jar">
+        <copy overwrite="true" tofile="${dist.dir}/README.TXT" file="README.TXT" />
+    </target>
 </project>
