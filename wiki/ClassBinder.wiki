@@ -1,0 +1,7 @@
+#summary This is the static class, you would use to take influence on the creation process
+
+= Introduction =
+
+
+
+= HowTo use=
