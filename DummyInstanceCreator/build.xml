@@ -75,9 +75,8 @@
     <target name="-pre-jar">
         <buildnumber file="buildnumber.properties"/>
         <propertyfile file="nbproject/project.properties">
-            <entry key="program.BUILDDATE" type="date" value="now" pattern="yyyyMMdd" />
+            <entry key="build.date" type="date" value="now" pattern="yyyy-MM-dd" />
         </propertyfile>
-        <copy file="appinfo.properties" todir="${build.classes.dir}"/>
     </target>
 
     <target name="-post-jar">

@@ -19,6 +19,8 @@ package de.dev.eth0.dummycreator;
 
 import de.dev.eth0.dummycreator.binder.ConstructorBinder;
 import de.dev.eth0.dummycreator.binder.InterfaceBinder;
+import de.dev.eth0.dummycreator.binder.MethodBinder;
+import de.dev.eth0.dummycreator.binder.ObjectBinder;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -27,9 +29,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
-//TODO: Generische Objekte erstellen
-//TODO: Es wäre cool, wenn man eine Methode übergeben kann, mit der man bestimmte Klassen erstellen lassen möchte
-//TODO: Es gibt noch einige unchecked conversion oder cast warnings
 
 /**
  * This is the main-class of the dummycreator, which contains only static methods
@@ -64,7 +63,31 @@ public class DummyCreator {
      * @return
      */
     private static <T> T createDummyOfClass(final Class<T> clazz, final List<Class> used_classes) {
-        T ret = checkSpecials(clazz);
+        //Has there been an object binding?
+        T ret = ObjectBinder.getMethodForClassCreation(clazz);
+        if (ret != null) {
+            return ret;
+        }
+
+        //Was this class bind to a method?
+        Method m = MethodBinder.getMethodForClassCreation(clazz);
+        if (m != null) {
+            Class[] parameters = m.getParameterTypes();
+            final Object[] params = new Object[parameters.length];
+            for (int i = 0; i < params.length; i++) {
+                params[i] = createDummyOfClass(parameters[i], used_classes);
+            }
+            try {
+                return (T) m.invoke(null, params);
+            } catch (InvocationTargetException ite) {
+                // ite.printStackTrace();
+            } catch (IllegalAccessException iae) {
+                // iae.printStackTrace();
+            }
+        }
+
+
+        ret = checkSpecials(clazz);
         //If it was a special, we got ret != null
         if (ret != null) {
             return ret;
