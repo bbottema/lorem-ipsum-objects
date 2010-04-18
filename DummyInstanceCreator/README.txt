@@ -21,22 +21,27 @@ If you want to use the DummyCreator, you just have to integrate the jar-file to
 your project. Afterwards you can call it by:
     DummyCreator.createDummyOfClass(The class you need)
 
+There are several possibilities to take influence on the creation-process.
 
 2.1 Register Interfaces
 --------------------------------------------------------------------------------
 
-Normally you would often use a interface instead of the real class if you define
-an attribute of a class. For example, you would write
-    private List myList;
-instead of
-    private ArrayList myList;
+Normally you would often use a interface instead of the real class if you
+define an attribute of a class. For example, you would write
 
-Now, there is a problem, when we try to create a dummy instance of myList. To
-solve this, you need to bind an implementation of the interface to the
-interface.
+private List myList;
+
+instead of
+
+private ArrayList myList;
+
+Now, there is a problem, when we try to create a dummy instance of myList.
+To solve this, you need to bind an implementation of the interface to the
+interface with the ClassBinder?:
 
 This can be done by:
-    InterfaceBinder.bind(List.class, ArrayList.class);
+
+ClassBinder.bind(List.class, ArrayList.class);
 
 By doing this, you can bind every implementation to an interface you want.
 
@@ -46,12 +51,36 @@ By doing this, you can bind every implementation to an interface you want.
 
 In the normal creation process of a dummy object, the creator tries to use all
 constructors of the class until one worked. If you want to preselect the
-constructor that should be used, you can bind it to the ConstructorBinder:
-    ConstructorBinder.bind(Class clazz, Constructor c);
+constructor that should be used, you can bind it to the ClassBinder:
 
-To get the constructor, you normally would use reflection and then choose the
-needed.
-    Constructor[] constructors = clazz.getConstructors();
+ClassBinder.bind(Class clazz, Constructor c);
+
+To get the constructor, you normally would use reflection and then choose
+the needed one.
+
+Constructor[] constructors = clazz.getConstructors();
+
+
+2.3 Preselect which object to use
+--------------------------------------------------------------------------------
+
+If you want to use a specific object for a certain class, you can register it
+at the ClassBinder:
+
+ClassBinder.bind(Class clazz, Object o);
+
+Every time the DummyCreator is called with this class, it will return the given
+object.
+
+
+2.4 Use a creation-method for classes
+--------------------------------------------------------------------------------
+
+You can also register a method which returns a certain class. If you now want
+to create an object of this class with the DummyCreator, it uses the given
+class:
+
+ClassBinder.bind(Class clazz, Method m);
 
 
 3. Help
