@@ -28,6 +28,8 @@ public class PrimitiveClass {
     private boolean _boolean;
     private long _long;
     private double _double;
+    private double _secondDouble;
+
     private String _string;
     private short _short;
     private float _float;
@@ -198,4 +200,14 @@ public class PrimitiveClass {
 
     public PrimitiveClass() {
     }
+
+    public double getSecondDouble() {
+        return _secondDouble;
+    }
+
+    public void setSecondDouble(double _secondDouble) {
+        this._secondDouble = _secondDouble;
+    }
+
+    
 }

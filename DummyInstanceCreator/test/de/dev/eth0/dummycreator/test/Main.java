@@ -15,15 +15,18 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-
 package de.dev.eth0.dummycreator.test;
 
 import de.dev.eth0.dummycreator.DummyCreator;
-import de.dev.eth0.dummycreator.binder.InterfaceBinder;
+import de.dev.eth0.dummycreator.binder.ClassBinder;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.LinkedList;
 import java.util.List;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -32,89 +35,124 @@ import java.util.List;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    @BeforeClass
+    public static void setUp() {
         try {
-            System.out.println();
-            System.out.println("Integer");
-            System.out.println(DummyCreator.createDummyOfClass(Integer.class));
-
-            System.out.println();
-            System.out.println("String");
-            System.out.println(DummyCreator.createDummyOfClass(String.class));
-
-            System.out.println();
-            System.out.println("Byte");
-            System.out.println(DummyCreator.createDummyOfClass(Byte.class));
-
-            System.out.println();
-            System.out.println("Boolean");
-            System.out.println(DummyCreator.createDummyOfClass(Boolean.class));
-
-            System.out.println();
-            System.out.println("Long");
-            System.out.println(DummyCreator.createDummyOfClass(Long.class));
-
-            System.out.println();
-            System.out.println("Short");
-            System.out.println(DummyCreator.createDummyOfClass(Short.class));
-
-            System.out.println();
-            System.out.println("Double");
-            System.out.println(DummyCreator.createDummyOfClass(Double.class));
-
-            System.out.println();
-            System.out.println("Float");
-            System.out.println(DummyCreator.createDummyOfClass(Float.class));
-
-            System.out.println();
-            System.out.println("Character");
-            System.out.println(DummyCreator.createDummyOfClass(Character.class));
-
-            System.out.println();
-            System.out.println("Simple Object");
-            testDummyCreation(PrimitiveClass.class);
-
-            System.out.println();
-            System.out.println("Inherited Simple Object");
-            testDummyCreation(InheritedPrimitiveClass.class);
-
-            System.out.println();
-            System.out.println("Normal Object");
-            testDummyCreation(NormalClass.class);
-
-            System.out.println();
-            System.out.println("Loop Object");
-            testDummyCreation(LoopClass.class);
-
-            System.out.println();
-            System.out.println("Array Object");
-            testDummyCreation(ArrayClass.class);
-
-            System.out.println();
-            System.out.println("Array of PrimitiveClass Object");
-            testDummyCreation(ArrayWithObjectsClass.class);
-
-            System.out.println();
-            System.out.println("Array List Object");
-            //testDummyCreation(ArrayListClass.class);
-            ArrayListClass alc = DummyCreator.createDummyOfClass(ArrayListClass.class);
-            System.out.println(alc.getMyList());
-            for (String s : alc.getMyList()) {
-                System.out.println(s);
-            }
-
-            InterfaceBinder.bind(List.class, LinkedList.class);
-
-            System.out.println();
-            System.out.println("List Object");
-            //testDummyCreation(ListClass.class);
-
-            ListClass lc = DummyCreator.createDummyOfClass(ListClass.class);
-            System.out.println(lc.getMyList());
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            ClassBinder.bind(List.class, ArrayList.class);
+            ClassBinder.bind(Integer.class, Integer.class.getConstructor(Integer.TYPE));
+            ClassBinder.bind(Long.class, Long.MAX_VALUE);
+            ClassBinder.bind(Double.class, Double.MIN_VALUE);
+        } catch (NoSuchMethodException nsme) {
         }
+    }
+
+    @Test
+    public void CheckObjectBindings() throws Exception {
+        System.out.println("CheckInterfaceBindings");
+        System.out.println("String");
+        assertEquals(Long.MAX_VALUE, DummyCreator.createDummyOfClass(Long.class), 0);
+
+        System.out.println();
+        System.out.println("Boolean");
+        assertEquals(Double.MIN_VALUE, DummyCreator.createDummyOfClass(Double.class), 0);
+    }
+
+    @Test
+    public void CheckMethodBindings() throws Exception {
+    }
+
+    @Test
+    public void CheckConstructorBindings() throws Exception {
+        System.out.println("CheckConstructorBindings");
+        System.out.println("Integer");
+        assertEquals(Integer.class, DummyCreator.createDummyOfClass(Integer.class).getClass());
+    }
+
+    @Test
+    public void CheckInterfaceBindings() throws Exception {
+        System.out.println("CheckInterfaceBindings");
+        System.out.println("ArrayList");
+        assertEquals(ArrayList.class, DummyCreator.createDummyOfClass(List.class).getClass());
+        System.out.println("Override Binding");
+        ClassBinder.bind(List.class, LinkedList.class);
+        assertEquals(LinkedList.class, DummyCreator.createDummyOfClass(List.class).getClass());
+    }
+
+    @Test
+    public void CheckStringCreation() {
+        System.out.println("CheckPrimitiveCreation");
+        System.out.println("String");
+        assertEquals(String.class, DummyCreator.createDummyOfClass(String.class).getClass());
+    }
+
+    @Test
+    public void CheckSimpleObjectCreation() {
+        System.out.println("CheckSimpleObjectCreation");
+        System.out.println("Byte");
+        assertEquals(Byte.class, DummyCreator.createDummyOfClass(Byte.class).getClass());
+        System.out.println();
+        System.out.println("Long");
+        assertEquals(Long.class, DummyCreator.createDummyOfClass(Long.class).getClass());
+    }
+
+    @Test
+    public void CheckPrimitiveClassCreation() {
+        System.out.println("CheckPrimitiveClassCreation");
+        System.out.println("Primitive Class");
+        assertEquals(PrimitiveClass.class, DummyCreator.createDummyOfClass(PrimitiveClass.class).getClass());
+
+        System.out.println();
+        System.out.println("Inherited Primitive Object");
+        assertEquals(InheritedPrimitiveClass.class, DummyCreator.createDummyOfClass(InheritedPrimitiveClass.class).getClass());
+
+        //TODO Check if all parameters have been set
+    }
+
+    @Test
+    public void CheckNormalClassCreation() {
+        System.out.println("CheckNormalClassCreation");
+        System.out.println("Normal Class");
+        assertEquals(NormalClass.class, DummyCreator.createDummyOfClass(NormalClass.class).getClass());
+        //TODO Check if all parameters have been set
+    }
+
+    @Test
+    public void CheckLoopClassCreation(){
+        System.out.println("CheckLoopClassCreation");
+        System.out.println("Loop Class");
+        assertEquals(LoopClass.class, DummyCreator.createDummyOfClass(LoopClass.class).getClass());
+    }
+   
+    @Test
+    public void CheckSomethingElse() throws Exception {
+
+       
+  
+
+        System.out.println();
+        System.out.println("Array Object");
+        testDummyCreation(ArrayClass.class);
+
+        System.out.println();
+        System.out.println("Array of PrimitiveClass Object");
+        testDummyCreation(ArrayWithObjectsClass.class);
+
+        System.out.println();
+        System.out.println("Array List Object");
+        //testDummyCreation(ArrayListClass.class);
+        ArrayListClass alc = DummyCreator.createDummyOfClass(ArrayListClass.class);
+        System.out.println(alc.getMyList());
+        for (String s : alc.getMyList()) {
+            System.out.println(s);
+        }
+
+
+        System.out.println();
+        System.out.println("List Object");
+        //testDummyCreation(ListClass.class);
+
+        ListClass lc = DummyCreator.createDummyOfClass(ListClass.class);
+        System.out.println(lc.getMyList());
     }
 
     private static void testDummyCreation(Class clazz) throws Exception {

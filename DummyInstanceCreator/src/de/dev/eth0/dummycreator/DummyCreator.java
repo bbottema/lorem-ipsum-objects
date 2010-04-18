@@ -17,18 +17,16 @@
  */
 package de.dev.eth0.dummycreator;
 
-import de.dev.eth0.dummycreator.binder.ConstructorBinder;
-import de.dev.eth0.dummycreator.binder.InterfaceBinder;
-import de.dev.eth0.dummycreator.binder.MethodBinder;
-import de.dev.eth0.dummycreator.binder.ObjectBinder;
+import de.dev.eth0.dummycreator.binder.ClassBinder;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * This is the main-class of the dummycreator, which contains only static methods
@@ -51,7 +49,7 @@ public class DummyCreator {
      * @return
      */
     public static <T> T createDummyOfClass(final Class<T> clazz) {
-        List<Class> used_classes = new ArrayList<Class>();
+        Set<Class> used_classes = new HashSet<Class>();
         return createDummyOfClass(clazz, used_classes);
     }
 
@@ -62,52 +60,34 @@ public class DummyCreator {
      * @param used_classes
      * @return
      */
-    private static <T> T createDummyOfClass(final Class<T> clazz, final List<Class> used_classes) {
-        //Has there been an object binding?
-        T ret = ObjectBinder.getMethodForClassCreation(clazz);
-        if (ret != null) {
-            return ret;
-        }
+    private static <T> T createDummyOfClass(final Class<T> clazz, final Set<Class> used_classes) {
+        //List of Classes, we already used for population. By remembering, we can avoid looping
+        if (!used_classes.contains(clazz)) {
+            T ret = null;
+            //Check, if there is an objectbinding for this class
+            Object bind = ClassBinder.getBindingForClass(clazz);
 
-        //Was this class bind to a method?
-        Method m = MethodBinder.getMethodForClassCreation(clazz);
-        if (m != null) {
-            Class[] parameters = m.getParameterTypes();
-            final Object[] params = new Object[parameters.length];
-            for (int i = 0; i < params.length; i++) {
-                params[i] = createDummyOfClass(parameters[i], used_classes);
+            if(bind != null && bind.getClass().equals(clazz)){
+                return (T) bind;
             }
-            try {
-                return (T) m.invoke(null, params);
-            } catch (InvocationTargetException ite) {
-                // ite.printStackTrace();
-            } catch (IllegalAccessException iae) {
-                // iae.printStackTrace();
-            }
-        }
 
 
-        ret = checkSpecials(clazz);
-        //If it was a special, we got ret != null
-        if (ret != null) {
-            return ret;
-        }
-        //Is it an interface?
-        if (clazz.isInterface()) {
-            //Load class to use
-            Class<? extends T> c = InterfaceBinder.getImplementationOfInterface(clazz);
-            //Did we get an implementation of the interface?
-            if (c != null) {
-                return createDummyOfClass(c, used_classes);
-            } //Else we have a problem... TODO: What to do??
-            else {
-                return null;
+            ret = checkPrimitivesAndArray(clazz);
+            //If it was a special, we got ret != null
+            if (ret != null) {
+                return ret;
             }
-        } //Check if we have a given constructor
-        Constructor<T> c = ConstructorBinder.getConstructorOfClass(clazz);
-        if (c != null) {
-            ret = tryConstructor(c, used_classes);
-        } else {
+            used_classes.add(clazz);
+
+            //Has this class be bind?
+            ret = checkClassBinder(clazz, used_classes);
+            if (ret != null) {
+                return ret;
+            }
+            //Do we need to create a string?
+            if (clazz.equals(String.class)) {
+                return (T) RandomCreator.getRandomString();
+            }
             //Sort the constructors by there parameter-count
             final Constructor[] consts = clazz.getConstructors();
             java.util.Arrays.sort(consts, new ConstructorComparator());
@@ -120,8 +100,11 @@ public class DummyCreator {
                 }
             }
             populateObject(ret, clazz, used_classes);
-        }
-        return ret;
+
+            return ret;
+        } //If this class has already be used for creation
+        return null;
+
     }
 
     /**
@@ -131,17 +114,17 @@ public class DummyCreator {
      * @param used_classes
      * @return
      */
-    private static <T> T tryConstructor(final Constructor<T> c, final List<Class> used_classes) {
+    private static <T> T tryConstructor(final Constructor<T> c, final Set<Class> used_classes) {
         Class<T>[] parameters = (Class<T>[]) c.getParameterTypes();
         final Object[] params = new Object[parameters.length];
-        for (int i = 0; i < params.length; i++) {
+        for (int i = 0; i
+                < params.length; i++) {
             params[i] = createDummyOfClass(parameters[i], used_classes);
         }
         try {
             T ret = (T) c.newInstance(params);
             //If it worked, we can break
             return ret;
-
         } //TODO: what to do, if we get an exception?
         catch (InvocationTargetException ite) {
             // ite.printStackTrace();
@@ -155,23 +138,18 @@ public class DummyCreator {
     }
 
     /**
-     * When we created an object, we need to populate it's attributes. this is done here
+     * When we created an object, we need to populate it's attributes. This is done here
      * @param ret
      * @param clazz
      * @param used_classes
      */
-    private static void populateObject(final Object ret, final Class clazz, final List<Class> used_classes) {
-        //List of Classes, we already used for population. By remembering, we can avoid looping
-        used_classes.add(clazz);
+    private static void populateObject(final Object ret, final Class clazz, final Set<Class> used_classes) {
         for (Method m : clazz.getMethods()) {
             if (isSetter(m)) {
-                final Class c = m.getParameterTypes()[0];
                 //The parameter we will pass later to the method
                 Object parameter = null;
                 //We didn't use this class already
-                if (!used_classes.contains(c)) {
-                    parameter = createDummyOfClass(m.getParameterTypes()[0]);
-                }
+                parameter = createDummyOfClass(m.getParameterTypes()[0], used_classes);
                 try {
                     m.invoke(ret, parameter);
                 } catch (Exception e) {
@@ -181,25 +159,57 @@ public class DummyCreator {
         }
     }
 
+    private static <T> T checkClassBinder(final Class<T> clazz, final Set<Class> used_classes) {
+        Object bind = ClassBinder.getBindingForClass(clazz);
+        T ret = null;
+        if (bind != null) {
+            //Do we have a constructor binding?
+            if (bind instanceof Constructor) {
+                ret = tryConstructor((Constructor<T>) bind, used_classes);
+                return ret;
+            } else //Was this class bind to a method?
+            if (bind instanceof Method) {
+                Method m = (Method) bind;
+                Class[] parameters = m.getParameterTypes();
+                final Object[] params = new Object[parameters.length];
+                for (int i = 0; i < params.length; i++) {
+                    params[i] = createDummyOfClass(parameters[i], used_classes);
+                }
+                try {
+                    return (T) m.invoke(null, params);
+                } catch (InvocationTargetException ite) {
+                    // ite.printStackTrace();
+                } catch (IllegalAccessException iae) {
+                    // iae.printStackTrace();
+                }
+            } else //Was this an interface?
+            if (clazz.isInterface()) {
+                //Load class to use
+                Class<? extends T> c = (Class<? extends T>) bind;
+                return createDummyOfClass(c, used_classes);
+            }
+        }
+        return ret;
+    }
+
     /**
      * This method checks, if the class, we want to create is a special one (primitives and String)
      * @param <T>
      * @param clazz
      * @return
      */
-    private static <T> T checkSpecials(final Class<T> clazz) {
+    private static <T> T checkPrimitivesAndArray(final Class<T> clazz) {
         //Check  if we have a primitive or string
         if (clazz.isPrimitive()) {
             return (T) buildPrimitive(clazz);
         }
-        if (clazz.equals(String.class)) {
-            return (T) RandomCreator.getRandomString();
-        }
+
         //Do we have an array?
         if (clazz.isArray()) {
             int length = getRandomArrayLength();
             Object parameter = Array.newInstance(clazz.getComponentType(), length);
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i
+                    < length; i++) {
                 Array.set(parameter, i, createDummyOfClass(clazz.getComponentType()));
             }
             return (T) parameter;
@@ -276,7 +286,7 @@ public class DummyCreator {
             return 1;
         }
     }
-    //<editor-fold desc="Old Code">
+//<editor-fold desc="Old Code">
     /**
     if (c.isArray()) {
     int length = getRandomArrayLength();
@@ -320,5 +330,5 @@ public class DummyCreator {
     }
     }
      **/
-    //</editor-fold>
+//</editor-fold>
 }
