@@ -4,4 +4,4 @@
 
 
 
-= HowTo use=
+= How to use=
