@@ -20,7 +20,12 @@ package de.dev.eth0.dummycreator.binder;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -71,5 +76,16 @@ public class ClassBinder {
      */
     public static Object getBindingForClass(final Class _class) {
         return bindings.get(_class);
+    }
+
+    /**
+     * You can call this method to build some default bindings for common classes.
+     * This includes List.class, Map.class, Set.class
+     */
+    public static void setDefaultBindings(){
+        ClassBinder.bind(List.class, ArrayList.class);
+        ClassBinder.bind(Map.class, HashMap.class);
+        ClassBinder.bind(Set.class, HashSet.class);
+        
     }
 }
