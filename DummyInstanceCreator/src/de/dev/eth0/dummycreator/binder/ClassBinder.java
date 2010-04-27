@@ -82,10 +82,10 @@ public class ClassBinder {
      * You can call this method to build some default bindings for common classes.
      * This includes List.class, Map.class, Set.class
      */
-    public static void setDefaultBindings(){
+    public static void setDefaultBindings() {
         ClassBinder.bind(List.class, ArrayList.class);
         ClassBinder.bind(Map.class, HashMap.class);
         ClassBinder.bind(Set.class, HashSet.class);
-        
+        //TODO: Create-Methods for ArrayList, HashMap and HashSet would be great
     }
 }
