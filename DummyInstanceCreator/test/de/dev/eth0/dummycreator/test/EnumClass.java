@@ -24,19 +24,24 @@ package de.dev.eth0.dummycreator.test;
  */
 public class EnumClass {
 
+    public enum internalEnum {
+
+        priv1,
+        priv2,
+        priv3
+    }
     private char _char;
     private boolean _boolean;
     private long _long;
     private double _double;
     private double _secondDouble;
-
     private String _string;
     private short _short;
     private float _float;
     private byte _byte;
     private int _int;
-
     private EnumTester enumTester;
+    private internalEnum internalEnum;
 
     /**
      * Get the value of _int
@@ -219,5 +224,11 @@ public class EnumClass {
         this.enumTester = enumTester;
     }
 
-    
+    public internalEnum getInternalEnum() {
+        return internalEnum;
+    }
+
+    public void setInternalEnum(internalEnum internalEnum) {
+        this.internalEnum = internalEnum;
+    }
 }

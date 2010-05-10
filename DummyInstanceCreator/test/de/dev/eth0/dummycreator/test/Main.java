@@ -129,6 +129,7 @@ public class Main {
         System.out.println("Enum Class");
         EnumClass ec =DummyCreator.createDummyOfClass(EnumClass.class);
         assertNotNull(ec.getEnumTester());
+        assertNotNull(ec.getInternalEnum());
     }
    
     @Test
