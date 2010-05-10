@@ -64,4 +64,8 @@ public class RandomCreator {
     public static short getRandomShort() {
         return (short) r.nextInt();
     }
+
+    public static int getRandomInt(int max){
+        return r.nextInt(max);
+    }
 }

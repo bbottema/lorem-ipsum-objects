@@ -24,7 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -67,11 +66,9 @@ public class DummyCreator {
             //Check, if there is an objectbinding for this class
             Object bind = ClassBinder.getBindingForClass(clazz);
 
-            if(bind != null && bind.getClass().equals(clazz)){
+            if (bind != null && bind.getClass().equals(clazz)) {
                 return (T) bind;
             }
-
-
             ret = checkPrimitivesAndArray(clazz);
             //If it was a special, we got ret != null
             if (ret != null) {
@@ -88,7 +85,12 @@ public class DummyCreator {
             if (clazz.equals(String.class)) {
                 return (T) RandomCreator.getRandomString();
             }
-            //Sort the constructors by there parameter-count
+            if(clazz.isEnum()){
+                T[] enums = clazz.getEnumConstants();
+                return enums[RandomCreator.getRandomInt(enums.length-1)];
+            }
+
+            //Sort the constructors by their parameter-count
             final Constructor[] consts = clazz.getConstructors();
             java.util.Arrays.sort(consts, new ConstructorComparator());
             //Try every constructor, begin with the one, with the least parameters
@@ -203,13 +205,11 @@ public class DummyCreator {
         if (clazz.isPrimitive()) {
             return (T) buildPrimitive(clazz);
         }
-
         //Do we have an array?
         if (clazz.isArray()) {
             int length = getRandomArrayLength();
             Object parameter = Array.newInstance(clazz.getComponentType(), length);
-            for (int i = 0; i
-                    < length; i++) {
+            for (int i = 0; i < length; i++) {
                 Array.set(parameter, i, createDummyOfClass(clazz.getComponentType()));
             }
             return (T) parameter;
@@ -286,49 +286,4 @@ public class DummyCreator {
             return 1;
         }
     }
-//<editor-fold desc="Old Code">
-    /**
-    if (c.isArray()) {
-    int length = getRandomArrayLength();
-    parameter = Array.newInstance(c.getComponentType(), length);
-    for (int i = 0; i < length; i++) {
-    Array.set(parameter, i, createDummyOfClass(c.getComponentType()));
-    }
-    } else {
-    //Check if we want to create a list
-    boolean list = false;
-    for (Class _c : c.getInterfaces()) {
-    if (_c.equals(List.class)) {
-    list = true;
-    break;
-    }
-    }
-    if (list) {
-    //Build a list
-    List tmp = createDummyOfClass(ArrayList.class);
-    //Check if we have a generic list
-    Type genericParameterType = m.getGenericParameterTypes()[0];
-    if (genericParameterType instanceof ParameterizedType) {
-    //If the list is generic, we can create objects of its type
-    ParameterizedType type = (ParameterizedType) genericParameterType;
-    Class parameterArgClass = (Class) type.getActualTypeArguments()[0];
-    for (int i = 0; i < getRandomArrayLength(); i++) {
-    tmp.add(createDummyOfClass(parameterArgClass));
-    }
-    }
-    parameter = tmp;
-    } //Have we already populated the class we need as parameter?
-    else if (!usedClasses.contains(m.getParameterTypes()[0])) {
-    parameter = createDummyOfClass(m.getParameterTypes()[0]);
-    usedClasses.add(m.getParameterTypes()[0]);
-    } else {
-    parameter = null;
-    }
-    }
-
-    }
-    }
-    }
-     **/
-//</editor-fold>
 }

@@ -122,6 +122,14 @@ public class Main {
         System.out.println("Loop Class");
         assertEquals(LoopClass.class, DummyCreator.createDummyOfClass(LoopClass.class).getClass());
     }
+
+    @Test
+    public void CheckEnumClassCreation(){
+        System.out.println("CheckEnumClassCreation");
+        System.out.println("Enum Class");
+        EnumClass ec =DummyCreator.createDummyOfClass(EnumClass.class);
+        assertNotNull(ec.getEnumTester());
+    }
    
     @Test
     public void CheckSomethingElse() throws Exception {
