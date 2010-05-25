@@ -65,6 +65,15 @@ public class ClassBinder {
     }
 
     /**
+     * This methods allows you to release a binding for a certain class
+     * @param <T>
+     * @param _class
+     */
+    public static <T> void releaseBinding(final Class<T> _class){
+        bindings.remove(_class);
+    }
+
+    /**
      * This method returns a binding made for the given class. This binding might be of one of the following type:
      * Constructor
      * Implementation of a Interface
@@ -77,6 +86,7 @@ public class ClassBinder {
     public static Object getBindingForClass(final Class _class) {
         return bindings.get(_class);
     }
+
 
     /**
      * You can call this method to build some default bindings for common classes.

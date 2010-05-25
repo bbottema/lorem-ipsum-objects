@@ -117,27 +117,23 @@ public class Main {
     }
 
     @Test
-    public void CheckLoopClassCreation(){
+    public void CheckLoopClassCreation() {
         System.out.println("CheckLoopClassCreation");
         System.out.println("Loop Class");
         assertEquals(LoopClass.class, DummyCreator.createDummyOfClass(LoopClass.class).getClass());
     }
 
     @Test
-    public void CheckEnumClassCreation(){
+    public void CheckEnumClassCreation() {
         System.out.println("CheckEnumClassCreation");
         System.out.println("Enum Class");
-        EnumClass ec =DummyCreator.createDummyOfClass(EnumClass.class);
+        EnumClass ec = DummyCreator.createDummyOfClass(EnumClass.class);
         assertNotNull(ec.getEnumTester());
         assertNotNull(ec.getInternalEnum());
     }
-   
+
     @Test
     public void CheckSomethingElse() throws Exception {
-
-       
-  
-
         System.out.println();
         System.out.println("Array Object");
         testDummyCreation(ArrayClass.class);
@@ -162,6 +158,24 @@ public class Main {
 
         ListClass lc = DummyCreator.createDummyOfClass(ListClass.class);
         System.out.println(lc.getMyList());
+    }
+
+    @Test
+    public void Benchmark() throws Exception {
+        System.out.println();
+        System.out.println("Benchmarking");
+        System.out.println("Primitive Class");
+        long t = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            DummyCreator.createDummyOfClass(PrimitiveClass.class);
+        }
+        System.out.println("Time: "+(System.currentTimeMillis() - t));
+        System.out.println("Loop Class ");
+        t = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            DummyCreator.createDummyOfClass(LoopClass.class);
+        }
+        System.out.println("Time: "+(System.currentTimeMillis() - t));
     }
 
     private static void testDummyCreation(Class clazz) throws Exception {

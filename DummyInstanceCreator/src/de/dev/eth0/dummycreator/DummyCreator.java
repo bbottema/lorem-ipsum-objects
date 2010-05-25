@@ -18,12 +18,15 @@
 package de.dev.eth0.dummycreator;
 
 import de.dev.eth0.dummycreator.binder.ClassBinder;
+import de.dev.eth0.dummycreator.cache.MethodCache;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -41,7 +44,7 @@ public class DummyCreator {
     }
 
     /**
-     * This is the main-method, we use to create a dummy-class. It's called with the needed class.
+     * This is the main-method used to create a dummy of a certain class. It's called with the needed class.
      * e.g. Integer i = createDummyOfClass(Integer.class)
      * @param <T>
      * @param clazz
@@ -62,14 +65,13 @@ public class DummyCreator {
     private static <T> T createDummyOfClass(final Class<T> clazz, final Set<Class> used_classes) {
         //List of Classes, we already used for population. By remembering, we can avoid looping
         if (!used_classes.contains(clazz)) {
-            T ret = null;
             //Check, if there is an objectbinding for this class
             Object bind = ClassBinder.getBindingForClass(clazz);
-
             if (bind != null && bind.getClass().equals(clazz)) {
                 return (T) bind;
             }
-            ret = checkPrimitivesAndArray(clazz);
+
+            T ret = checkPrimitivesAndArray(clazz);
             //If it was a special, we got ret != null
             if (ret != null) {
                 return ret;
@@ -81,13 +83,16 @@ public class DummyCreator {
             if (ret != null) {
                 return ret;
             }
+
             //Do we need to create a string?
             if (clazz.equals(String.class)) {
                 return (T) RandomCreator.getRandomString();
             }
-            if(clazz.isEnum()){
+
+            //Is the class an enum?
+            if (clazz.isEnum()) {
                 T[] enums = clazz.getEnumConstants();
-                return enums[RandomCreator.getRandomInt(enums.length-1)];
+                return enums[RandomCreator.getRandomInt(enums.length - 1)];
             }
 
             //Sort the constructors by their parameter-count
@@ -140,23 +145,31 @@ public class DummyCreator {
     }
 
     /**
-     * When we created an object, we need to populate it's attributes. This is done here
+     * After the creation of an object, we need to populate it's attributes. This is done here
      * @param ret
      * @param clazz
      * @param used_classes
      */
     private static void populateObject(final Object ret, final Class clazz, final Set<Class> used_classes) {
-        for (Method m : clazz.getMethods()) {
-            if (isSetter(m)) {
-                //The parameter we will pass later to the method
-                Object parameter = null;
-                //We didn't use this class already
-                parameter = createDummyOfClass(m.getParameterTypes()[0], used_classes);
-                try {
-                    m.invoke(ret, parameter);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        List<Method> setter = MethodCache.getSetterForClass(clazz);
+        if (setter == null) {
+            setter = new ArrayList<Method>();
+            for (Method m : clazz.getMethods()) {
+                if (isSetter(m)) {
+                    setter.add(m);
                 }
+            }
+            MethodCache.addSetterForClass(clazz, setter);
+        }
+        for (Method m : MethodCache.getSetterForClass(clazz)) {
+            //The parameter we will pass later to the method
+            Object parameter = null;
+            //We didn't use this class yet
+            parameter = createDummyOfClass(m.getParameterTypes()[0], used_classes);
+            try {
+                m.invoke(ret, parameter);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
