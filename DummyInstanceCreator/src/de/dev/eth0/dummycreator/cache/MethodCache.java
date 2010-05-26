@@ -33,6 +33,9 @@ public class MethodCache {
 
     private static final Map<Class, List<Method>> cache = new HashMap<Class, List<Method>>();
 
+    /**
+     * Hide the constructor
+     */
     private MethodCache() {
     }
 

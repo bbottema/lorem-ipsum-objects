@@ -18,13 +18,17 @@
 package de.dev.eth0.dummycreator;
 
 import de.dev.eth0.dummycreator.binder.ClassBinder;
+import de.dev.eth0.dummycreator.cache.ConstructorCache;
 import de.dev.eth0.dummycreator.cache.MethodCache;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -52,6 +56,11 @@ public class DummyCreator {
      */
     public static <T> T createDummyOfClass(final Class<T> clazz) {
         Set<Class> used_classes = new HashSet<Class>();
+        if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {
+            if (ClassBinder.getBindingForClass(clazz) == null) {
+                throw new IllegalArgumentException("Cant instantiate an abstract class or an interface. Please bind it into ClassBinder");
+            }
+        }
         return createDummyOfClass(clazz, used_classes);
     }
 
@@ -67,7 +76,7 @@ public class DummyCreator {
         if (!used_classes.contains(clazz)) {
             //Check, if there is an objectbinding for this class
             Object bind = ClassBinder.getBindingForClass(clazz);
-            if (bind != null && bind.getClass().equals(clazz)) {
+            if (bind != null && bind.getClass() == clazz) {
                 return (T) bind;
             }
 
@@ -85,7 +94,7 @@ public class DummyCreator {
             }
 
             //Do we need to create a string?
-            if (clazz.equals(String.class)) {
+            if (clazz == String.class) {
                 return (T) RandomCreator.getRandomString();
             }
 
@@ -94,18 +103,38 @@ public class DummyCreator {
                 T[] enums = clazz.getEnumConstants();
                 return enums[RandomCreator.getRandomInt(enums.length - 1)];
             }
+            //Load the constructors
+            List<Constructor> consts = ConstructorCache.getCachedConstructors(clazz);
+            if (consts == null) {
+                consts = new ArrayList<Constructor>();
+                Constructor[] _con = clazz.getConstructors();
+                //Sort the constructors by their parameter-count
+                java.util.Arrays.sort(_con, new ConstructorComparator());
+                consts.addAll(Arrays.asList(_con));
+                //Add to cache
+                ConstructorCache.addConstructors(clazz, consts);
+            }
+            //Check if we have a prefered Constructor and try it
+            Constructor<T> preferedConstructor = ConstructorCache.getPreferedConstructor(clazz);
+            if (preferedConstructor != null) {
 
-            //Sort the constructors by their parameter-count
-            final Constructor[] consts = clazz.getConstructors();
-            java.util.Arrays.sort(consts, new ConstructorComparator());
-            //Try every constructor, begin with the one, with the least parameters
-            for (Constructor<T> co : consts) {
-                ret = tryConstructor(co, used_classes);
-                if (ret != null) {
-                    //Worked
-                    break;
+                ret = tryConstructor(preferedConstructor, used_classes);
+            }
+            if (ret == null) {
+                for (Constructor<T> co : consts) {
+                    ret = tryConstructor(co, used_classes);
+                    if (ret != null) {
+                        ConstructorCache.setPreferedConstructor(clazz, co);
+                        //Worked
+                        break;
+                    }
+
                 }
             }
+            if (ret == null) {
+                throw new IllegalArgumentException("The given class couldn't be instantiated");
+            }
+
             populateObject(ret, clazz, used_classes);
 
             return ret;
@@ -123,17 +152,17 @@ public class DummyCreator {
      */
     private static <T> T tryConstructor(final Constructor<T> c, final Set<Class> used_classes) {
         Class<T>[] parameters = (Class<T>[]) c.getParameterTypes();
-        final Object[] params = new Object[parameters.length];
-        for (int i = 0; i
-                < params.length; i++) {
-            params[i] = createDummyOfClass(parameters[i], used_classes);
-        }
         try {
-            T ret = (T) c.newInstance(params);
-            //If it worked, we can break
-            return ret;
-        } //TODO: what to do, if we get an exception?
-        catch (InvocationTargetException ite) {
+            if (parameters.length > 0) {
+                final Object[] params = new Object[parameters.length];
+                for (int i = 0; i < params.length; i++) {
+                    params[i] = createDummyOfClass(parameters[i], used_classes);
+                }
+                return (T) c.newInstance(params);
+            } else {
+                return (T) c.newInstance();
+            }
+        } catch (InvocationTargetException ite) {
             // ite.printStackTrace();
         } catch (InstantiationException ie) {
             // ie.printStackTrace();
@@ -161,10 +190,10 @@ public class DummyCreator {
             }
             MethodCache.addSetterForClass(clazz, setter);
         }
-        for (Method m : MethodCache.getSetterForClass(clazz)) {
-            //The parameter we will pass later to the method
-            Object parameter = null;
-            //We didn't use this class yet
+
+        Object parameter = null;
+        for (Method m : setter) {
+            //Load the parameter to pass to this method
             parameter = createDummyOfClass(m.getParameterTypes()[0], used_classes);
             try {
                 m.invoke(ret, parameter);
@@ -252,25 +281,24 @@ public class DummyCreator {
      * @return
      */
     private static Object buildPrimitive(Class c) {
-        Object parameter = null;
-        if (c.equals(java.lang.Boolean.TYPE)) {
-            parameter = RandomCreator.getRandomBoolean();
-        } else if (c.equals(java.lang.Character.TYPE)) {
-            parameter = RandomCreator.getRandomChar();
-        } else if (c.equals(java.lang.Byte.TYPE)) {
-            parameter = RandomCreator.getRandomByte();
-        } else if (c.equals(java.lang.Short.TYPE)) {
-            parameter = RandomCreator.getRandomShort();
-        } else if (c.equals(java.lang.Integer.TYPE)) {
-            parameter = RandomCreator.getRandomInt();
-        } else if (c.equals(java.lang.Long.TYPE)) {
-            parameter = RandomCreator.getRandomLong();
-        } else if (c.equals(java.lang.Float.TYPE)) {
-            parameter = RandomCreator.getRandomFloat();
-        } else if (c.equals(java.lang.Double.TYPE)) {
-            parameter = RandomCreator.getRandomDouble();
+        if (c ==(java.lang.Integer.TYPE)) {
+            return RandomCreator.getRandomInt();
+        } else if (c ==(java.lang.Long.TYPE)) {
+            return RandomCreator.getRandomLong();
+        } else if (c ==(java.lang.Float.TYPE)) {
+            return RandomCreator.getRandomFloat();
+        } else if (c ==(java.lang.Boolean.TYPE)) {
+            return RandomCreator.getRandomBoolean();
+        } else if (c ==(java.lang.Character.TYPE)) {
+            return RandomCreator.getRandomChar();
+        } else if (c ==(java.lang.Byte.TYPE)) {
+            return RandomCreator.getRandomByte();
+        } else if (c ==(java.lang.Short.TYPE)) {
+            return RandomCreator.getRandomShort();
+        } else if (c ==(java.lang.Double.TYPE)) {
+            return RandomCreator.getRandomDouble();
         }
-        return parameter;
+        return null;
     }
 
     /**

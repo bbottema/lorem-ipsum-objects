@@ -15,7 +15,6 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-
 package de.dev.eth0.dummycreator;
 
 import java.util.Random;
@@ -65,7 +64,7 @@ public class RandomCreator {
         return (short) r.nextInt();
     }
 
-    public static int getRandomInt(int max){
+    public static int getRandomInt(int max) {
         return r.nextInt(max);
     }
 }

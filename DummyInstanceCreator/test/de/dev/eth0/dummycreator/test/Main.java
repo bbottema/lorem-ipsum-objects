@@ -124,6 +124,13 @@ public class Main {
     }
 
     @Test
+    public void CheckMultiConstructorClassCreation() {
+        System.out.println("CheckMultiConstructorClassCreation");
+        System.out.println("MultiConstructor Class");
+        assertEquals(MultiConstructorClass.class, DummyCreator.createDummyOfClass(MultiConstructorClass.class).getClass());
+    }
+
+    @Test
     public void CheckEnumClassCreation() {
         System.out.println("CheckEnumClassCreation");
         System.out.println("Enum Class");
@@ -169,13 +176,19 @@ public class Main {
         for (int i = 0; i < 1000000; i++) {
             DummyCreator.createDummyOfClass(PrimitiveClass.class);
         }
-        System.out.println("Time: "+(System.currentTimeMillis() - t));
+        System.out.println("Time: " + (System.currentTimeMillis() - t));
         System.out.println("Loop Class ");
         t = System.currentTimeMillis();
         for (int i = 0; i < 1000000; i++) {
             DummyCreator.createDummyOfClass(LoopClass.class);
         }
-        System.out.println("Time: "+(System.currentTimeMillis() - t));
+        System.out.println("Time: " + (System.currentTimeMillis() - t));
+        System.out.println("MultiConstructor Class ");
+        t = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            DummyCreator.createDummyOfClass(MultiConstructorClass.class);
+        }
+        System.out.println("Time: " + (System.currentTimeMillis() - t));
     }
 
     private static void testDummyCreation(Class clazz) throws Exception {
