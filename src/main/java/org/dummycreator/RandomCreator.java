@@ -19,17 +19,24 @@ package org.dummycreator;
 
 import java.util.Random;
 
+import de.svenjacobs.loremipsum.LoremIpsum;
+
 /**
  * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
-public class RandomCreator {
+class RandomCreator {
 
-    private final static Random r = new Random();
+    private static final Random r = new Random();
+    private static final LoremIpsum loremIpsum = new LoremIpsum();
 
     public static String getRandomString() {
-	return Long.toString(Math.abs(r.nextLong()), 36);
+	String gibberish = "";
+	for (int i = 0; i <= r.nextInt(3); i++) {
+	    gibberish += (gibberish.length() != 0 ? " " : "") + loremIpsum.getWords(1, r.nextInt(50));
+	}
+	return gibberish.replaceAll("\\s", "_").replaceAll("[\\.\\,]", "");
     }
 
     public static boolean getRandomBoolean() {

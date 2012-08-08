@@ -37,18 +37,26 @@ import org.dummycreator.binder.ClassBinder;
 import org.dummycreator.cache.ConstructorCache;
 import org.dummycreator.cache.MethodCache;
 
-
 /**
+ * 
+ * 
  * This is the main-class of the dummycreator, which contains only static methods
  * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>, Benny Bottema <b.bottema@projectnibble.org>
  */
 public class DummyCreator {
 
-    /**
-     * Hide the constructor
-     */
-    private DummyCreator() {
+    private final ConstructorCache constructorCache;
+    
+    private final MethodCache methodCache;
+
+    public DummyCreator() {
+	this(new ConstructorCache(), new MethodCache());
+    }
+
+    public DummyCreator(ConstructorCache constructorCache, MethodCache methodCache) {
+	this.constructorCache = constructorCache;
+	this.methodCache = methodCache;
     }
 
     /**
@@ -59,8 +67,8 @@ public class DummyCreator {
      * @param clazz
      * @return
      */
-    public static <T> T createDummyOfClass(final Class<T> clazz) {
-	Map<Class<?>, UsedInfo<?>> used_classes = new HashMap<Class<?>, UsedInfo<?>>();
+    public <T> T createDummyOfClass(final Class<T> clazz) {
+	Map<Class<?>, ClassUsageInfo<?>> used_classes = new HashMap<Class<?>, ClassUsageInfo<?>>();
 	if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {
 	    if (ClassBinder.getBindingForClass(clazz) == null) {
 		throw new IllegalArgumentException("Cant instantiate an abstract class or an interface. Please bind it into ClassBinder");
@@ -78,7 +86,7 @@ public class DummyCreator {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private static <T> T createDummyOfClass(final Class<T> clazz, final Map<Class<?>, UsedInfo<?>> used_classes) {
+    private <T> T createDummyOfClass(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
 	// List of Classes, we already used for population. By remembering, we can avoid looping
 	if (used_classes.get(clazz) == null || !used_classes.get(clazz).isPopulated()) {
 	    // Check, if there is an objectbinding for this class
@@ -93,7 +101,7 @@ public class DummyCreator {
 		return ret;
 	    }
 
-	    UsedInfo<T> usedInfo = new UsedInfo<T>();
+	    ClassUsageInfo<T> usedInfo = new ClassUsageInfo<T>();
 	    usedInfo.setInstance(ret);
 	    used_classes.put(clazz, usedInfo);
 
@@ -114,7 +122,7 @@ public class DummyCreator {
 		return enums[RandomCreator.getRandomInt(enums.length - 1)];
 	    }
 	    // Load the constructors
-	    List<Constructor<?>> consts = ConstructorCache.getCachedConstructors(clazz);
+	    List<Constructor<?>> consts = constructorCache.getCachedConstructors(clazz);
 	    if (consts == null) {
 		consts = new ArrayList<Constructor<?>>();
 		Constructor<?>[] _con = clazz.getConstructors();
@@ -122,10 +130,10 @@ public class DummyCreator {
 		java.util.Arrays.sort(_con, new ConstructorComparator());
 		consts.addAll(Arrays.asList(_con));
 		// Add to cache
-		ConstructorCache.addConstructors(clazz, consts);
+		constructorCache.addConstructors(clazz, consts);
 	    }
 	    // Check if we have a prefered Constructor and try it
-	    Constructor<T> preferedConstructor = (Constructor<T>) ConstructorCache.getPreferedConstructor(clazz);
+	    Constructor<T> preferedConstructor = (Constructor<T>) constructorCache.getPreferedConstructor(clazz);
 	    if (preferedConstructor != null) {
 		ret = tryConstructor(preferedConstructor, used_classes);
 	    }
@@ -133,7 +141,7 @@ public class DummyCreator {
 		for (Constructor<?> co : consts) {
 		    ret = (T) tryConstructor(co, used_classes);
 		    if (ret != null) {
-			ConstructorCache.setPreferedConstructor(clazz, co);
+			constructorCache.setPreferedConstructor(clazz, co);
 			// Worked
 			break;
 		    }
@@ -162,7 +170,7 @@ public class DummyCreator {
      * @param used_classes
      * @return
      */
-    private static <T> T tryConstructor(final Constructor<T> c, final Map<Class<?>, UsedInfo<?>> used_classes) {
+    private <T> T tryConstructor(final Constructor<T> c, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
 	@SuppressWarnings("unchecked")
 	Class<T>[] parameters = (Class<T>[]) c.getParameterTypes();
 	try {
@@ -200,7 +208,7 @@ public class DummyCreator {
      * @see #createDummyOfClass(Class, Map)
      */
     @SuppressWarnings({ "unchecked" })
-    private static <T> void populateObject(final T subject, final Map<Class<?>, UsedInfo<?>> knownInstances) {
+    private <T> void populateObject(final T subject, final Map<Class<?>, ClassUsageInfo<?>> knownInstances) {
 	final Class<?> clazz = subject.getClass();
 
 	if (subject instanceof Collection) {
@@ -228,7 +236,7 @@ public class DummyCreator {
 		}
 	    }
 	} else {
-	    List<Method> setter = MethodCache.getSetterForClass(clazz);
+	    List<Method> setter = methodCache.getSetterForClass(clazz);
 	    if (setter == null) {
 		setter = new ArrayList<Method>();
 		for (Method m : clazz.getMethods()) {
@@ -236,7 +244,7 @@ public class DummyCreator {
 			setter.add(m);
 		    }
 		}
-		MethodCache.addSetterForClass(clazz, setter);
+		methodCache.addSetterForClass(clazz, setter);
 	    }
 
 	    Object parameter = null;
@@ -253,7 +261,7 @@ public class DummyCreator {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T checkClassBinder(final Class<T> clazz, final Map<Class<?>, UsedInfo<?>> used_classes) {
+    private <T> T checkClassBinder(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
 	Object bind = ClassBinder.getBindingForClass(clazz);
 	T ret = null;
 	if (bind != null) {
@@ -294,7 +302,7 @@ public class DummyCreator {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private static <T> T checkPrimitivesAndArray(final Class<T> clazz) {
+    private <T> T checkPrimitivesAndArray(final Class<T> clazz) {
 	// Check if we have a primitive or string
 	if (clazz.isPrimitive()) {
 	    return buildPrimitive(clazz);
@@ -317,7 +325,7 @@ public class DummyCreator {
      * @param method
      * @return
      */
-    private static boolean isSetter(Method method) {
+    private boolean isSetter(Method method) {
 	if (!method.getName().startsWith("set")) {
 	    return false;
 	}
@@ -362,8 +370,7 @@ public class DummyCreator {
      * @return
      */
     private static int getRandomArrayLength(int max) {
-	Random rand = new Random();
-	return rand.nextInt(max) + 1;
+	return new Random().nextInt(max) + 1;
     }
 
     /**
