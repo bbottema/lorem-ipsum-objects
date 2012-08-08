@@ -47,13 +47,20 @@ public class DummyCreator {
     
     private final MethodCache methodCache;
 
+    private final ClassBindings classBinder;
+    
     public DummyCreator() {
-	this(new ConstructorCache(), new MethodCache());
+	this(new ClassBindings(), new ConstructorCache(), new MethodCache());
+    }
+    
+    public DummyCreator(ClassBindings classBinder) {
+	this(classBinder, new ConstructorCache(), new MethodCache());
     }
 
-    public DummyCreator(ConstructorCache constructorCache, MethodCache methodCache) {
+    public DummyCreator(ClassBindings classBinder, ConstructorCache constructorCache, MethodCache methodCache) {
 	this.constructorCache = constructorCache;
 	this.methodCache = methodCache;
+	this.classBinder = classBinder;
     }
 
     /**
@@ -67,7 +74,7 @@ public class DummyCreator {
     public <T> T createDummyOfClass(final Class<T> clazz) {
 	Map<Class<?>, ClassUsageInfo<?>> used_classes = new HashMap<Class<?>, ClassUsageInfo<?>>();
 	if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {
-	    if (ClassBinder.getBindingForClass(clazz) == null) {
+	    if (classBinder.getBindingForClass(clazz) == null) {
 		throw new IllegalArgumentException("Cant instantiate an abstract class or an interface. Please bind it into ClassBinder");
 	    }
 	}
@@ -87,7 +94,7 @@ public class DummyCreator {
 	// List of Classes, we already used for population. By remembering, we can avoid looping
 	if (used_classes.get(clazz) == null || !used_classes.get(clazz).isPopulated()) {
 	    // Check, if there is an objectbinding for this class
-	    Object bind = ClassBinder.getBindingForClass(clazz);
+	    Object bind = classBinder.getBindingForClass(clazz);
 	    if (bind != null && bind.getClass() == clazz) {
 		return (T) bind;
 	    }
@@ -259,15 +266,12 @@ public class DummyCreator {
 
     @SuppressWarnings("unchecked")
     private <T> T checkClassBinder(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
-	Object bind = ClassBinder.getBindingForClass(clazz);
-	T ret = null;
+	Object bind = classBinder.getBindingForClass(clazz);
 	if (bind != null) {
 	    // Do we have a constructor binding?
 	    if (bind instanceof Constructor) {
-		ret = tryConstructor((Constructor<T>) bind, used_classes);
-		return ret;
-	    } else // Was this class bind to a method?
-	    if (bind instanceof Method) {
+		return tryConstructor((Constructor<T>) bind, used_classes);
+	    } else if (bind instanceof Method) {
 		Method m = (Method) bind;
 		Class<?>[] parameters = m.getParameterTypes();
 		final Object[] params = new Object[parameters.length];
@@ -281,14 +285,15 @@ public class DummyCreator {
 		} catch (IllegalAccessException iae) {
 		    // iae.printStackTrace();
 		}
-	    } else // Was this an interface?
-	    if (clazz.isInterface()) {
-		// Load class to use
-		Class<? extends T> c = (Class<? extends T>) bind;
-		return createDummyOfClass(c, used_classes);
+		return null;
+	    } else if (bind.getClass() == Class.class) {
+		return createDummyOfClass((Class<? extends T>) bind, used_classes);
+	    } else {
+		return (T) bind;
 	    }
+	} else {
+	    return null;
 	}
-	return ret;
     }
 
     /**
