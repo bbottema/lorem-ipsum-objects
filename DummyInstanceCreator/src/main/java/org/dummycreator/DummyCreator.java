@@ -15,7 +15,7 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package de.dev.eth0.dummycreator;
+package org.dummycreator;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -33,15 +33,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import de.dev.eth0.dummycreator.binder.ClassBinder;
-import de.dev.eth0.dummycreator.cache.ConstructorCache;
-import de.dev.eth0.dummycreator.cache.MethodCache;
+import org.dummycreator.binder.ClassBinder;
+import org.dummycreator.cache.ConstructorCache;
+import org.dummycreator.cache.MethodCache;
+
 
 /**
  * This is the main-class of the dummycreator, which contains only static methods
  * 
- * @author Alexander Muthmann <amuthmann@dev-eth0.de>
- * @version 04/2010
+ * @author Alexander Muthmann <amuthmann@dev-eth0.de>, Benny Bottema <b.bottema@projectnibble.org>
  */
 public class DummyCreator {
 
@@ -171,9 +171,9 @@ public class DummyCreator {
 		for (int i = 0; i < params.length; i++) {
 		    params[i] = createDummyOfClass(parameters[i], used_classes);
 		}
-		return (T) c.newInstance(params);
+		return c.newInstance(params);
 	    } else {
-		return (T) c.newInstance();
+		return c.newInstance();
 	    }
 	} catch (InvocationTargetException ite) {
 	    // ite.printStackTrace();
@@ -297,7 +297,7 @@ public class DummyCreator {
     private static <T> T checkPrimitivesAndArray(final Class<T> clazz) {
 	// Check if we have a primitive or string
 	if (clazz.isPrimitive()) {
-	    return (T) buildPrimitive(clazz);
+	    return buildPrimitive(clazz);
 	}
 	// Do we have an array?
 	if (clazz.isArray()) {

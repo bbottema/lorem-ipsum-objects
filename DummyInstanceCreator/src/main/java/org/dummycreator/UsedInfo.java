@@ -1,4 +1,4 @@
-package de.dev.eth0.dummycreator;
+package org.dummycreator;
 
 class UsedInfo<T> {
     private T instance = null;

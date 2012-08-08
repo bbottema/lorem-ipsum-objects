@@ -15,7 +15,7 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package de.dev.eth0.dummycreator.cache;
+package org.dummycreator.cache;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
