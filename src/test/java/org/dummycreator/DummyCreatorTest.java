@@ -21,8 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,22 +38,17 @@ public class DummyCreatorTest {
 
     @Before
     public void setUp() throws SecurityException, NoSuchMethodException {
-	ClassBindings classBinder = ClassBindings.defaultBindings();
-	classBinder.add(List.class, ArrayList.class);
-	classBinder.add(Integer.class, Integer.class.getConstructor(Integer.TYPE));
-	classBinder.add(Long.class, Long.MAX_VALUE);
-	classBinder.add(Double.class, Double.MIN_VALUE);
-	dummyCreator = new DummyCreator(classBinder);
+	ClassBindings classBindings = ClassBindings.defaultBindings();
+	classBindings.add(List.class, ArrayList.class);
+	classBindings.add(Integer.class, Integer.class.getConstructor(Integer.TYPE));
+	classBindings.add(Long.class, Long.MAX_VALUE);
+	classBindings.add(Double.class, Double.MIN_VALUE);
+	dummyCreator = new DummyCreator(classBindings);
     }
 
     @Test
     public void CheckObjectBindings() throws Exception {
-	System.out.println("CheckInterfaceBindings");
-	System.out.println("String");
 	assertEquals(Long.MAX_VALUE, dummyCreator.createDummyOfClass(Long.class), 0);
-
-	System.out.println();
-	System.out.println("Boolean");
 	assertEquals(Double.MIN_VALUE, dummyCreator.createDummyOfClass(Double.class), 0);
     }
 
@@ -65,50 +58,38 @@ public class DummyCreatorTest {
 
     @Test
     public void CheckConstructorBindings() throws Exception {
-	System.out.println("CheckConstructorBindings");
-	System.out.println("Integer");
 	assertEquals(Integer.class, dummyCreator.createDummyOfClass(Integer.class).getClass());
     }
 
     @Test
     public void CheckInterfaceBindings() throws Exception {
-	System.out.println("CheckInterfaceBindings");
-	System.out.println("ArrayList");
 	assertEquals(ArrayList.class, dummyCreator.createDummyOfClass(List.class).getClass());
-	System.out.println("Override Binding");
 
-	ClassBindings classBinder = new ClassBindings();
-	classBinder.add(List.class, ArrayList.class);
-	classBinder.add(List.class, LinkedList.class);
-	DummyCreator dummyCreator = new DummyCreator(classBinder);
+	ClassBindings classBindings = new ClassBindings();
+	classBindings.add(List.class, ArrayList.class);
+	classBindings.add(List.class, LinkedList.class);
+	DummyCreator dummyCreator = new DummyCreator(classBindings);
 	assertEquals(LinkedList.class, dummyCreator.createDummyOfClass(List.class).getClass());
     }
 
     @Test
     public void CheckStringCreation() {
-	System.out.println("CheckPrimitiveCreation");
-	System.out.println("String");
 	String dummy = dummyCreator.createDummyOfClass(String.class);
-	System.out.println(dummy);
 	assertEquals(String.class, dummy.getClass());
     }
 
     @Test
     public void CheckSimpleObjectCreation() {
-	System.out.println("CheckSimpleObjectCreation");
-	System.out.println("Byte");
 	assertEquals(Byte.class, dummyCreator.createDummyOfClass(Byte.class).getClass());
-	System.out.println();
-	System.out.println("Long");
 	assertEquals(Long.class, dummyCreator.createDummyOfClass(Long.class).getClass());
     }
 
     @Test
     public void CheckObjectBinding() {
-	ClassBindings classBinder = new ClassBindings();
+	ClassBindings classBindings = new ClassBindings();
 	LinkedList<Object> list = new LinkedList<Object>();
-	classBinder.add(List.class, list);
-	DummyCreator dummyCreator = new DummyCreator(classBinder);
+	classBindings.add(List.class, list);
+	DummyCreator dummyCreator = new DummyCreator(classBindings);
 	List<?> dummy = dummyCreator.createDummyOfClass(List.class);
 	assertEquals(LinkedList.class, dummy.getClass());
 	assertSame(list, dummy);
@@ -116,30 +97,26 @@ public class DummyCreatorTest {
 
     @Test
     public void CheckDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
-	ClassBindings classBinder = new ClassBindings();
-	classBinder.add(B.class, C.class.getConstructor(int.class));
-	DummyCreator dummyCreator = new DummyCreator(classBinder);
+	ClassBindings classBindings = new ClassBindings();
+	classBindings.add(B.class, C.class.getConstructor(int.class));
+	DummyCreator dummyCreator = new DummyCreator(classBindings);
 	B dummy = dummyCreator.createDummyOfClass(B.class);
 	assertEquals(C.class, dummy.getClass());
     }
 
     @Test
     public void CheckDeferredSubTypeBinding() throws SecurityException, NoSuchMethodException {
-	ClassBindings classBinder = new ClassBindings();
-	classBinder.add(B.class, C.class);
-	DummyCreator dummyCreator = new DummyCreator(classBinder);
+	ClassBindings classBindings = new ClassBindings();
+	classBindings.add(B.class, C.class);
+	DummyCreator dummyCreator = new DummyCreator(classBindings);
 	B dummy = dummyCreator.createDummyOfClass(B.class);
 	assertEquals(C.class, dummy.getClass());
     }
 
     @Test
     public void CheckPrimitiveClassCreation() {
-	System.out.println("CheckPrimitiveClassCreation");
-	System.out.println("Primitive Class");
 	assertEquals(PrimitiveClass.class, dummyCreator.createDummyOfClass(PrimitiveClass.class).getClass());
 
-	System.out.println();
-	System.out.println("Inherited Primitive Object");
 	assertEquals(InheritedPrimitiveClass.class, dummyCreator.createDummyOfClass(InheritedPrimitiveClass.class).getClass());
 
 	// TODO Check if all parameters have been set
@@ -147,30 +124,22 @@ public class DummyCreatorTest {
 
     @Test
     public void CheckNormalClassCreation() {
-	System.out.println("CheckNormalClassCreation");
-	System.out.println("Normal Class");
 	assertEquals(NormalClass.class, dummyCreator.createDummyOfClass(NormalClass.class).getClass());
 	// TODO Check if all parameters have been set
     }
 
     @Test
     public void CheckLoopClassCreation() {
-	System.out.println("CheckLoopClassCreation");
-	System.out.println("Loop Class");
 	assertEquals(LoopClass.class, dummyCreator.createDummyOfClass(LoopClass.class).getClass());
     }
 
     @Test
     public void CheckMultiConstructorClassCreation() {
-	System.out.println("CheckMultiConstructorClassCreation");
-	System.out.println("MultiConstructor Class");
 	assertEquals(MultiConstructorClass.class, dummyCreator.createDummyOfClass(MultiConstructorClass.class).getClass());
     }
 
     @Test
     public void CheckEnumClassCreation() {
-	System.out.println("CheckEnumClassCreation");
-	System.out.println("Enum Class");
 	EnumClass ec = dummyCreator.createDummyOfClass(EnumClass.class);
 	assertNotNull(ec.getEnumTester());
 	assertNotNull(ec.getInternalEnum());
@@ -217,84 +186,5 @@ public class DummyCreatorTest {
 	Map<Integer, String> numbers = new HashMap<Integer, String>();
 	Map<?, ?> ec = dummyCreator.createDummyOfClass(numbers.getClass());
 	assertNotNull(ec);
-    }
-
-    @Test
-    public void CheckSomethingElse() throws Exception {
-	System.out.println();
-	System.out.println("Array Object");
-	testDummyCreation(ArrayClass.class);
-
-	System.out.println();
-	System.out.println("Array of PrimitiveClass Object");
-	testDummyCreation(ArrayWithObjectsClass.class);
-
-	System.out.println();
-	System.out.println("Array List Object");
-	// testDummyCreation(ArrayListClass.class);
-	ArrayListClass alc = dummyCreator.createDummyOfClass(ArrayListClass.class);
-	System.out.println(alc.getMyList());
-	for (String s : alc.getMyList()) {
-	    System.out.println(s);
-	}
-
-	System.out.println();
-	System.out.println("List Object");
-	// testDummyCreation(ListClass.class);
-
-	ListClass lc = dummyCreator.createDummyOfClass(ListClass.class);
-	System.out.println(lc.getMyList());
-    }
-
-    // @Test
-    public void Benchmark() throws Exception {
-	System.out.println();
-	System.out.println("Benchmarking");
-	System.out.println("Primitive Class");
-	long t = System.currentTimeMillis();
-	for (int i = 0; i < 1000000; i++) {
-	    dummyCreator.createDummyOfClass(PrimitiveClass.class);
-	}
-	System.out.println("Time: " + (System.currentTimeMillis() - t));
-	System.out.println("Loop Class ");
-	t = System.currentTimeMillis();
-	for (int i = 0; i < 1000000; i++) {
-	    dummyCreator.createDummyOfClass(LoopClass.class);
-	}
-	System.out.println("Time: " + (System.currentTimeMillis() - t));
-	System.out.println("MultiConstructor Class ");
-	t = System.currentTimeMillis();
-	for (int i = 0; i < 1000000; i++) {
-	    dummyCreator.createDummyOfClass(MultiConstructorClass.class);
-	}
-	System.out.println("Time: " + (System.currentTimeMillis() - t));
-    }
-
-    private void testDummyCreation(Class<?> clazz) throws Exception {
-	Object t = dummyCreator.createDummyOfClass(clazz);
-	printInfo(t, clazz);
-    }
-
-    private <T> void printInfo(T object, Class<?> clazz) throws Exception {
-	if (object != null) {
-	    for (Method m : clazz.getMethods()) {
-		if (m.getName().startsWith("get") && !m.getName().startsWith("getClass")) {
-		    if (m.getParameterTypes().length == 0) {
-			Object o = m.invoke(object);
-			if (m.getReturnType().isPrimitive() || m.getReturnType().equals(String.class)) {
-			    System.out.println(m.getName() + " : " + m.invoke(object));
-			} else if (m.getReturnType().isArray()) {
-			    for (int i = 0; i < Array.getLength(o); i++) {
-				System.out.println(i + ": " + Array.get(o, i));
-				printInfo(Array.get(o, i), m.getReturnType().getComponentType());
-			    }
-			} else { // Have we already populated the class we need as parameter?
-			    System.out.println("Sub-Object : " + m.getReturnType());
-			    printInfo(o, m.getReturnType());
-			}
-		    }
-		}
-	    }
-	}
     }
 }

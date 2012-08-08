@@ -37,11 +37,11 @@ private ArrayList myList;
 
 Now, there is a problem, when we try to create a dummy instance of myList.
 To solve this, you need to bind an implementation of the interface to the
-interface with the ClassBinder?:
+interface with the ClassBindings?:
 
 This can be done by:
 
-ClassBinder.bind(List.class, ArrayList.class);
+ClassBindings.add(List.class, ArrayList.class);
 
 By doing this, you can bind every implementation to an interface you want.
 
@@ -51,9 +51,9 @@ By doing this, you can bind every implementation to an interface you want.
 
 In the normal creation process of a dummy object, the creator tries to use all
 constructors of the class until one worked. If you want to preselect the
-constructor that should be used, you can bind it to the ClassBinder:
+constructor that should be used, you can bind it to the ClassBindings:
 
-ClassBinder.bind(Class clazz, Constructor c);
+ClassBindings.add(Class clazz, Constructor c);
 
 To get the constructor, you normally would use reflection and then choose
 the needed one.
@@ -65,9 +65,9 @@ Constructor[] constructors = clazz.getConstructors();
 --------------------------------------------------------------------------------
 
 If you want to use a specific object for a certain class, you can register it
-at the ClassBinder:
+at the ClassBindings:
 
-ClassBinder.bind(Class clazz, Object o);
+ClassBindings.add(Class clazz, Object o);
 
 Every time the DummyCreator is called with this class, it will return the given
 object.
@@ -80,7 +80,7 @@ You can also register a method which returns a certain class. If you now want
 to create an object of this class with the DummyCreator, it uses the given
 class:
 
-ClassBinder.bind(Class clazz, Method m);
+ClassBindings.add(Class clazz, Method m);
 
 
 3. Help
