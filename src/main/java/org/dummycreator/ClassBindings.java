@@ -86,7 +86,7 @@ public class ClassBindings {
      * @param _class
      * @return
      */
-    public Object getBindingForClass(final Class<?> _class) {
+    public Object find(final Class<?> _class) {
 	return bindings.get(_class);
     }
 

@@ -31,31 +31,61 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+
+import org.apache.log4j.Logger;
 
 /**
+ * Tool to create populated dummy objects of a given class. This tool will recursively run through its setters and try to come up with newly
+ * populated objects for those fields.
+ * <p>
+ * To avoid recursive infinite loops, this tool keeps track of previously populated instances of a certain type and reuse that instead.
+ * <p>
+ * For numbers being generated a random number is being using, for strings a lorem ipsum generated is being used.
  * 
+ * @see #create(Class)
  * 
- * This is the main-class of the dummycreator, which contains only static methods
- * 
- * @author Alexander Muthmann <amuthmann@dev-eth0.de>, Benny Bottema <b.bottema@projectnibble.org>
+ * @author Alexander Muthmann <amuthmann@dev-eth0.de>
+ * @author Benny Bottema <b.bottema@projectnibble.org>
  */
 public class DummyCreator {
 
+    private final Logger logger = Logger.getLogger(getClass());
+
+    /**
+     * A cache for previously found {@link Constructor} instances and preferred constructor for previous successfully invoked constructors.
+     */
     private final ConstructorCache constructorCache;
 
+    /**
+     * A cache for previously found {@link Method} instances and preferred constructor for previous successfully invoked constructors.
+     */
     private final MethodCache methodCache;
 
+    /**
+     * A map that contains deferred class types for a given type. With this you can defer the creation of a dummy instance to another type.
+     * This is useful if you need to instance dummy objects for an interface or abstract class.
+     * 
+     * @see ClassBindings
+     */
     private final ClassBindings classBindings;
 
+    /**
+     * Default constructor: configures the Dummy Creator with vanilla new bindings and caches.
+     */
     public DummyCreator() {
 	this(new ClassBindings(), new ConstructorCache(), new MethodCache());
     }
 
+    /**
+     * Constructor: configures the Dummy Creator with a given {@link ClassBindings} instance and new caches.
+     */
     public DummyCreator(ClassBindings classBindings) {
 	this(classBindings, new ConstructorCache(), new MethodCache());
     }
 
+    /**
+     * Constructor: configures the Dummy Creator with given {@link ClassBindings} instance and user caches.
+     */
     public DummyCreator(ClassBindings classBindings, ConstructorCache constructorCache, MethodCache methodCache) {
 	this.constructorCache = constructorCache;
 	this.methodCache = methodCache;
@@ -63,37 +93,42 @@ public class DummyCreator {
     }
 
     /**
-     * This is the main-method used to create a dummy of a certain class. It's called with the needed class. e.g. Integer i =
-     * createDummyOfClass(Integer.class)
+     * Main method, creates a dummy object of a given type.
+     * <p>
+     * Provide your own {@link ClassBindings} in {@link #DummyCreator(ClassBindings)} to control how objects are created for specific types
+     * (such as the abstract List class). This is the main-method used to create a dummy of a certain class. It's called with the needed
+     * class. e.g. Integer i = createDummyOfClass(Integer.class)
      * 
-     * @param <T>
-     * @param clazz
-     * @return
+     * @param <T> The type to be created and returned (returned type can be a sub type of <code>T</code>).
+     * @param clazz The type that should be created
+     * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured!).
+     * @throws IllegalArgumentException Thrown if an abstract type or interface was given for which no binding could be found in the
+     *             provided {@link ClassBindings}.
      */
-    public <T> T createDummyOfClass(final Class<T> clazz) {
+    public <T> T create(final Class<T> clazz) {
 	Map<Class<?>, ClassUsageInfo<?>> used_classes = new HashMap<Class<?>, ClassUsageInfo<?>>();
 	if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {
-	    if (classBindings.getBindingForClass(clazz) == null) {
+	    if (classBindings.find(clazz) == null) {
 		throw new IllegalArgumentException("Can't instantiate an abstract class or an interface. Please register it to ClassBindings");
 	    }
 	}
-	return createDummyOfClass(clazz, used_classes);
+	return create(clazz, used_classes);
     }
 
     /**
-     * A helper for the main-method to avoid loops
+     * Will try to create a new object for the given type, while maintaining a track record of already created - and - populated objects to
+     * avoid recursive loops.
      * 
-     * @param <T>
-     * @param clazz
-     * @param used_classes
-     * @return
+     * @param <T> The type to be created and returned (returned type can be a sub type of <code>T</code>).
+     * @param clazz The type that should be created
+     * @param knownInstances A list of previously created and populated objects for a specific type.
+     * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
      */
     @SuppressWarnings("unchecked")
-    private <T> T createDummyOfClass(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
+    private <T> T create(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> knownInstances) {
 	// List of Classes, we already used for population. By remembering, we can avoid looping
-	if (used_classes.get(clazz) == null || !used_classes.get(clazz).isPopulated()) {
-	    // Check, if there is an objectbinding for this class
-	    Object bind = classBindings.getBindingForClass(clazz);
+	if (knownInstances.get(clazz) == null || !knownInstances.get(clazz).isPopulated()) {
+	    Object bind = classBindings.find(clazz);
 	    if (bind != null && bind.getClass() == clazz) {
 		return (T) bind;
 	    }
@@ -106,10 +141,10 @@ public class DummyCreator {
 
 	    ClassUsageInfo<T> usedInfo = new ClassUsageInfo<T>();
 	    usedInfo.setInstance(ret);
-	    used_classes.put(clazz, usedInfo);
+	    knownInstances.put(clazz, usedInfo);
 
 	    // Has this class be bind?
-	    ret = findClassBindings(clazz, used_classes);
+	    ret = findClassBindings(clazz, knownInstances);
 	    if (ret != null) {
 		return ret;
 	    }
@@ -138,11 +173,11 @@ public class DummyCreator {
 	    // Check if we have a prefered Constructor and try it
 	    Constructor<T> preferedConstructor = (Constructor<T>) constructorCache.getPreferedConstructor(clazz);
 	    if (preferedConstructor != null) {
-		ret = tryConstructor(preferedConstructor, used_classes);
+		ret = tryConstructor(preferedConstructor, knownInstances);
 	    }
 	    if (ret == null) {
 		for (Constructor<?> co : consts) {
-		    ret = (T) tryConstructor(co, used_classes);
+		    ret = (T) tryConstructor(co, knownInstances);
 		    if (ret != null) {
 			constructorCache.setPreferedConstructor(clazz, co);
 			// Worked
@@ -157,43 +192,42 @@ public class DummyCreator {
 
 	    usedInfo.setInstance(ret);
 	    usedInfo.setPopulated(true);
-	    populateObject(ret, used_classes);
+	    populateObject(ret, knownInstances);
 
 	    return ret;
 	} else {
-	    return (T) used_classes.get(clazz).getInstance();
+	    return (T) knownInstances.get(clazz).getInstance();
 	}
     }
 
     /**
-     * A method, which tries to instanciate an object with the given constructor
+     * Tries to instantiate an object with the given constructor.
      * 
      * @param <T>
      * @param c
-     * @param used_classes
+     * @param knownInstances
      * @return
      */
-    private <T> T tryConstructor(final Constructor<T> c, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
+    private <T> T tryConstructor(final Constructor<T> c, final Map<Class<?>, ClassUsageInfo<?>> knownInstances) {
 	@SuppressWarnings("unchecked")
 	Class<T>[] parameters = (Class<T>[]) c.getParameterTypes();
 	try {
 	    if (parameters.length > 0) {
 		final Object[] params = new Object[parameters.length];
 		for (int i = 0; i < params.length; i++) {
-		    params[i] = createDummyOfClass(parameters[i], used_classes);
+		    params[i] = create(parameters[i], knownInstances);
 		}
 		return c.newInstance(params);
 	    } else {
 		return c.newInstance();
 	    }
-	} catch (InvocationTargetException ite) {
-	    // ite.printStackTrace();
-	} catch (InstantiationException ie) {
-	    // ie.printStackTrace();
-	} catch (IllegalAccessException iae) {
-	    // iae.printStackTrace();
+	} catch (InvocationTargetException e) {
+	    logger.debug(String.format("unable to invoke constructor '%s'", c.getName()), e);
+	} catch (InstantiationException e) {
+	    logger.debug(String.format("unable to invoke constructor '%s'", c.getName()), e);
+	} catch (IllegalAccessException e) {
+	    logger.debug(String.format("unable to invoke constructor '%s'", c.getName()), e);
 	}
-	// If this didn't work, we return null
 	return null;
     }
 
@@ -208,34 +242,34 @@ public class DummyCreator {
      * 
      * @param subject The object to populate with dummy values.
      * @param knownInstances A list of known instances to keep track of already processed classes (to avoid infinite loop)
-     * @see #createDummyOfClass(Class, Map)
+     * @see #create(Class, Map)
      */
     @SuppressWarnings({ "unchecked" })
     private <T> void populateObject(final T subject, final Map<Class<?>, ClassUsageInfo<?>> knownInstances) {
 	final Class<?> clazz = subject.getClass();
 
 	if (subject instanceof Collection) {
-	    for (int i = 0; i < getRandomArrayLength(2); i++) {
+	    for (int i = 0; i < RandomCreator.getRandomInt(2) + 1; i++) {
 		// detect generic declarations
 		Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
 		if (genericTypes.length > 0 && (genericTypes[0] instanceof Class)) {
 		    // uses generic type if available, Integer for '<T extends List<Integer>>'
-		    ((Collection<Object>) subject).add(createDummyOfClass((Class<?>) genericTypes[0], knownInstances));
+		    ((Collection<Object>) subject).add(create((Class<?>) genericTypes[0], knownInstances));
 		} else {
 		    // use default String value for raw type Collection
-		    ((Collection<Object>) subject).add(createDummyOfClass(String.class, knownInstances));
+		    ((Collection<Object>) subject).add(create(String.class, knownInstances));
 		}
 	    }
 	} else if (subject instanceof Map) {
-	    for (int i = 0; i < getRandomArrayLength(2); i++) {
+	    for (int i = 0; i < RandomCreator.getRandomInt(2) + 1; i++) {
 		// detect generic declarations
 		Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
 		if (genericTypes.length > 0 && (genericTypes[0] instanceof Class)) {
 		    // uses generic type if available, String and Integer for '<T extends Map<String, Double>>'
-		    ((Map<Object, Object>) subject).put(createDummyOfClass((Class<?>) genericTypes[0], knownInstances), createDummyOfClass((Class<?>) genericTypes[1], knownInstances));
+		    ((Map<Object, Object>) subject).put(create((Class<?>) genericTypes[0], knownInstances), create((Class<?>) genericTypes[1], knownInstances));
 		} else {
 		    // use default String and String value for raw type Collection
-		    ((Map<Object, Object>) subject).put(createDummyOfClass(String.class, knownInstances), createDummyOfClass(String.class, knownInstances));
+		    ((Map<Object, Object>) subject).put(create(String.class, knownInstances), create(String.class, knownInstances));
 		}
 	    }
 	} else {
@@ -243,7 +277,7 @@ public class DummyCreator {
 	    if (setter == null) {
 		setter = new ArrayList<Method>();
 		for (Method m : clazz.getMethods()) {
-		    if (isSetter(m)) {
+		    if (isUsableSetter(m)) {
 			setter.add(m);
 		    }
 		}
@@ -253,7 +287,7 @@ public class DummyCreator {
 	    Object parameter = null;
 	    for (Method m : setter) {
 		// Load the parameter to pass to this method
-		parameter = createDummyOfClass(m.getParameterTypes()[0], knownInstances);
+		parameter = create(m.getParameterTypes()[0], knownInstances);
 		try {
 		    m.invoke(subject, parameter);
 		} catch (Exception e) {
@@ -265,7 +299,7 @@ public class DummyCreator {
 
     @SuppressWarnings("unchecked")
     private <T> T findClassBindings(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
-	Object bind = classBindings.getBindingForClass(clazz);
+	Object bind = classBindings.find(clazz);
 	if (bind != null) {
 	    // Do we have a constructor binding?
 	    if (bind instanceof Constructor) {
@@ -275,18 +309,18 @@ public class DummyCreator {
 		Class<?>[] parameters = m.getParameterTypes();
 		final Object[] params = new Object[parameters.length];
 		for (int i = 0; i < params.length; i++) {
-		    params[i] = createDummyOfClass(parameters[i], used_classes);
+		    params[i] = create(parameters[i], used_classes);
 		}
 		try {
 		    return (T) m.invoke(null, params);
-		} catch (InvocationTargetException ite) {
-		    // ite.printStackTrace();
-		} catch (IllegalAccessException iae) {
-		    // iae.printStackTrace();
+		} catch (InvocationTargetException e) {
+		    logger.debug(String.format("failed to invoke Method [%s] to product an object of type [%s]", m.getName(), clazz), e);
+		} catch (IllegalAccessException e) {
+		    logger.debug(String.format("failed to invoke Method [%s] to product an object of type [%s]", m.getName(), clazz), e);
 		}
 		return null;
 	    } else if (bind.getClass() == Class.class) {
-		return createDummyOfClass((Class<? extends T>) bind, used_classes);
+		return create((Class<? extends T>) bind, used_classes);
 	    } else {
 		return (T) bind;
 	    }
@@ -310,10 +344,10 @@ public class DummyCreator {
 	}
 	// Do we have an array?
 	if (clazz.isArray()) {
-	    int length = getRandomArrayLength(20);
+	    int length = RandomCreator.getRandomInt(2) + 1;
 	    Object parameter = Array.newInstance(clazz.getComponentType(), length);
 	    for (int i = 0; i < length; i++) {
-		Array.set(parameter, i, createDummyOfClass(clazz.getComponentType()));
+		Array.set(parameter, i, create(clazz.getComponentType()));
 	    }
 	    return (T) parameter;
 	}
@@ -326,14 +360,8 @@ public class DummyCreator {
      * @param method
      * @return
      */
-    private boolean isSetter(Method method) {
-	if (!method.getName().startsWith("set")) {
-	    return false;
-	}
-	if (method.getParameterTypes().length != 1) {
-	    return false;
-	}
-	return true;
+    private boolean isUsableSetter(Method method) {
+	return method.getName().startsWith("set") && method.getParameterTypes().length == 1;
     }
 
     /**
@@ -362,16 +390,6 @@ public class DummyCreator {
 	    return (T) (Double) RandomCreator.getRandomDouble();
 	}
 	return null;
-    }
-
-    /**
-     * Method to generate a random length for an array
-     * 
-     * @param max TODO
-     * @return
-     */
-    private static int getRandomArrayLength(int max) {
-	return new Random().nextInt(max) + 1;
     }
 
     /**
