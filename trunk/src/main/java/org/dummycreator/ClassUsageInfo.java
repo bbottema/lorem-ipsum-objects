@@ -1,6 +1,6 @@
 package org.dummycreator;
 
-class UsedInfo<T> {
+class ClassUsageInfo<T> {
     private T instance = null;
     private boolean populated = false;
 

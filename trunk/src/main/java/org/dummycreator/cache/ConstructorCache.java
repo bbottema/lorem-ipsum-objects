@@ -31,18 +31,15 @@ import java.util.Map;
  */
 public class ConstructorCache {
 
-    private static final Map<Class<?>, List<Constructor<?>>> cache = new HashMap<Class<?>, List<Constructor<?>>>();
-    private static final Map<Class<?>, Constructor<?>> preferedConstructors = new HashMap<Class<?>, Constructor<?>>();
+    private final Map<Class<?>, List<Constructor<?>>> cache = new HashMap<Class<?>, List<Constructor<?>>>();
+    private final Map<Class<?>, Constructor<?>> preferedConstructors = new HashMap<Class<?>, Constructor<?>>();
 
-    private ConstructorCache() {
-    }
-
-    public static List<Constructor<?>> getCachedConstructors(final Class<?> clazz) {
+    public List<Constructor<?>> getCachedConstructors(final Class<?> clazz) {
 	List<Constructor<?>> cs = cache.get(clazz);
 	return cs == null ? null : Collections.unmodifiableList(cs);
     }
 
-    public static void addConstructor(final Class<?> clazz, final Constructor<?> cons) {
+    public void addConstructor(final Class<?> clazz, final Constructor<?> cons) {
 	List<Constructor<?>> cs = cache.get(clazz);
 	if (cs == null) {
 	    cs = new ArrayList<Constructor<?>>();
@@ -51,7 +48,7 @@ public class ConstructorCache {
 	cs.add(cons);
     }
 
-    public static void addConstructors(final Class<?> clazz, final List<Constructor<?>> cons) {
+    public void addConstructors(final Class<?> clazz, final List<Constructor<?>> cons) {
 	List<Constructor<?>> cs = cache.get(clazz);
 	if (cs == null) {
 	    cs = new ArrayList<Constructor<?>>();
@@ -60,11 +57,11 @@ public class ConstructorCache {
 	cs.addAll(cons);
     }
 
-    public static Constructor<?> getPreferedConstructor(final Class<?> clazz) {
+    public Constructor<?> getPreferedConstructor(final Class<?> clazz) {
 	return preferedConstructors.get(clazz);
     }
 
-    public static void setPreferedConstructor(final Class<?> clazz, final Constructor<?> cons) {
+    public void setPreferedConstructor(final Class<?> clazz, final Constructor<?> cons) {
 	preferedConstructors.put(clazz, cons);
     }
 }

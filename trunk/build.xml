@@ -31,11 +31,12 @@
 	</target>
 	
 	<target name="compile-test" depends="compile">
-		<mkdir dir="${output.dir}/classes"/>
-		<javac destdir="${output.dir}/classes" debug="true" deprecation="true" optimize="false" source="1.6" includeantruntime="false">
+		<mkdir dir="${output.dir}/test-classes"/>
+		<javac destdir="${output.dir}/test-classes" debug="true" deprecation="true" optimize="false" source="1.6" includeantruntime="false">
 			<compilerarg value="-Xlint" />
 			<classpath>
 				<path refid="compiletime-libraries"/>
+				<path path="${output.dir}/classes"/>
 			</classpath>
 			<src path="${test.dir}" />
 		</javac>
@@ -49,14 +50,17 @@
 	</target>
 	
 	<target name="test" depends="compile-test" description="tests the library">
-		<junit printsummary="yes" haltonfailure="yes" fork="yes">
+		<junit printsummary="yes" haltonfailure="yes">
 			<classpath refid="compiletime-libraries" />
 			<classpath>
     			<pathelement location="${output.dir}/test-classes"/>
     			<pathelement location="${output.dir}/classes"/>
 			</classpath>
-			<formatter type="plain"/>
-			<test name="org.dummycreator.Main"/>
+			<batchtest fork="yes" todir="${output.dir}\tests">
+				<fileset dir="${test.dir}">
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
 		</junit>
 	</target>
 	
