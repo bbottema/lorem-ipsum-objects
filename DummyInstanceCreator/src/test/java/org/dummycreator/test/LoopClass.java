@@ -15,23 +15,52 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package de.dev.eth0.dummycreator.test;
+
+package org.dummycreator;
 
 /**
  * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
-public class ArrayWithObjectsClass {
+public class LoopClass {
 
-    private PrimitiveClass[] primitivclasses;
+    protected LoopClass loopObject;
+    protected long id;
 
-    public PrimitiveClass[] getPrimitivclasses() {
-	return primitivclasses;
+    /**
+     * Get the value of id
+     * 
+     * @return the value of id
+     */
+    public long getId() {
+	return id;
     }
 
-    public void setPrimitivclasses(PrimitiveClass[] primitivclasses) {
-	this.primitivclasses = primitivclasses;
+    /**
+     * Set the value of id
+     * 
+     * @param id new value of id
+     */
+    public void setId(long id) {
+	this.id = id;
     }
 
+    /**
+     * Get the value of loopObject
+     * 
+     * @return the value of loopObject
+     */
+    public LoopClass getLoopObject() {
+	return loopObject;
+    }
+
+    /**
+     * Set the value of loopObject
+     * 
+     * @param loopObject new value of loopObject
+     */
+    public void setLoopObject(LoopClass loopObject) {
+	this.loopObject = loopObject;
+    }
 }

@@ -1,4 +1,4 @@
-package de.dev.eth0.dummycreator.test;
+package org.dummycreator;
 
 import java.util.ArrayList;
 

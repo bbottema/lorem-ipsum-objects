@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dev.eth0.dummycreator.test;
+package org.dummycreator;
 
 /**
  * 

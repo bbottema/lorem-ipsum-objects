@@ -15,7 +15,7 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package de.dev.eth0.dummycreator.test;
+package org.dummycreator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dummycreator.DummyCreator;
+import org.dummycreator.binder.ClassBinder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import java.util.*;
 
-import de.dev.eth0.dummycreator.DummyCreator;
-import de.dev.eth0.dummycreator.binder.ClassBinder;
 
 /**
  * 
@@ -238,7 +238,7 @@ public class Main {
 	System.out.println("Time: " + (System.currentTimeMillis() - t));
     }
 
-    private static void testDummyCreation(Class clazz) throws Exception {
+    private static void testDummyCreation(Class<?> clazz) throws Exception {
 	Object t = DummyCreator.createDummyOfClass(clazz);
 	printInfo(t, clazz);
     }

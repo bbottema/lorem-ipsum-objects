@@ -15,7 +15,7 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package de.dev.eth0.dummycreator.test;
+package org.dummycreator;
 
 /**
  * 
