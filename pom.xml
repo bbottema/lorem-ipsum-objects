@@ -1,0 +1,60 @@
+<project>
+  
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.dummycreator</groupId>
+  <artifactId>dummy-creator</artifactId>
+  <packaging>jar</packaging>
+  <name>Dummy Creator</name>
+  <version>1.0-SNAPSHOT</version>
+  <description>A small tool for generating populated dummy objects</description>
+  <url>http://code.google.com/p/dummycreator/</url>
+  
+  <licenses>
+    <license>
+      <name>Common Development and Distribution License</name>
+      <url>http://opensource.org/licenses/cddl1.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <scm>
+    <connection>scm:svn:http://dummycreator.googlecode.com/svn/DummyInstanceCreator/</connection>
+    <developerConnection>scm:svn:https://dummycreator.googlecode.com/svn/DummyInstanceCreator/</developerConnection>
+    <url>http://dummycreator.googlecode.com/svn/DummyInstanceCreator/</url>
+  </scm>
+  
+  <developers>
+    <developer>
+      <id>muthmann</id>
+      <name>Alexander Muthmann</name>
+      <email>amuthmann@dev-eth0.de</email>
+      <roles>
+        <role>developer</role>
+        <role>packager</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>benny</id>
+      <name>Benny Bottema</name>
+      <email>b.bottema@projectnibble.org</email>
+      <url>http://blog.projectnibble.org</url>
+      <roles>
+        <role>developer</role>
+        <role>packager</role>
+      </roles>
+    </developer>
+  </developers>
+  
+  <issueManagement>
+	<system>Google Code</system>
+	<url>http://code.google.com/p/dummycreator/issues/</url>
+  </issueManagement>
+  
+  <dependencies>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+    </dependency>
+  </dependencies>
+</project>
