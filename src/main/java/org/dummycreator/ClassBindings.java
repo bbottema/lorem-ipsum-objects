@@ -28,26 +28,42 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Stores a list of classes / interfaces and their associated deferred types. This list is used to tell {@link DummyCreator} which specific
+ * implementation it should use to product new dummy instances for a certain type.
+ * <p>
+ * Classes can be used as deferred types, but the following deferred types are allowed:
+ * <ul>
+ * <li>Class references: {@link #add(Class, Class)}</li>
+ * <li>methods with a return type: {@link #add(Class, Method)}</li>
+ * <li>constructors: {@link #add(Class, Constructor)}</li>
+ * <li>instance objects: {@link #add(Class, Object)}</li>
+ * </ul>
  * 
- * @author Alexander Muthmann <amuthmann@dev-eth0.de>
- * @version 04/2010
+ * Examples are:
+ * <ul>
+ * <li>List -> ArrayList</li>
+ * <li>List -> LinkedList</li>
+ * <li>Integer -> 4443 (which is autoboxed to an Integer)</li>
+ * <li>Foo -> FooFactory.class.getMethod('createFoo')</li>
+ * <li>Apple -> Apple.class.getConstructor(String.class)</li>
+ * </ul>
  */
-public class ClassBinder {
+public class ClassBindings {
 
-    private static final HashMap<Class<?>, Object> bindings = new HashMap<Class<?>, Object>();
+    /**
+     * The list with bindings
+     */
+    private final HashMap<Class<?>, Object> bindings = new HashMap<Class<?>, Object>();
 
-    private ClassBinder() {
+    public <T> void add(final Class<T> clazz, final Constructor<? extends T> constructor) {
+	bindings.put(clazz, constructor);
     }
 
-    public static <T> void bind(final Class<T> _class, final Constructor<T> _constructor) {
-	bindings.put(_class, _constructor);
+    public <T> void add(final Class<T> clazz, final Class<? extends T> deferredSubtype) {
+	bindings.put(clazz, deferredSubtype);
     }
 
-    public static <T> void bind(final Class<T> _interface, final Class<? extends T> _implementation) {
-	bindings.put(_interface, _implementation);
-    }
-
-    public static <T> void bind(final Class<T> clazz, final Method method) {
+    public <T> void add(final Class<T> clazz, final Method method) {
 	if (Modifier.isStatic(method.getModifiers()) && method.getReturnType().equals(clazz)) {
 	    bindings.put(clazz, method);
 	} else {
@@ -55,23 +71,12 @@ public class ClassBinder {
 	}
     }
 
-    public static <T> void bind(final Class<T> clazz, final Object object) {
-	// Check if the object is a subclass of clazz
+    public <T> void add(final Class<T> clazz, final Object object) {
 	if (clazz.isAssignableFrom(object.getClass())) {
 	    bindings.put(clazz, object);
 	} else {
 	    throw new IllegalArgumentException("The object has to have a subclass of clazz");
 	}
-    }
-
-    /**
-     * This methods allows you to release a binding for a certain class
-     * 
-     * @param <T>
-     * @param _class
-     */
-    public static <T> void releaseBinding(final Class<T> _class) {
-	bindings.remove(_class);
     }
 
     /**
@@ -81,17 +86,18 @@ public class ClassBinder {
      * @param _class
      * @return
      */
-    public static Object getBindingForClass(final Class<?> _class) {
+    public Object getBindingForClass(final Class<?> _class) {
 	return bindings.get(_class);
     }
 
     /**
      * You can call this method to build some default bindings for common classes. This includes List.class, Map.class, Set.class
      */
-    public static void setDefaultBindings() {
-	ClassBinder.bind(List.class, ArrayList.class);
-	ClassBinder.bind(Map.class, HashMap.class);
-	ClassBinder.bind(Set.class, HashSet.class);
-	// TODO: Create-Methods for ArrayList, HashMap and HashSet would be great
+    public static ClassBindings defaultBindings() {
+	ClassBindings classBinder = new ClassBindings();
+	classBinder.add(List.class, ArrayList.class);
+	classBinder.add(Map.class, HashMap.class);
+	classBinder.add(Set.class, HashSet.class);
+	return classBinder;
     }
 }
