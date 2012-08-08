@@ -15,16 +15,10 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-
 package org.dummycreator;
 
 import java.util.List;
 
-/**
- * 
- * @author Alexander Muthmann <amuthmann@dev-eth0.de>
- * @version 04/2010
- */
 public class ListClass {
 
     private List<String> myList;
