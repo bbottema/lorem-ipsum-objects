@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.dummycreator.binder.ClassBinder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
