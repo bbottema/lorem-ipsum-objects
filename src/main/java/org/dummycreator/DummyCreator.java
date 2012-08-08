@@ -28,11 +28,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.codemonkey.javareflection.FieldUtils;
+import org.codemonkey.javareflection.FieldUtils.BeanRestriction;
+import org.codemonkey.javareflection.FieldUtils.Visibility;
+import org.codemonkey.javareflection.FieldWrapper;
 
 /**
  * Tool to create populated dummy objects of a given class. This tool will recursively run through its setters and try to come up with newly
@@ -202,11 +207,6 @@ public class DummyCreator {
 
     /**
      * Tries to instantiate an object with the given constructor.
-     * 
-     * @param <T>
-     * @param c
-     * @param knownInstances
-     * @return
      */
     private <T> T tryConstructor(final Constructor<T> c, final Map<Class<?>, ClassUsageInfo<?>> knownInstances) {
 	@SuppressWarnings("unchecked")
@@ -222,7 +222,7 @@ public class DummyCreator {
 		return c.newInstance();
 	    }
 	} catch (InvocationTargetException e) {
-	    logger.debug(String.format("unable to invoke constructor '%s'", c.getName()), e);
+	    logger.trace(String.format("unable to invoke constructor '%s', string should represent a number?", c.getName()));
 	} catch (InstantiationException e) {
 	    logger.debug(String.format("unable to invoke constructor '%s'", c.getName()), e);
 	} catch (IllegalAccessException e) {
@@ -273,16 +273,7 @@ public class DummyCreator {
 		}
 	    }
 	} else {
-	    List<Method> setter = methodCache.getSetterForClass(clazz);
-	    if (setter == null) {
-		setter = new ArrayList<Method>();
-		for (Method m : clazz.getMethods()) {
-		    if (isUsableSetter(m)) {
-			setter.add(m);
-		    }
-		}
-		methodCache.addSetterForClass(clazz, setter);
-	    }
+	    List<Method> setter = discoverSetters(clazz);
 
 	    Object parameter = null;
 	    for (Method m : setter) {
@@ -295,6 +286,21 @@ public class DummyCreator {
 		}
 	    }
 	}
+    }
+
+    private List<Method> discoverSetters(final Class<?> clazz) {
+	List<Method> setter = methodCache.getSetterForClass(clazz);
+	if (setter == null) {
+	    setter = new ArrayList<Method>();
+	    Map<Class<?>, List<FieldWrapper>> fields = FieldUtils.collectFields(clazz, Object.class, EnumSet.allOf(Visibility.class), EnumSet.of(BeanRestriction.YES_SETTER));
+	    for (List<FieldWrapper> fieldWrappers : fields.values()) {
+		for (FieldWrapper fieldWrapper : fieldWrappers) {
+		    setter.add(fieldWrapper.getSetter());
+		}
+	    }
+	    methodCache.addSetterForClass(clazz, setter);
+	}
+	return setter;
     }
 
     @SuppressWarnings("unchecked")
@@ -355,20 +361,12 @@ public class DummyCreator {
     }
 
     /**
-     * Method to check, if the given method is a Setter. A setter is defined by the name setXXXX and by having only one parameter
+     * Method to build a primitive dummy.
      * 
-     * @param method
-     * @return
-     */
-    private boolean isUsableSetter(Method method) {
-	return method.getName().startsWith("set") && method.getParameterTypes().length == 1;
-    }
-
-    /**
-     * Method to build a primitive
+     * @see RandomCreator
      * 
-     * @param c
-     * @return
+     * @param c The primitive type to be created.
+     * @return A primitive dummy value.
      */
     @SuppressWarnings("unchecked")
     private static <T> T buildPrimitive(Class<T> c) {
