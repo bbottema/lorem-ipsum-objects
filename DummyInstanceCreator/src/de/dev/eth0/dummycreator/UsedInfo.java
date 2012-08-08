@@ -5,18 +5,18 @@ class UsedInfo<T> {
     private boolean populated = false;
 
     public T getInstance() {
-        return instance;
+	return instance;
     }
 
     public void setInstance(T instance) {
-        this.instance = instance;
+	this.instance = instance;
     }
 
     public boolean isPopulated() {
-        return populated;
+	return populated;
     }
 
     public void setPopulated(boolean populated) {
-        this.populated = populated;
+	this.populated = populated;
     }
 }

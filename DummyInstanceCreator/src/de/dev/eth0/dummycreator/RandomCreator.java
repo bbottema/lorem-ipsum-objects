@@ -20,7 +20,7 @@ package de.dev.eth0.dummycreator;
 import java.util.Random;
 
 /**
- *
+ * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
@@ -29,42 +29,42 @@ public class RandomCreator {
     private final static Random r = new Random();
 
     public static String getRandomString() {
-        return Long.toString(Math.abs(r.nextLong()), 36);
+	return Long.toString(Math.abs(r.nextLong()), 36);
     }
 
     public static boolean getRandomBoolean() {
-        return r.nextBoolean();
+	return r.nextBoolean();
     }
 
     public static int getRandomInt() {
-        return r.nextInt();
+	return r.nextInt();
     }
 
     public static char getRandomChar() {
-        return (char) r.nextInt();
+	return (char) r.nextInt();
     }
 
     public static byte getRandomByte() {
-        return (byte) r.nextInt();
+	return (byte) r.nextInt();
     }
 
     public static long getRandomLong() {
-        return r.nextLong();
+	return r.nextLong();
     }
 
     public static float getRandomFloat() {
-        return r.nextFloat();
+	return r.nextFloat();
     }
 
     public static double getRandomDouble() {
-        return r.nextDouble();
+	return r.nextDouble();
     }
 
     public static short getRandomShort() {
-        return (short) r.nextInt();
+	return (short) r.nextInt();
     }
 
     public static int getRandomInt(int max) {
-        return r.nextInt(max);
+	return r.nextInt(max);
     }
 }

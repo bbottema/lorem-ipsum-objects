@@ -19,32 +19,30 @@
 package de.dev.eth0.dummycreator.test;
 
 /**
- *
+ * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
 public class InheritedPrimitiveClass extends PrimitiveClass {
 
     private String secondString;
-    
 
     /**
      * Get the value of secondString
-     *
+     * 
      * @return the value of secondString
      */
     public String getSecondString() {
-        return secondString;
+	return secondString;
     }
 
     /**
      * Set the value of secondString
-     *
+     * 
      * @param secondString new value of secondString
      */
     public void setSecondString(String secondString) {
-        this.secondString = secondString;
+	this.secondString = secondString;
     }
-
 
 }

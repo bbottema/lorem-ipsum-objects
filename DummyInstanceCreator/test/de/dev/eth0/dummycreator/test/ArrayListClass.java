@@ -20,7 +20,7 @@ package de.dev.eth0.dummycreator.test;
 import java.util.ArrayList;
 
 /**
- *
+ * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
@@ -29,13 +29,11 @@ public class ArrayListClass {
     private ArrayList<String> myList;
 
     public ArrayList<String> getMyList() {
-        return myList;
+	return myList;
     }
 
     public void setMyList(ArrayList<String> myList) {
-        this.myList = myList;
+	this.myList = myList;
     }
-
-    
 
 }

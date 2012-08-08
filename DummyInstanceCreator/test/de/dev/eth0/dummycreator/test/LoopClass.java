@@ -19,7 +19,7 @@
 package de.dev.eth0.dummycreator.test;
 
 /**
- *
+ * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
@@ -30,37 +30,37 @@ public class LoopClass {
 
     /**
      * Get the value of id
-     *
+     * 
      * @return the value of id
      */
     public long getId() {
-        return id;
+	return id;
     }
 
     /**
      * Set the value of id
-     *
+     * 
      * @param id new value of id
      */
     public void setId(long id) {
-        this.id = id;
+	this.id = id;
     }
 
     /**
      * Get the value of loopObject
-     *
+     * 
      * @return the value of loopObject
      */
     public LoopClass getLoopObject() {
-        return loopObject;
+	return loopObject;
     }
 
     /**
      * Set the value of loopObject
-     *
+     * 
      * @param loopObject new value of loopObject
      */
     public void setLoopObject(LoopClass loopObject) {
-        this.loopObject = loopObject;
+	this.loopObject = loopObject;
     }
 }

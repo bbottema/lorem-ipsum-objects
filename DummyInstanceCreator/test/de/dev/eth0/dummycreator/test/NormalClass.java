@@ -19,7 +19,7 @@
 package de.dev.eth0.dummycreator.test;
 
 /**
- *
+ * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
@@ -30,37 +30,37 @@ public class NormalClass {
 
     /**
      * Get the value of id
-     *
+     * 
      * @return the value of id
      */
     public int getId() {
-        return id;
+	return id;
     }
 
     /**
      * Set the value of id
-     *
+     * 
      * @param id new value of id
      */
     public void setId(int id) {
-        this.id = id;
+	this.id = id;
     }
 
     /**
      * Get the value of primitiveClass
-     *
+     * 
      * @return the value of primitiveClass
      */
     public PrimitiveClass getPrimitiveClass() {
-        return primitiveClass;
+	return primitiveClass;
     }
 
     /**
      * Set the value of primitiveClass
-     *
+     * 
      * @param primitiveClass new value of primitiveClass
      */
     public void setPrimitiveClass(PrimitiveClass primitiveClass) {
-        this.primitiveClass = primitiveClass;
+	this.primitiveClass = primitiveClass;
     }
 }

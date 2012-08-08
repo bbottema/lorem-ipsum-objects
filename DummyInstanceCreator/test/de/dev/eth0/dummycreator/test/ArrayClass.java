@@ -19,7 +19,7 @@
 package de.dev.eth0.dummycreator.test;
 
 /**
- *
+ * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
@@ -28,10 +28,10 @@ public class ArrayClass {
     private String[] strings;
 
     public String[] getStrings() {
-        return strings;
+	return strings;
     }
 
     public void setStrings(String[] strings) {
-        this.strings = strings;
+	this.strings = strings;
     }
 }

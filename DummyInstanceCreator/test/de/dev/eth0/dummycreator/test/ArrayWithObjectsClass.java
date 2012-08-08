@@ -18,7 +18,7 @@
 package de.dev.eth0.dummycreator.test;
 
 /**
- *
+ * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
@@ -27,13 +27,11 @@ public class ArrayWithObjectsClass {
     private PrimitiveClass[] primitivclasses;
 
     public PrimitiveClass[] getPrimitivclasses() {
-        return primitivclasses;
+	return primitivclasses;
     }
 
     public void setPrimitivclasses(PrimitiveClass[] primitivclasses) {
-        this.primitivclasses = primitivclasses;
+	this.primitivclasses = primitivclasses;
     }
-
-    
 
 }

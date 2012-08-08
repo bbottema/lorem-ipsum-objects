@@ -21,7 +21,7 @@ package de.dev.eth0.dummycreator.test;
 import java.util.List;
 
 /**
- *
+ * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de>
  * @version 04/2010
  */
@@ -30,10 +30,10 @@ public class ListClass {
     private List<String> myList;
 
     public List<String> getMyList() {
-        return myList;
+	return myList;
     }
 
     public void setMyList(List<String> myList) {
-        this.myList = myList;
+	this.myList = myList;
     }
 }

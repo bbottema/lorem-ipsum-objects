@@ -26,6 +26,7 @@ import java.util.Map;
 
 /**
  * This is a cache for use with dummycreator. It caches all found setter for a certain class
+ * 
  * @author Alexander Muthmann <amuthmann at dev-eth0.de>
  * @version 05/2010
  */
@@ -41,39 +42,42 @@ public class MethodCache {
 
     /**
      * This method returns a list of setter-methods for the given class. If no setter is cached, it returns null
+     * 
      * @param clazz
      * @return
      */
     public static List<Method> getSetterForClass(final Class<?> clazz) {
-        List<Method> m = cache.get(clazz);
-        return m == null ? null : Collections.unmodifiableList(m);
+	List<Method> m = cache.get(clazz);
+	return m == null ? null : Collections.unmodifiableList(m);
     }
 
     /**
      * Adds a Method as setter for the given class.
+     * 
      * @param clazz
      * @param setter
      */
     public static void addSetterForClass(final Class<?> clazz, final Method setter) {
-        List<Method> setters = cache.get(clazz);
-        if (setters == null) {
-            setters = new ArrayList<Method>();
-            cache.put(clazz, setters);
-        }
-        setters.add(setter);
+	List<Method> setters = cache.get(clazz);
+	if (setters == null) {
+	    setters = new ArrayList<Method>();
+	    cache.put(clazz, setters);
+	}
+	setters.add(setter);
     }
 
     /**
      * Adds the list of Methods as setters for the given class
+     * 
      * @param clazz
      * @param setter
      */
-    public static void addSetterForClass(final Class<?> clazz, final List<Method> setter){
-        List<Method> setters = cache.get(clazz);
-        if (setters == null) {
-            setters = new ArrayList<Method>();
-            cache.put(clazz, setters);
-        }
-        setters.addAll(setter);
+    public static void addSetterForClass(final Class<?> clazz, final List<Method> setter) {
+	List<Method> setters = cache.get(clazz);
+	if (setters == null) {
+	    setters = new ArrayList<Method>();
+	    cache.put(clazz, setters);
+	}
+	setters.addAll(setter);
     }
 }

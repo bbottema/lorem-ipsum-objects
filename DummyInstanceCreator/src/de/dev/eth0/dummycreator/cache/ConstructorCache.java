@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * 
  * @author Alexander Muthmann <amuthmann at dev-eth0.de>
  * @version 05/2010
  */
@@ -38,33 +38,33 @@ public class ConstructorCache {
     }
 
     public static List<Constructor<?>> getCachedConstructors(final Class<?> clazz) {
-        List<Constructor<?>> cs = cache.get(clazz);
-        return cs == null ? null : Collections.unmodifiableList(cs);
+	List<Constructor<?>> cs = cache.get(clazz);
+	return cs == null ? null : Collections.unmodifiableList(cs);
     }
 
     public static void addConstructor(final Class<?> clazz, final Constructor<?> cons) {
-        List<Constructor<?>> cs = cache.get(clazz);
-        if (cs == null) {
-            cs = new ArrayList<Constructor<?>>();
-            cache.put(clazz, cs);
-        }
-        cs.add(cons);
+	List<Constructor<?>> cs = cache.get(clazz);
+	if (cs == null) {
+	    cs = new ArrayList<Constructor<?>>();
+	    cache.put(clazz, cs);
+	}
+	cs.add(cons);
     }
 
     public static void addConstructors(final Class<?> clazz, final List<Constructor<?>> cons) {
-        List<Constructor<?>> cs = cache.get(clazz);
-        if (cs == null) {
-            cs = new ArrayList<Constructor<?>>();
-            cache.put(clazz, cs);
-        }
-        cs.addAll(cons);
+	List<Constructor<?>> cs = cache.get(clazz);
+	if (cs == null) {
+	    cs = new ArrayList<Constructor<?>>();
+	    cache.put(clazz, cs);
+	}
+	cs.addAll(cons);
     }
 
     public static Constructor<?> getPreferedConstructor(final Class<?> clazz) {
-        return preferedConstructors.get(clazz);
+	return preferedConstructors.get(clazz);
     }
 
     public static void setPreferedConstructor(final Class<?> clazz, final Constructor<?> cons) {
-        preferedConstructors.put(clazz, cons);
+	preferedConstructors.put(clazz, cons);
     }
 }
