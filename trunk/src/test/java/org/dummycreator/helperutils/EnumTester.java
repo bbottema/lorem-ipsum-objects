@@ -15,18 +15,9 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package org.dummycreator;
+package org.dummycreator.helperutils;
 
-public class ArrayWithObjectsClass {
+public enum EnumTester {
 
-    private PrimitiveClass[] primitivclasses;
-
-    public PrimitiveClass[] getPrimitivclasses() {
-	return primitivclasses;
-    }
-
-    public void setPrimitivclasses(PrimitiveClass[] primitivclasses) {
-	this.primitivclasses = primitivclasses;
-    }
-
+    UNASSIGNED, WAITING_FOR_CONFIRMATION, WAITING_FOR_PICKUP, ACTIVE, DELIVERED, PROBLEM;
 }
