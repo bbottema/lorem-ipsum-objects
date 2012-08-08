@@ -15,9 +15,46 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package org.dummycreator;
+package org.dummycreator.helperutils;
 
-public enum EnumTester {
+public class LoopClass {
 
-    UNASSIGNED, WAITING_FOR_CONFIRMATION, WAITING_FOR_PICKUP, ACTIVE, DELIVERED, PROBLEM;
+    protected LoopClass loopObject;
+    protected long id;
+
+    /**
+     * Get the value of id
+     * 
+     * @return the value of id
+     */
+    public long getId() {
+	return id;
+    }
+
+    /**
+     * Set the value of id
+     * 
+     * @param id new value of id
+     */
+    public void setId(long id) {
+	this.id = id;
+    }
+
+    /**
+     * Get the value of loopObject
+     * 
+     * @return the value of loopObject
+     */
+    public LoopClass getLoopObject() {
+	return loopObject;
+    }
+
+    /**
+     * Set the value of loopObject
+     * 
+     * @param loopObject new value of loopObject
+     */
+    public void setLoopObject(LoopClass loopObject) {
+	this.loopObject = loopObject;
+    }
 }

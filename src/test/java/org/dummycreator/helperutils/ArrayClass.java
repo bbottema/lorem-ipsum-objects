@@ -15,19 +15,17 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package org.dummycreator;
+package org.dummycreator.helperutils;
 
-import java.util.List;
+public class ArrayClass {
 
-public class ListClass {
+    private String[] strings;
 
-    private List<String> myList;
-
-    public List<String> getMyList() {
-	return myList;
+    public String[] getStrings() {
+	return strings;
     }
 
-    public void setMyList(List<String> myList) {
-	this.myList = myList;
+    public void setStrings(String[] strings) {
+	this.strings = strings;
     }
 }

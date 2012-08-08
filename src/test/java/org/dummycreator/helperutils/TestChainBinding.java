@@ -1,4 +1,4 @@
-package org.dummycreator;
+package org.dummycreator.helperutils;
 
 public class TestChainBinding {
     public static abstract class A {

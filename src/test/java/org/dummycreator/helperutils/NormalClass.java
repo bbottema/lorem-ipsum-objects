@@ -15,25 +15,46 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package org.dummycreator;
+package org.dummycreator.helperutils;
 
-import java.util.ArrayList;
+public class NormalClass {
 
-/**
- * 
- * @author Alexander Muthmann <amuthmann@dev-eth0.de>
- * @version 04/2010
- */
-public class ArrayListClass {
+    private int id;
+    private PrimitiveClass primitiveClass;
 
-    private ArrayList<String> myList;
-
-    public ArrayList<String> getMyList() {
-	return myList;
+    /**
+     * Get the value of id
+     * 
+     * @return the value of id
+     */
+    public int getId() {
+	return id;
     }
 
-    public void setMyList(ArrayList<String> myList) {
-	this.myList = myList;
+    /**
+     * Set the value of id
+     * 
+     * @param id new value of id
+     */
+    public void setId(int id) {
+	this.id = id;
     }
 
+    /**
+     * Get the value of primitiveClass
+     * 
+     * @return the value of primitiveClass
+     */
+    public PrimitiveClass getPrimitiveClass() {
+	return primitiveClass;
+    }
+
+    /**
+     * Set the value of primitiveClass
+     * 
+     * @param primitiveClass new value of primitiveClass
+     */
+    public void setPrimitiveClass(PrimitiveClass primitiveClass) {
+	this.primitiveClass = primitiveClass;
+    }
 }

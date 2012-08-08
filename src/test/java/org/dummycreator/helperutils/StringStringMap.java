@@ -15,10 +15,10 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package org.dummycreator;
+package org.dummycreator.helperutils;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 @SuppressWarnings("serial")
-public class MyCustomTestClassList extends ArrayList<MyCustomTestClass> {
+public class StringStringMap extends HashMap<String, String> {
 }

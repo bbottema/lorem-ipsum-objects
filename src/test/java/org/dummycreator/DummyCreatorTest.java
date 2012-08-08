@@ -27,8 +27,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.dummycreator.TestChainBinding.B;
-import org.dummycreator.TestChainBinding.C;
+import org.dummycreator.helperutils.EnumClass;
+import org.dummycreator.helperutils.InheritedPrimitiveClass;
+import org.dummycreator.helperutils.LoopClass;
+import org.dummycreator.helperutils.MultiConstructorClass;
+import org.dummycreator.helperutils.MyCustomTestClass;
+import org.dummycreator.helperutils.MyCustomTestClassList;
+import org.dummycreator.helperutils.NormalClass;
+import org.dummycreator.helperutils.PrimitiveClass;
+import org.dummycreator.helperutils.TestChainBinding.B;
+import org.dummycreator.helperutils.TestChainBinding.C;
 import org.junit.Before;
 import org.junit.Test;
 

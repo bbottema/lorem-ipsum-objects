@@ -15,28 +15,18 @@
  * The Original Software is dummyCreator. The Initial Developer of the Original
  * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
-package org.dummycreator;
+package org.dummycreator.helperutils;
 
-public class InheritedPrimitiveClass extends PrimitiveClass {
+public class ArrayWithObjectsClass {
 
-    private String secondString;
+    private PrimitiveClass[] primitivclasses;
 
-    /**
-     * Get the value of secondString
-     * 
-     * @return the value of secondString
-     */
-    public String getSecondString() {
-	return secondString;
+    public PrimitiveClass[] getPrimitivclasses() {
+	return primitivclasses;
     }
 
-    /**
-     * Set the value of secondString
-     * 
-     * @param secondString new value of secondString
-     */
-    public void setSecondString(String secondString) {
-	this.secondString = secondString;
+    public void setPrimitivclasses(PrimitiveClass[] primitivclasses) {
+	this.primitivclasses = primitivclasses;
     }
 
 }
