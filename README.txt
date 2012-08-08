@@ -1,12 +1,16 @@
 DummyCreator
-Developed by Alexander Muthmann (http://www.dev-eth0.de)
+Project home: http://code.google.com/p/dummycreator/
+Developed by 
+	- Alexander Muthmann (http://www.dev-eth0.de) 
+	- Benny bottema (http://blog.projectnibble.org)
 
 1. Description
 --------------------------------------------------------------------------------
 
-The DummyCreator is a library, which provides a possibility to automatically
-create dummy-objects. Those dummy objects are created with all of their
-attributes set. So you can use them as a helper while testing your application.
+DummyCreator is a small tool that helps you generate test data by creating 
+populated dummy objects of a given type. Those dummy objects are created with 
+all of their attributes set. So you can use them as a helper while testing your 
+application.
 
 For example, if you want to test a class, which processes data from a database,
 you might want to use random instances instead of data from the real database
@@ -83,7 +87,14 @@ class:
 ClassBindings.add(Class clazz, Method m);
 
 
-3. Help
+3. Running Ant / Maven
+--------------------------------------------------------------------------------
+
+This project supports both Maven and Ant and both are able to compile, test, 
+jar and generate javadocs.
+
+
+4. Help
 --------------------------------------------------------------------------------
 
 If you have any questions, feel free to contact me at dummyCreator@dev-eth0.de
