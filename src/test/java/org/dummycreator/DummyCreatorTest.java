@@ -76,7 +76,7 @@ public class DummyCreatorTest {
 	System.out.println("ArrayList");
 	assertEquals(ArrayList.class, dummyCreator.createDummyOfClass(List.class).getClass());
 	System.out.println("Override Binding");
-	
+
 	ClassBindings classBinder = new ClassBindings();
 	classBinder.add(List.class, ArrayList.class);
 	classBinder.add(List.class, LinkedList.class);
