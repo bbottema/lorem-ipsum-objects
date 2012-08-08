@@ -32,12 +32,6 @@ import org.dummycreator.binder.ClassBinder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
-/**
- * 
- * @author Alexander Muthmann <amuthmann@dev-eth0.de>
- * @version 04/2010
- */
 public class DummyCreatorTest {
 
     private static final DummyCreator DUMMY_CREATOR = new DummyCreator();
