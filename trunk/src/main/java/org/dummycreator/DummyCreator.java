@@ -46,20 +46,20 @@ public class DummyCreator {
 
     private final MethodCache methodCache;
 
-    private final ClassBindings classBinder;
+    private final ClassBindings classBindings;
 
     public DummyCreator() {
 	this(new ClassBindings(), new ConstructorCache(), new MethodCache());
     }
 
-    public DummyCreator(ClassBindings classBinder) {
-	this(classBinder, new ConstructorCache(), new MethodCache());
+    public DummyCreator(ClassBindings classBindings) {
+	this(classBindings, new ConstructorCache(), new MethodCache());
     }
 
-    public DummyCreator(ClassBindings classBinder, ConstructorCache constructorCache, MethodCache methodCache) {
+    public DummyCreator(ClassBindings classBindings, ConstructorCache constructorCache, MethodCache methodCache) {
 	this.constructorCache = constructorCache;
 	this.methodCache = methodCache;
-	this.classBinder = classBinder;
+	this.classBindings = classBindings;
     }
 
     /**
@@ -73,8 +73,8 @@ public class DummyCreator {
     public <T> T createDummyOfClass(final Class<T> clazz) {
 	Map<Class<?>, ClassUsageInfo<?>> used_classes = new HashMap<Class<?>, ClassUsageInfo<?>>();
 	if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {
-	    if (classBinder.getBindingForClass(clazz) == null) {
-		throw new IllegalArgumentException("Cant instantiate an abstract class or an interface. Please bind it into ClassBinder");
+	    if (classBindings.getBindingForClass(clazz) == null) {
+		throw new IllegalArgumentException("Can't instantiate an abstract class or an interface. Please register it to ClassBindings");
 	    }
 	}
 	return createDummyOfClass(clazz, used_classes);
@@ -93,7 +93,7 @@ public class DummyCreator {
 	// List of Classes, we already used for population. By remembering, we can avoid looping
 	if (used_classes.get(clazz) == null || !used_classes.get(clazz).isPopulated()) {
 	    // Check, if there is an objectbinding for this class
-	    Object bind = classBinder.getBindingForClass(clazz);
+	    Object bind = classBindings.getBindingForClass(clazz);
 	    if (bind != null && bind.getClass() == clazz) {
 		return (T) bind;
 	    }
@@ -109,7 +109,7 @@ public class DummyCreator {
 	    used_classes.put(clazz, usedInfo);
 
 	    // Has this class be bind?
-	    ret = checkClassBinder(clazz, used_classes);
+	    ret = findClassBindings(clazz, used_classes);
 	    if (ret != null) {
 		return ret;
 	    }
@@ -264,8 +264,8 @@ public class DummyCreator {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T checkClassBinder(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
-	Object bind = classBinder.getBindingForClass(clazz);
+    private <T> T findClassBindings(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
+	Object bind = classBindings.getBindingForClass(clazz);
 	if (bind != null) {
 	    // Do we have a constructor binding?
 	    if (bind instanceof Constructor) {
