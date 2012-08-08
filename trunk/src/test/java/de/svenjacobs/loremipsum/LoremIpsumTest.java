@@ -17,7 +17,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
    THE SOFTWARE. 
-*/
+ */
 
 package de.svenjacobs.loremipsum;
 
@@ -28,41 +28,45 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class LoremIpsumTest {
-  private LoremIpsum loremIpsum;
-  
-  @Before
-  public void setUp() {
-    this.loremIpsum = new LoremIpsum();
-  }
+    private LoremIpsum loremIpsum;
 
-  @Test
-  public void testWords() {
-    String words = loremIpsum.getWords( 1 );
-    assertThat( words, is( "Lorem" ) );
+    @Before
+    public void setUp() {
+	this.loremIpsum = new LoremIpsum();
+    }
 
-    words = loremIpsum.getWords( 25 );
-    assertThat( words, is( "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At" ) );
-  
-    words = loremIpsum.getWords( 50 );
-    assertThat( words, is( "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." ) );
+    @Test
+    public void testWords() {
+	String words = loremIpsum.getWords(1);
+	assertThat(words, is("Lorem"));
 
-    words = loremIpsum.getWords( 10, 2 );
-    assertThat( words, is( "dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod" ) );
-  }
+	words = loremIpsum.getWords(25);
+	assertThat(words, is("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At"));
 
-  @Test( expected = IndexOutOfBoundsException.class )
-  public void testWordsExceptionBelow() {
-    loremIpsum.getWords( 50, -1 );
-  }
-  
-  @Test( expected = IndexOutOfBoundsException.class )
-  public void testWordsExceptionAbove() {
-    loremIpsum.getWords( 50, 50 );
-  }
+	words = loremIpsum.getWords(50);
+	assertThat(
+		words,
+		is("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."));
 
-  @Test
-  public void testParagraphs() {
-    String paragraphs = loremIpsum.getParagraphs( 2 );
-    assertThat( paragraphs, is( "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." ) );
-  }
+	words = loremIpsum.getWords(10, 2);
+	assertThat(words, is("dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod"));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testWordsExceptionBelow() {
+	loremIpsum.getWords(50, -1);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testWordsExceptionAbove() {
+	loremIpsum.getWords(50, 50);
+    }
+
+    @Test
+    public void testParagraphs() {
+	String paragraphs = loremIpsum.getParagraphs(2);
+	assertThat(
+		paragraphs,
+		is("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."));
+    }
 }

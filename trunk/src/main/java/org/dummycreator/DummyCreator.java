@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-
 /**
  * 
  * 
@@ -44,15 +43,15 @@ import java.util.Random;
 public class DummyCreator {
 
     private final ConstructorCache constructorCache;
-    
+
     private final MethodCache methodCache;
 
     private final ClassBindings classBinder;
-    
+
     public DummyCreator() {
 	this(new ClassBindings(), new ConstructorCache(), new MethodCache());
     }
-    
+
     public DummyCreator(ClassBindings classBinder) {
 	this(classBinder, new ConstructorCache(), new MethodCache());
     }
