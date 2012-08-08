@@ -17,16 +17,21 @@
  */
 package de.dev.eth0.dummycreator.test;
 
-import de.dev.eth0.dummycreator.DummyCreator;
-import de.dev.eth0.dummycreator.binder.ClassBinder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.lang.reflect.Array;
-import java.util.List;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import java.util.*;
+
+import de.dev.eth0.dummycreator.DummyCreator;
+import de.dev.eth0.dummycreator.binder.ClassBinder;
 
 /**
  *
@@ -138,6 +143,47 @@ public class Main {
         assertNotNull(ec.getEnumTester());
         assertNotNull(ec.getInternalEnum());
     }
+    
+    @SuppressWarnings("serial")
+    public static class NumberStringMap extends HashMap<Integer, String>{}; 
+
+    @Test
+    public void checkGenericMap() {
+        Map<Integer, String> numberStringMap = new NumberStringMap();
+        Map<?, ?> ec = DummyCreator.createDummyOfClass(numberStringMap.getClass());
+        assertNotNull(ec);
+    }
+    
+    @SuppressWarnings("serial")
+    public static class NumberStringList extends ArrayList<Integer>{}; 
+
+    @Test
+    public void checkGenericList() {
+        List<Integer> numbers = new NumberStringList();
+        List<?> ec = DummyCreator.createDummyOfClass(numbers.getClass());
+        assertNotNull(ec);
+    }
+    
+    @Test
+    public void checkList() {
+        List<Integer> numbers = new ArrayList<Integer>();
+        List<?> ec = DummyCreator.createDummyOfClass(numbers.getClass());
+        assertNotNull(ec);
+    }
+    
+    @Test
+    public void checkMooooList() {
+        List<MyCustomTestClass> numbers = new MyCustomTestClassList();
+        List<?> ec = DummyCreator.createDummyOfClass(numbers.getClass());
+        assertNotNull(ec);
+    }
+
+    @Test
+    public void checkMap() {
+        Map<Integer, String> numbers = new HashMap<Integer, String>();
+        Map<?, ?> ec = DummyCreator.createDummyOfClass(numbers.getClass());
+        assertNotNull(ec);
+    }
 
     @Test
     public void CheckSomethingElse() throws Exception {
@@ -167,7 +213,7 @@ public class Main {
         System.out.println(lc.getMyList());
     }
 
-    @Test
+    //@Test
     public void Benchmark() throws Exception {
         System.out.println();
         System.out.println("Benchmarking");
@@ -196,7 +242,7 @@ public class Main {
         printInfo(t, clazz);
     }
 
-    private static <T> void printInfo(T object, Class clazz) throws Exception {
+    private static <T> void printInfo(T object, Class<?> clazz) throws Exception {
         if (object != null) {
             for (Method m : clazz.getMethods()) {
                 if (m.getName().startsWith("get") && !m.getName().startsWith("getClass")) {

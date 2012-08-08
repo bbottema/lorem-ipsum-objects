@@ -31,40 +31,40 @@ import java.util.Map;
  */
 public class ConstructorCache {
 
-    private static final Map<Class, List<Constructor>> cache = new HashMap<Class, List<Constructor>>();
-    private static final Map<Class, Constructor> preferedConstructors = new HashMap<Class, Constructor>();
+    private static final Map<Class<?>, List<Constructor<?>>> cache = new HashMap<Class<?>, List<Constructor<?>>>();
+    private static final Map<Class<?>, Constructor<?>> preferedConstructors = new HashMap<Class<?>, Constructor<?>>();
 
     private ConstructorCache() {
     }
 
-    public static List<Constructor> getCachedConstructors(final Class clazz) {
-        List<Constructor> cs = cache.get(clazz);
+    public static List<Constructor<?>> getCachedConstructors(final Class<?> clazz) {
+        List<Constructor<?>> cs = cache.get(clazz);
         return cs == null ? null : Collections.unmodifiableList(cs);
     }
 
-    public static void addConstructor(final Class clazz, final Constructor cons) {
-        List<Constructor> cs = cache.get(clazz);
+    public static void addConstructor(final Class<?> clazz, final Constructor<?> cons) {
+        List<Constructor<?>> cs = cache.get(clazz);
         if (cs == null) {
-            cs = new ArrayList<Constructor>();
+            cs = new ArrayList<Constructor<?>>();
             cache.put(clazz, cs);
         }
         cs.add(cons);
     }
 
-    public static void addConstructors(final Class clazz, final List<Constructor> cons) {
-        List<Constructor> cs = cache.get(clazz);
+    public static void addConstructors(final Class<?> clazz, final List<Constructor<?>> cons) {
+        List<Constructor<?>> cs = cache.get(clazz);
         if (cs == null) {
-            cs = new ArrayList<Constructor>();
+            cs = new ArrayList<Constructor<?>>();
             cache.put(clazz, cs);
         }
         cs.addAll(cons);
     }
 
-    public static Constructor getPreferedConstructor(final Class clazz) {
+    public static Constructor<?> getPreferedConstructor(final Class<?> clazz) {
         return preferedConstructors.get(clazz);
     }
 
-    public static void setPreferedConstructor(final Class clazz, final Constructor cons) {
+    public static void setPreferedConstructor(final Class<?> clazz, final Constructor<?> cons) {
         preferedConstructors.put(clazz, cons);
     }
 }

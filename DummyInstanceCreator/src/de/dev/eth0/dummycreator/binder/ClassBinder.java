@@ -34,7 +34,7 @@ import java.util.Set;
  */
 public class ClassBinder {
 
-    private static final HashMap<Class, Object> bindings = new HashMap<Class, Object>();
+    private static final HashMap<Class<?>, Object> bindings = new HashMap<Class<?>, Object>();
 
     private ClassBinder() {
     }
@@ -83,7 +83,7 @@ public class ClassBinder {
      * @param _class
      * @return
      */
-    public static Object getBindingForClass(final Class _class) {
+    public static Object getBindingForClass(final Class<?> _class) {
         return bindings.get(_class);
     }
 

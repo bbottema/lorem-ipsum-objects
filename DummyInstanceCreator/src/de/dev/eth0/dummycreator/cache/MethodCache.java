@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class MethodCache {
 
-    private static final Map<Class, List<Method>> cache = new HashMap<Class, List<Method>>();
+    private static final Map<Class<?>, List<Method>> cache = new HashMap<Class<?>, List<Method>>();
 
     /**
      * Hide the constructor
@@ -44,7 +44,7 @@ public class MethodCache {
      * @param clazz
      * @return
      */
-    public static List<Method> getSetterForClass(final Class clazz) {
+    public static List<Method> getSetterForClass(final Class<?> clazz) {
         List<Method> m = cache.get(clazz);
         return m == null ? null : Collections.unmodifiableList(m);
     }
@@ -54,7 +54,7 @@ public class MethodCache {
      * @param clazz
      * @param setter
      */
-    public static void addSetterForClass(final Class clazz, final Method setter) {
+    public static void addSetterForClass(final Class<?> clazz, final Method setter) {
         List<Method> setters = cache.get(clazz);
         if (setters == null) {
             setters = new ArrayList<Method>();
@@ -68,7 +68,7 @@ public class MethodCache {
      * @param clazz
      * @param setter
      */
-    public static void addSetterForClass(final Class clazz, final List<Method> setter){
+    public static void addSetterForClass(final Class<?> clazz, final List<Method> setter){
         List<Method> setters = cache.get(clazz);
         if (setters == null) {
             setters = new ArrayList<Method>();

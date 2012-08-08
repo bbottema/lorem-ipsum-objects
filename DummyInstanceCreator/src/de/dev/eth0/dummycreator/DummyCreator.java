@@ -17,22 +17,25 @@
  */
 package de.dev.eth0.dummycreator;
 
-import de.dev.eth0.dummycreator.binder.ClassBinder;
-import de.dev.eth0.dummycreator.cache.ConstructorCache;
-import de.dev.eth0.dummycreator.cache.MethodCache;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-import java.util.Set;
+
+import de.dev.eth0.dummycreator.binder.ClassBinder;
+import de.dev.eth0.dummycreator.cache.ConstructorCache;
+import de.dev.eth0.dummycreator.cache.MethodCache;
 
 /**
  * This is the main-class of the dummycreator, which contains only static methods
@@ -55,7 +58,7 @@ public class DummyCreator {
      * @return
      */
     public static <T> T createDummyOfClass(final Class<T> clazz) {
-        Set<Class> used_classes = new HashSet<Class>();
+        Map<Class<?>, UsedInfo<?>> used_classes = new HashMap<Class<?>, UsedInfo<?>>();
         if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {
             if (ClassBinder.getBindingForClass(clazz) == null) {
                 throw new IllegalArgumentException("Cant instantiate an abstract class or an interface. Please bind it into ClassBinder");
@@ -71,9 +74,10 @@ public class DummyCreator {
      * @param used_classes
      * @return
      */
-    private static <T> T createDummyOfClass(final Class<T> clazz, final Set<Class> used_classes) {
+    @SuppressWarnings("unchecked")
+    private static <T> T createDummyOfClass(final Class<T> clazz, final Map<Class<?>, UsedInfo<?>> used_classes) {
         //List of Classes, we already used for population. By remembering, we can avoid looping
-        if (!used_classes.contains(clazz)) {
+        if (used_classes.get(clazz) == null || !used_classes.get(clazz).isPopulated()) {
             //Check, if there is an objectbinding for this class
             Object bind = ClassBinder.getBindingForClass(clazz);
             if (bind != null && bind.getClass() == clazz) {
@@ -85,7 +89,10 @@ public class DummyCreator {
             if (ret != null) {
                 return ret;
             }
-            used_classes.add(clazz);
+            
+            UsedInfo<T> usedInfo = new UsedInfo<T>();
+            usedInfo.setInstance(ret);
+	    used_classes.put(clazz, usedInfo);
 
             //Has this class be bind?
             ret = checkClassBinder(clazz, used_classes);
@@ -104,10 +111,10 @@ public class DummyCreator {
                 return enums[RandomCreator.getRandomInt(enums.length - 1)];
             }
             //Load the constructors
-            List<Constructor> consts = ConstructorCache.getCachedConstructors(clazz);
+            List<Constructor<?>> consts = ConstructorCache.getCachedConstructors(clazz);
             if (consts == null) {
-                consts = new ArrayList<Constructor>();
-                Constructor[] _con = clazz.getConstructors();
+                consts = new ArrayList<Constructor<?>>();
+                Constructor<?>[] _con = clazz.getConstructors();
                 //Sort the constructors by their parameter-count
                 java.util.Arrays.sort(_con, new ConstructorComparator());
                 consts.addAll(Arrays.asList(_con));
@@ -115,14 +122,13 @@ public class DummyCreator {
                 ConstructorCache.addConstructors(clazz, consts);
             }
             //Check if we have a prefered Constructor and try it
-            Constructor<T> preferedConstructor = ConstructorCache.getPreferedConstructor(clazz);
+	    Constructor<T> preferedConstructor = (Constructor<T>) ConstructorCache.getPreferedConstructor(clazz);
             if (preferedConstructor != null) {
-
                 ret = tryConstructor(preferedConstructor, used_classes);
             }
             if (ret == null) {
-                for (Constructor<T> co : consts) {
-                    ret = tryConstructor(co, used_classes);
+                for (Constructor<?> co : consts) {
+                    ret = (T) tryConstructor(co, used_classes);
                     if (ret != null) {
                         ConstructorCache.setPreferedConstructor(clazz, co);
                         //Worked
@@ -135,12 +141,14 @@ public class DummyCreator {
                 throw new IllegalArgumentException("The given class couldn't be instantiated");
             }
 
+            usedInfo.setInstance(ret);
+            usedInfo.setPopulated(true);
             populateObject(ret, clazz, used_classes);
 
             return ret;
-        } //If this class has already be used for creation
-        return null;
-
+        } else {
+            return (T) used_classes.get(clazz).getInstance();
+        }
     }
 
     /**
@@ -150,8 +158,9 @@ public class DummyCreator {
      * @param used_classes
      * @return
      */
-    private static <T> T tryConstructor(final Constructor<T> c, final Set<Class> used_classes) {
-        Class<T>[] parameters = (Class<T>[]) c.getParameterTypes();
+    private static <T> T tryConstructor(final Constructor<T> c, final Map<Class<?>, UsedInfo<?>> used_classes) {
+        @SuppressWarnings("unchecked")
+	Class<T>[] parameters = (Class<T>[]) c.getParameterTypes();
         try {
             if (parameters.length > 0) {
                 final Object[] params = new Object[parameters.length];
@@ -179,31 +188,53 @@ public class DummyCreator {
      * @param clazz
      * @param used_classes
      */
-    private static void populateObject(final Object ret, final Class clazz, final Set<Class> used_classes) {
-        List<Method> setter = MethodCache.getSetterForClass(clazz);
-        if (setter == null) {
-            setter = new ArrayList<Method>();
-            for (Method m : clazz.getMethods()) {
-                if (isSetter(m)) {
-                    setter.add(m);
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static <T> void populateObject(final Object ret, final Class<T> clazz, final Map<Class<?>, UsedInfo<?>> used_classes) {
+        if (ret instanceof Collection) {
+            for (int i = 0; i < getRandomArrayLength(2); i++) {
+                Type[] genericTypes = ((ParameterizedType) ret.getClass().getGenericSuperclass()).getActualTypeArguments();
+                if (genericTypes.length > 0 && (genericTypes[0] instanceof Class)) {
+            	((Collection) ret).add(createDummyOfClass((Class) genericTypes[0], used_classes));
+                } else {
+            	((Collection) ret).add(createDummyOfClass(String.class, used_classes));
                 }
             }
-            MethodCache.addSetterForClass(clazz, setter);
-        }
+        } else if (ret instanceof Map) {
+            for (int i = 0; i < getRandomArrayLength(2); i++) {
+                Type[] genericTypes = ((ParameterizedType) ret.getClass().getGenericSuperclass()).getActualTypeArguments();
+                if (genericTypes.length > 0 && (genericTypes[0] instanceof Class)) {
+            	((Map) ret).put(createDummyOfClass((Class) genericTypes[0], used_classes), createDummyOfClass((Class) genericTypes[1], used_classes));
+                } else {
+            	((Map) ret).put(createDummyOfClass(String.class, used_classes), createDummyOfClass(String.class, used_classes));
+                }
+            }
+        } else {
+            List<Method> setter = MethodCache.getSetterForClass(clazz);
+            if (setter == null) {
+                setter = new ArrayList<Method>();
+                for (Method m : clazz.getMethods()) {
+                    if (isSetter(m)) {
+                        setter.add(m);
+                    }
+                }
+                MethodCache.addSetterForClass(clazz, setter);
+            }
 
-        Object parameter = null;
-        for (Method m : setter) {
-            //Load the parameter to pass to this method
-            parameter = createDummyOfClass(m.getParameterTypes()[0], used_classes);
-            try {
-                m.invoke(ret, parameter);
-            } catch (Exception e) {
-                e.printStackTrace();
+            Object parameter = null;
+            for (Method m : setter) {
+                //Load the parameter to pass to this method
+                parameter = createDummyOfClass(m.getParameterTypes()[0], used_classes);
+                try {
+                    m.invoke(ret, parameter);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    private static <T> T checkClassBinder(final Class<T> clazz, final Set<Class> used_classes) {
+    @SuppressWarnings("unchecked")
+    private static <T> T checkClassBinder(final Class<T> clazz, final Map<Class<?>, UsedInfo<?>> used_classes) {
         Object bind = ClassBinder.getBindingForClass(clazz);
         T ret = null;
         if (bind != null) {
@@ -214,7 +245,7 @@ public class DummyCreator {
             } else //Was this class bind to a method?
             if (bind instanceof Method) {
                 Method m = (Method) bind;
-                Class[] parameters = m.getParameterTypes();
+                Class<?>[] parameters = m.getParameterTypes();
                 final Object[] params = new Object[parameters.length];
                 for (int i = 0; i < params.length; i++) {
                     params[i] = createDummyOfClass(parameters[i], used_classes);
@@ -242,6 +273,7 @@ public class DummyCreator {
      * @param clazz
      * @return
      */
+    @SuppressWarnings("unchecked")
     private static <T> T checkPrimitivesAndArray(final Class<T> clazz) {
         //Check  if we have a primitive or string
         if (clazz.isPrimitive()) {
@@ -249,7 +281,7 @@ public class DummyCreator {
         }
         //Do we have an array?
         if (clazz.isArray()) {
-            int length = getRandomArrayLength();
+            int length = getRandomArrayLength(20);
             Object parameter = Array.newInstance(clazz.getComponentType(), length);
             for (int i = 0; i < length; i++) {
                 Array.set(parameter, i, createDummyOfClass(clazz.getComponentType()));
@@ -280,42 +312,44 @@ public class DummyCreator {
      * @param c
      * @return
      */
-    private static Object buildPrimitive(Class c) {
+    @SuppressWarnings("unchecked")
+    private static <T> T buildPrimitive(Class<T> c) {
         if (c ==(java.lang.Integer.TYPE)) {
-            return RandomCreator.getRandomInt();
+            return (T) (Integer) RandomCreator.getRandomInt();
         } else if (c ==(java.lang.Long.TYPE)) {
-            return RandomCreator.getRandomLong();
+            return (T) (Long) RandomCreator.getRandomLong();
         } else if (c ==(java.lang.Float.TYPE)) {
-            return RandomCreator.getRandomFloat();
+            return (T) (Float) RandomCreator.getRandomFloat();
         } else if (c ==(java.lang.Boolean.TYPE)) {
-            return RandomCreator.getRandomBoolean();
+            return (T) (Boolean) RandomCreator.getRandomBoolean();
         } else if (c ==(java.lang.Character.TYPE)) {
-            return RandomCreator.getRandomChar();
+            return (T) (Character) RandomCreator.getRandomChar();
         } else if (c ==(java.lang.Byte.TYPE)) {
-            return RandomCreator.getRandomByte();
+            return (T) (Byte) RandomCreator.getRandomByte();
         } else if (c ==(java.lang.Short.TYPE)) {
-            return RandomCreator.getRandomShort();
+            return (T) (Short) RandomCreator.getRandomShort();
         } else if (c ==(java.lang.Double.TYPE)) {
-            return RandomCreator.getRandomDouble();
+            return (T) (Double) RandomCreator.getRandomDouble();
         }
         return null;
     }
 
     /**
      * Method to generate a random length for an array
+     * @param max TODO
      * @return
      */
-    private static int getRandomArrayLength() {
+    private static int getRandomArrayLength(int max) {
         Random rand = new Random();
-        return rand.nextInt(20) + 1;
+        return rand.nextInt(max) + 1;
     }
 
     /**
      * Comparator to sort constructors by their number of parameters
      */
-    private static class ConstructorComparator implements Comparator<Constructor> {
+    private static class ConstructorComparator implements Comparator<Constructor<?>> {
 
-        public int compare(Constructor o1, Constructor o2) {
+        public int compare(Constructor<?> o1, Constructor<?> o2) {
             int num_o1 = o1.getParameterTypes().length;
             int num_o2 = o2.getParameterTypes().length;
             if (num_o1 < num_o2) {
