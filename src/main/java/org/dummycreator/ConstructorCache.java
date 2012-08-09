@@ -29,7 +29,7 @@ import java.util.Map;
  * @author Alexander Muthmann <amuthmann at dev-eth0.de>
  * @version 05/2010
  */
-public class ConstructorCache {
+class ConstructorCache {
 
     private final Map<Class<?>, List<Constructor<?>>> cache = new HashMap<Class<?>, List<Constructor<?>>>();
     private final Map<Class<?>, Constructor<?>> preferedConstructors = new HashMap<Class<?>, Constructor<?>>();

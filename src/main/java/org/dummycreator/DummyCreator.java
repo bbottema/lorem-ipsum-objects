@@ -78,23 +78,16 @@ public class DummyCreator {
      * Default constructor: configures the Dummy Creator with vanilla new bindings and caches.
      */
     public DummyCreator() {
-	this(new ClassBindings(), new ConstructorCache(), new MethodCache());
+	this(new ClassBindings());
     }
 
     /**
      * Constructor: configures the Dummy Creator with a given {@link ClassBindings} instance and new caches.
      */
     public DummyCreator(ClassBindings classBindings) {
-	this(classBindings, new ConstructorCache(), new MethodCache());
-    }
-
-    /**
-     * Constructor: configures the Dummy Creator with given {@link ClassBindings} instance and user caches.
-     */
-    public DummyCreator(ClassBindings classBindings, ConstructorCache constructorCache, MethodCache methodCache) {
-	this.constructorCache = constructorCache;
-	this.methodCache = methodCache;
 	this.classBindings = classBindings;
+	this.constructorCache = new ConstructorCache();
+	this.methodCache = new MethodCache();
     }
 
     /**
