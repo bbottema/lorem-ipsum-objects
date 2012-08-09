@@ -30,7 +30,7 @@ import java.util.Map;
  * @author Alexander Muthmann <amuthmann at dev-eth0.de>
  * @version 05/2010
  */
-public class MethodCache {
+class MethodCache {
 
     private final Map<Class<?>, List<Method>> cache = new HashMap<Class<?>, List<Method>>();
 
