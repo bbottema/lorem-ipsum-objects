@@ -11,7 +11,7 @@
   <artifactId>dummy-creator</artifactId>
   <packaging>jar</packaging>
   <name>Dummy Creator</name>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <description>A small tool for generating populated dummy objects</description>
   <url>http://code.google.com/p/dummycreator/</url>
   
@@ -24,9 +24,9 @@
   </licenses>
   
   <scm>
-    <connection>scm:svn:http://dummycreator.googlecode.com/svn/tags/dummy-creator-1.0</connection>
-    <developerConnection>scm:svn:https://dummycreator.googlecode.com/svn/tags/dummy-creator-1.0</developerConnection>
-    <url>http://dummycreator.googlecode.com/svn/tags/dummy-creator-1.0</url>
+    <connection>scm:svn:http://dummycreator.googlecode.com/svn/trunk/</connection>
+    <developerConnection>scm:svn:https://dummycreator.googlecode.com/svn/trunk/</developerConnection>
+    <url>http://dummycreator.googlecode.com/svn/trunk/</url>
   </scm>
   
   <developers>
