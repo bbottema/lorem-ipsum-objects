@@ -1,7 +1,7 @@
 <project>
   
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.dummycreator</groupId>
+  <groupId>de.dev-eth0.dummycreator</groupId>
   <artifactId>dummy-creator</artifactId>
   <packaging>jar</packaging>
   <name>Dummy Creator</name>
@@ -18,9 +18,9 @@
   </licenses>
   
   <scm>
-    <connection>scm:svn:http://dummycreator.googlecode.com/svn/DummyInstanceCreator/</connection>
-    <developerConnection>scm:svn:https://dummycreator.googlecode.com/svn/DummyInstanceCreator/</developerConnection>
-    <url>http://dummycreator.googlecode.com/svn/DummyInstanceCreator/</url>
+    <connection>scm:svn:http://dummycreator.googlecode.com/svn/trunk/</connection>
+    <developerConnection>scm:svn:https://dummycreator.googlecode.com/svn/trunk/</developerConnection>
+    <url>http://dummycreator.googlecode.com/svn/trunk/</url>
   </scm>
   
   <developers>
