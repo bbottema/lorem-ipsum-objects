@@ -227,11 +227,20 @@ public class DummyCreator {
     /**
      * Populates given object with dummy value. The behavior can vary depending on the type of object, as follows:
      * <ul>
-     * <li><strong>Collection</strong>: if the type is a subtype of {@link Collection}, a random number of items, 1 or 2, will be added</li>
-     * <li><strong>Map</strong>: if the type is a subtype of {@link Map}, a random number of key/value entries, 1 or 2, will be added</li>
+     * <li><strong>Collection</strong>: if the type is a subtype of {@link Collection}, a random number (1 or 2) of items will be added</li>
+     * <li><strong>Map</strong>: if the type is a subtype of {@link Map}, a random number (1 or 2) of key/value entries will be added</li>
      * <li><strong>Other types</strong>: The <em>setter</em> methods will be retrieved from the object and will be invoked with a new dummy
      * value.</li>
      * </ul>
+     * <p>
+     * <strong>note: </strong> In case of a <code>Collection</code> or <code>Map</code>, the objects created are <code>String</code>
+     * instances, unless a generic type can be derived with java reflection.
+     * <p>
+     * For example, <code>List<Foo></code> or <code>HashMap<Number, String></code> will both result in an instance containing only strings,
+     * but a type declared as <code>class FooList extends ArrayList<Foo></code> will result in an instance containing <code>Foo</code>
+     * elements. The behavior of the first case is a result of runtime <a
+     * href="http://en.wikipedia.org/wiki/Generics_in_Java#Problems_with_type_erasure">type erasure</a>. Only declared generic types in the
+     * class or interface signature, as in the latter case, are discoverable in runtime (the latter case).
      * 
      * @param subject The object to populate with dummy values.
      * @param knownInstances A list of known instances to keep track of already processed classes (to avoid infinite loop)
