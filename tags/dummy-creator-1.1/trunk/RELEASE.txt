@@ -1,0 +1,15 @@
+http://code.google.com/p/dummycreator/
+
+
+RELEASE NOTES Dummy Creator
+
+
+v1.1
+
+- Improved logging in case of failure
+- Improve random value generation parameters
+
+
+v1.0
+
+Initial formal release.
