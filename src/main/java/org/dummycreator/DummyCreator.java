@@ -274,7 +274,7 @@ public class DummyCreator {
 	    for (int i = 0; i < RandomCreator.getRandomInt(2) + 1; i++) {
 		// detect generic declarations
 		Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
-		if (genericTypes.length > 0 && (genericTypes[0] instanceof Class)) {
+		if (genericTypes.length > 0 && (genericTypes[0] instanceof Class) && (genericTypes[1] instanceof Class)) {
 		    // uses generic type if available, String and Integer for '<T extends Map<String, Double>>'
 		    ((Map<Object, Object>) subject).put(create((Class<?>) genericTypes[0], knownInstances), create((Class<?>) genericTypes[1], knownInstances));
 		} else {
