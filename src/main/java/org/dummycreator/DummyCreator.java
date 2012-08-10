@@ -185,7 +185,7 @@ public class DummyCreator {
 		}
 	    }
 	    if (ret == null) {
-		throw new IllegalArgumentException("The given class couldn't be instantiated");
+		throw new IllegalArgumentException(String.format("Could not instantiate object for type [%s]", clazz));
 	    }
 
 	    usedInfo.setInstance(ret);
