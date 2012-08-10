@@ -20,7 +20,9 @@ package org.dummycreator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -194,5 +196,22 @@ public class DummyCreatorTest {
 	Map<Integer, String> numbers = new HashMap<Integer, String>();
 	Map<?, ?> ec = dummyCreator.create(numbers.getClass());
 	assertNotNull(ec);
+    }
+
+    @Test
+    public void CheckInterfaceBindingErrors() throws Exception {
+	dummyCreator = new DummyCreator();
+	try {
+	    assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
+	    fail("illegal argument exception expected (can't instantiate abstract type or interface");
+	} catch (IllegalArgumentException e) {
+	    // ok
+	}
+	try {
+	    assertEquals(ArrayList.class, dummyCreator.create(AbstractList.class).getClass());
+	    fail("illegal argument exception expected (can't instantiate abstract type or interface");
+	} catch (IllegalArgumentException e) {
+	    // ok
+	}
     }
 }
