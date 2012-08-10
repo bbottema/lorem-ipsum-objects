@@ -121,6 +121,7 @@ public class DummyCreator {
      * @param clazz The type that should be created
      * @param knownInstances A list of previously created and populated objects for a specific type.
      * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
+     * @throws IllegalArgumentException Thrown if class could not be instantiated. Possible constructor invocation exceptions are logged separately.
      */
     @SuppressWarnings("unchecked")
     private <T> T create(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> knownInstances) {
@@ -141,8 +142,10 @@ public class DummyCreator {
 	    usedInfo.setInstance(ret);
 	    knownInstances.put(clazz, usedInfo);
 
-	    // Has this class be bind?
-	    ret = findClassBindings(clazz, knownInstances);
+	    List<Exception> constructorExceptions = new ArrayList<Exception>();
+
+	    // Try to defer instantiation to a binding, if available
+	    ret = findClassBindings(clazz, knownInstances, constructorExceptions);
 	    if (ret != null) {
 		return ret;
 	    }
@@ -168,14 +171,16 @@ public class DummyCreator {
 		// Add to cache
 		constructorCache.addConstructors(clazz, consts);
 	    }
+
 	    // Check if we have a prefered Constructor and try it
 	    Constructor<T> preferedConstructor = (Constructor<T>) constructorCache.getPreferedConstructor(clazz);
 	    if (preferedConstructor != null) {
-		ret = tryConstructor(preferedConstructor, knownInstances);
+		ret = tryConstructor(preferedConstructor, knownInstances, constructorExceptions);
 	    }
+	    
 	    if (ret == null) {
 		for (Constructor<?> co : consts) {
-		    ret = (T) tryConstructor(co, knownInstances);
+		    ret = (T) tryConstructor(co, knownInstances, constructorExceptions);
 		    if (ret != null) {
 			constructorCache.setPreferedConstructor(clazz, co);
 			// Worked
@@ -185,6 +190,9 @@ public class DummyCreator {
 		}
 	    }
 	    if (ret == null) {
+		for (Exception e : constructorExceptions) {
+		    logger.error("tried but failed to use constructor: ", e);
+		}
 		throw new IllegalArgumentException(String.format("Could not instantiate object for type [%s]", clazz));
 	    }
 
@@ -201,7 +209,7 @@ public class DummyCreator {
     /**
      * Tries to instantiate an object with the given constructor.
      */
-    private <T> T tryConstructor(final Constructor<T> c, final Map<Class<?>, ClassUsageInfo<?>> knownInstances) {
+    private <T> T tryConstructor(final Constructor<T> c, final Map<Class<?>, ClassUsageInfo<?>> knownInstances, List<Exception> constructorExceptions) {
 	@SuppressWarnings("unchecked")
 	Class<T>[] parameters = (Class<T>[]) c.getParameterTypes();
 	try {
@@ -215,11 +223,11 @@ public class DummyCreator {
 		return c.newInstance();
 	    }
 	} catch (InvocationTargetException e) {
-	    logger.trace(String.format("unable to invoke constructor '%s', string should represent a number?", c.getName()));
+	    constructorExceptions.add(e);
 	} catch (InstantiationException e) {
-	    logger.debug(String.format("unable to invoke constructor '%s'", c.getName()), e);
+	    constructorExceptions.add(e);
 	} catch (IllegalAccessException e) {
-	    logger.debug(String.format("unable to invoke constructor '%s'", c.getName()), e);
+	    constructorExceptions.add(e);
 	}
 	return null;
     }
@@ -306,12 +314,12 @@ public class DummyCreator {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T findClassBindings(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> used_classes) {
+    private <T> T findClassBindings(final Class<T> clazz, final Map<Class<?>, ClassUsageInfo<?>> used_classes, List<Exception> constructorExceptions) {
 	Object bind = classBindings.find(clazz);
 	if (bind != null) {
 	    // Do we have a constructor binding?
 	    if (bind instanceof Constructor) {
-		return tryConstructor((Constructor<T>) bind, used_classes);
+		return tryConstructor((Constructor<T>) bind, used_classes, constructorExceptions);
 	    } else if (bind instanceof Method) {
 		Method m = (Method) bind;
 		Class<?>[] parameters = m.getParameterTypes();
