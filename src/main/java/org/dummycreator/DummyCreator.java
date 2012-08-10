@@ -235,8 +235,8 @@ public class DummyCreator {
     /**
      * Populates given object with dummy value. The behavior can vary depending on the type of object, as follows:
      * <ul>
-     * <li><strong>Collection</strong>: if the type is a subtype of {@link Collection}, a random number (1 or 2) of items will be added</li>
-     * <li><strong>Map</strong>: if the type is a subtype of {@link Map}, a random number (1 or 2) of key/value entries will be added</li>
+     * <li><strong>Collection</strong>: if the type is a subtype of {@link Collection}, a random number (2 or 3) of items will be added</li>
+     * <li><strong>Map</strong>: if the type is a subtype of {@link Map}, a random number (2 or 3) of key/value entries will be added</li>
      * <li><strong>Other types</strong>: The <em>setter</em> methods will be retrieved from the object and will be invoked with a new dummy
      * value.</li>
      * </ul>
@@ -259,7 +259,7 @@ public class DummyCreator {
 	final Class<?> clazz = subject.getClass();
 
 	if (subject instanceof Collection) {
-	    for (int i = 0; i < RandomCreator.getRandomInt(2) + 1; i++) {
+	    for (int i = 0; i < RandomCreator.getRandomInt(2) + 2; i++) {
 		// detect generic declarations
 		Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
 		if (genericTypes.length > 0 && (genericTypes[0] instanceof Class)) {
@@ -271,7 +271,7 @@ public class DummyCreator {
 		}
 	    }
 	} else if (subject instanceof Map) {
-	    for (int i = 0; i < RandomCreator.getRandomInt(2) + 1; i++) {
+	    for (int i = 0; i < RandomCreator.getRandomInt(2) + 2; i++) {
 		// detect generic declarations
 		Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
 		if (genericTypes.length > 0 && (genericTypes[0] instanceof Class) && (genericTypes[1] instanceof Class)) {
@@ -360,7 +360,7 @@ public class DummyCreator {
 	}
 	// Do we have an array?
 	if (clazz.isArray()) {
-	    int length = RandomCreator.getRandomInt(2) + 1;
+	    int length = RandomCreator.getRandomInt(2) + 2;
 	    Object parameter = Array.newInstance(clazz.getComponentType(), length);
 	    for (int i = 0; i < length; i++) {
 		Array.set(parameter, i, create(clazz.getComponentType()));
