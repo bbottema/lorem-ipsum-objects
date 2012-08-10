@@ -1,0 +1,169 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /*<a name="line.1"></a>
+<FONT color="green">002</FONT>     * The contents of this file are subject to the terms of the Common Development<a name="line.2"></a>
+<FONT color="green">003</FONT>     * and Distribution License (the License). You may not use this file except in<a name="line.3"></a>
+<FONT color="green">004</FONT>     * compliance with the License.<a name="line.4"></a>
+<FONT color="green">005</FONT>     *<a name="line.5"></a>
+<FONT color="green">006</FONT>     * You can obtain a copy of the License at http://www.opensource.org/licenses/cddl1.php<a name="line.6"></a>
+<FONT color="green">007</FONT>     * or http://www.opensource.org/licenses/cddl1.txt.<a name="line.7"></a>
+<FONT color="green">008</FONT>     *<a name="line.8"></a>
+<FONT color="green">009</FONT>     * When distributing Covered Code, include this CDDL Header Notice in each file<a name="line.9"></a>
+<FONT color="green">010</FONT>     * and include the License file at http://www.opensource.org/licenses/cddl1.php.<a name="line.10"></a>
+<FONT color="green">011</FONT>     * If applicable, add the following below the CDDL Header, with the fields<a name="line.11"></a>
+<FONT color="green">012</FONT>     * enclosed by brackets [] replaced by your own identifying information:<a name="line.12"></a>
+<FONT color="green">013</FONT>     * "Portions Copyrighted [year] [name of copyright owner]"<a name="line.13"></a>
+<FONT color="green">014</FONT>     *<a name="line.14"></a>
+<FONT color="green">015</FONT>     * The Original Software is dummyCreator. The Initial Developer of the Original<a name="line.15"></a>
+<FONT color="green">016</FONT>     * Software is Alexander Muthmann &lt;amuthmann@dev-eth0.de&gt;.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.dummycreator;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    import java.lang.reflect.Constructor;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.lang.reflect.Method;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.lang.reflect.Modifier;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.util.ArrayList;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.util.HashMap;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import java.util.HashSet;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import java.util.List;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import java.util.Map;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import java.util.Set;<a name="line.28"></a>
+<FONT color="green">029</FONT>    <a name="line.29"></a>
+<FONT color="green">030</FONT>    /**<a name="line.30"></a>
+<FONT color="green">031</FONT>     * Stores a list of classes / interfaces and their associated deferred types. This list is used to tell {@link DummyCreator} which specific<a name="line.31"></a>
+<FONT color="green">032</FONT>     * implementation it should use to product new dummy instances for a certain type.<a name="line.32"></a>
+<FONT color="green">033</FONT>     * &lt;p&gt;<a name="line.33"></a>
+<FONT color="green">034</FONT>     * Classes can be used as deferred types, but the following deferred types are allowed:<a name="line.34"></a>
+<FONT color="green">035</FONT>     * &lt;ul&gt;<a name="line.35"></a>
+<FONT color="green">036</FONT>     * &lt;li&gt;Class references: {@link #add(Class, Class)}&lt;/li&gt;<a name="line.36"></a>
+<FONT color="green">037</FONT>     * &lt;li&gt;methods with a return type: {@link #add(Class, Method)}&lt;/li&gt;<a name="line.37"></a>
+<FONT color="green">038</FONT>     * &lt;li&gt;constructors: {@link #add(Class, Constructor)}&lt;/li&gt;<a name="line.38"></a>
+<FONT color="green">039</FONT>     * &lt;li&gt;instance objects: {@link #add(Class, Object)}&lt;/li&gt;<a name="line.39"></a>
+<FONT color="green">040</FONT>     * &lt;/ul&gt;<a name="line.40"></a>
+<FONT color="green">041</FONT>     * <a name="line.41"></a>
+<FONT color="green">042</FONT>     * Examples are:<a name="line.42"></a>
+<FONT color="green">043</FONT>     * &lt;ul&gt;<a name="line.43"></a>
+<FONT color="green">044</FONT>     * &lt;li&gt;List -&gt; ArrayList&lt;/li&gt;<a name="line.44"></a>
+<FONT color="green">045</FONT>     * &lt;li&gt;List -&gt; LinkedList&lt;/li&gt;<a name="line.45"></a>
+<FONT color="green">046</FONT>     * &lt;li&gt;Integer -&gt; 4443 (which is autoboxed to an Integer)&lt;/li&gt;<a name="line.46"></a>
+<FONT color="green">047</FONT>     * &lt;li&gt;Foo -&gt; FooFactory.class.getMethod('createFoo')&lt;/li&gt;<a name="line.47"></a>
+<FONT color="green">048</FONT>     * &lt;li&gt;Apple -&gt; Apple.class.getConstructor(String.class)&lt;/li&gt;<a name="line.48"></a>
+<FONT color="green">049</FONT>     * &lt;/ul&gt;<a name="line.49"></a>
+<FONT color="green">050</FONT>     */<a name="line.50"></a>
+<FONT color="green">051</FONT>    public class ClassBindings {<a name="line.51"></a>
+<FONT color="green">052</FONT>    <a name="line.52"></a>
+<FONT color="green">053</FONT>        /**<a name="line.53"></a>
+<FONT color="green">054</FONT>         * The list with bindings<a name="line.54"></a>
+<FONT color="green">055</FONT>         */<a name="line.55"></a>
+<FONT color="green">056</FONT>        private final HashMap&lt;Class&lt;?&gt;, Object&gt; bindings = new HashMap&lt;Class&lt;?&gt;, Object&gt;();<a name="line.56"></a>
+<FONT color="green">057</FONT>    <a name="line.57"></a>
+<FONT color="green">058</FONT>        public &lt;T&gt; void add(final Class&lt;T&gt; clazz, final Constructor&lt;? extends T&gt; constructor) {<a name="line.58"></a>
+<FONT color="green">059</FONT>            bindings.put(clazz, constructor);<a name="line.59"></a>
+<FONT color="green">060</FONT>        }<a name="line.60"></a>
+<FONT color="green">061</FONT>    <a name="line.61"></a>
+<FONT color="green">062</FONT>        public &lt;T&gt; void add(final Class&lt;T&gt; clazz, final Class&lt;? extends T&gt; deferredSubtype) {<a name="line.62"></a>
+<FONT color="green">063</FONT>            bindings.put(clazz, deferredSubtype);<a name="line.63"></a>
+<FONT color="green">064</FONT>        }<a name="line.64"></a>
+<FONT color="green">065</FONT>    <a name="line.65"></a>
+<FONT color="green">066</FONT>        public &lt;T&gt; void add(final Class&lt;T&gt; clazz, final Method method) {<a name="line.66"></a>
+<FONT color="green">067</FONT>            if (Modifier.isStatic(method.getModifiers()) &amp;&amp; method.getReturnType().equals(clazz)) {<a name="line.67"></a>
+<FONT color="green">068</FONT>                bindings.put(clazz, method);<a name="line.68"></a>
+<FONT color="green">069</FONT>            } else {<a name="line.69"></a>
+<FONT color="green">070</FONT>                throw new IllegalArgumentException("The method has to be static and return an object of the given class!");<a name="line.70"></a>
+<FONT color="green">071</FONT>            }<a name="line.71"></a>
+<FONT color="green">072</FONT>        }<a name="line.72"></a>
+<FONT color="green">073</FONT>    <a name="line.73"></a>
+<FONT color="green">074</FONT>        public &lt;T&gt; void add(final Class&lt;T&gt; clazz, final Object object) {<a name="line.74"></a>
+<FONT color="green">075</FONT>            if (clazz.isAssignableFrom(object.getClass())) {<a name="line.75"></a>
+<FONT color="green">076</FONT>                bindings.put(clazz, object);<a name="line.76"></a>
+<FONT color="green">077</FONT>            } else {<a name="line.77"></a>
+<FONT color="green">078</FONT>                throw new IllegalArgumentException("The object has to have a subclass of clazz");<a name="line.78"></a>
+<FONT color="green">079</FONT>            }<a name="line.79"></a>
+<FONT color="green">080</FONT>        }<a name="line.80"></a>
+<FONT color="green">081</FONT>    <a name="line.81"></a>
+<FONT color="green">082</FONT>        /**<a name="line.82"></a>
+<FONT color="green">083</FONT>         * This method returns a binding made for the given class. This binding might be of one of the following type: Constructor<a name="line.83"></a>
+<FONT color="green">084</FONT>         * Implementation of a Interface Method Object<a name="line.84"></a>
+<FONT color="green">085</FONT>         * <a name="line.85"></a>
+<FONT color="green">086</FONT>         * @param _class<a name="line.86"></a>
+<FONT color="green">087</FONT>         * @return<a name="line.87"></a>
+<FONT color="green">088</FONT>         */<a name="line.88"></a>
+<FONT color="green">089</FONT>        public Object find(final Class&lt;?&gt; _class) {<a name="line.89"></a>
+<FONT color="green">090</FONT>            return bindings.get(_class);<a name="line.90"></a>
+<FONT color="green">091</FONT>        }<a name="line.91"></a>
+<FONT color="green">092</FONT>    <a name="line.92"></a>
+<FONT color="green">093</FONT>        /**<a name="line.93"></a>
+<FONT color="green">094</FONT>         * You can call this method to build some default bindings for common classes. This includes List.class, Map.class, Set.class<a name="line.94"></a>
+<FONT color="green">095</FONT>         */<a name="line.95"></a>
+<FONT color="green">096</FONT>        public static ClassBindings defaultBindings() {<a name="line.96"></a>
+<FONT color="green">097</FONT>            ClassBindings classBindings = new ClassBindings();<a name="line.97"></a>
+<FONT color="green">098</FONT>            classBindings.add(List.class, ArrayList.class);<a name="line.98"></a>
+<FONT color="green">099</FONT>            classBindings.add(Map.class, HashMap.class);<a name="line.99"></a>
+<FONT color="green">100</FONT>            classBindings.add(Set.class, HashSet.class);<a name="line.100"></a>
+<FONT color="green">101</FONT>            return classBindings;<a name="line.101"></a>
+<FONT color="green">102</FONT>        }<a name="line.102"></a>
+<FONT color="green">103</FONT>    }<a name="line.103"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>
