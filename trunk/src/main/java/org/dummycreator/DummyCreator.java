@@ -107,7 +107,7 @@ public class DummyCreator {
 	Map<Class<?>, ClassUsageInfo<?>> used_classes = new HashMap<Class<?>, ClassUsageInfo<?>>();
 	if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {
 	    if (classBindings.find(clazz) == null) {
-		throw new IllegalArgumentException("Can't instantiate an abstract class or an interface. Please register it to ClassBindings");
+		throw new IllegalArgumentException(String.format("Unable to instantiate object of type [%s] and no binding found for this type", clazz));
 	    }
 	}
 	return create(clazz, used_classes);
