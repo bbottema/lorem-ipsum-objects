@@ -59,12 +59,18 @@ class RandomCreator {
 	return r.nextLong();
     }
 
+    /**
+     * @return A float value between 00.00 and 100.00
+     */
     public static float getRandomFloat() {
-	return r.nextFloat();
+	return r.nextInt(100) + ((float) Math.round(r.nextFloat() * 100) / 100);
     }
 
+    /**
+     * @return A double value between 00.00 and 100.00
+     */
     public static double getRandomDouble() {
-	return r.nextDouble();
+	return r.nextInt(100) + ((double) Math.round(r.nextDouble() * 100) / 100);
     }
 
     public static short getRandomShort() {
