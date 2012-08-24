@@ -1,9 +1,9 @@
-#summary The _!DummyCreator_ is the main class for automatic object creation
+#summary The DummyCreator is the main class for automatic object creation
 #labels Phase-Design,Featured
 
 = Introduction =
 
-The DummyCreator contains the following static method to create a new object of the given class:
+The !_DummyCreator_ contains the following static method to create a new object of the given class:
 {{{
 public <T> T create(final Class<T> clazz)
 }}}
