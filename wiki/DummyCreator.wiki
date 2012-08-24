@@ -13,7 +13,7 @@ To call it, just use the class you want:
 Integer integer = DummyCreator.create(Integer.class);
 }}}
 
-You can create objects of any type this way, but for some types you need to provide the DummyCreator with extra information what to do in those cases.
+You can create objects of any type this way, but for some types you need to provide the _!DummyCreator_ with extra information what to do in those cases.
 
 The following cases need extra information:
 
@@ -22,7 +22,7 @@ The following cases need extra information:
   * Cases where you want to provide your own logic to produce an object
   * Cases where you want to provide a specific Method or Constructor reference
 
-You can use Class bindings to do this. Create a new ClassBindings object or use the static default getter to provide some default bindings (such as using ArrayLists for List types).
+You can use Class bindings to do this. Create a new ClassBindings object or use the static default getter to provide some default bindings (such as using !ArrayLists for List types).
 
 {{{
 ClassBindings classBindings = ClassBindings.defaultBindings();
