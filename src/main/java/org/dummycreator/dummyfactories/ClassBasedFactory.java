@@ -227,7 +227,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 				try {
 					m.invoke(subject, parameter);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("error calling setter method [" + m.getName() + "]", e);
 				}
 			}
 		}
