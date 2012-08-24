@@ -1,13 +1,31 @@
 #summary The DummyCreator is the main class for automatic object creation
+#labels Phase-Design,Featured
 
 = Introduction =
 
 The DummyCreator contains the following static method to create a new object of the given class:
 {{{
-public static <T> T createDummyOfClass(final Class<T> clazz)
+public <T> T create(final Class<T> clazz)
 }}}
 
 To call it, just use the class you want:
 {{{
-Integer integer =  DummyCreator.createDummyOfClass(Integer.class);
+Integer integer = DummyCreator.create(Integer.class);
+}}}
+
+You can create objects of any type this way, but for some types you need to provide the DummyCreator with extra information what to do in those cases.
+
+The following cases need extra information:
+
+  * Abstract types for which a specific implementation should be instantiated
+  * Interfaces types idem
+  * Cases where you want to provide your own logic to produce an object
+  * Cases where you want to provide a specific Method or Constructor reference
+
+You can use Class bindings to do this. Create a new ClassBindings object or use the static default getter to provide some default bindings (such as using ArrayLists for List types).
+
+{{{
+ClassBindings classBindings = ClassBindings.defaultBindings();
+classBindings.add(YourInterface.class, new ClassBasedFactory<YourImplementation>(YourImplementation.class));
+DummyCreator dummyCreator = new DummyCreator(classBindings);
 }}}
