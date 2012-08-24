@@ -183,7 +183,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * but a type declared as <code>class FooList extends ArrayList<Foo></code> will result in an instance containing <code>Foo</code>
 	 * elements. The behavior of the first case is a result of runtime <a
 	 * href="http://en.wikipedia.org/wiki/Generics_in_Java#Problems_with_type_erasure">type erasure</a>. Only declared generic types in the
-	 * class or interface signature, as in the latter case, are discoverable in runtime (the latter case).
+	 * class or interface signature, as in the latter case, are discoverable in runtime.
 	 * 
 	 * @param subject The object to populate with dummy values.
 	 * @param knownInstances A list of known instances to keep track of already processed classes (to avoid infinite loop)
