@@ -57,14 +57,9 @@ public class DummyCreator {
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
-     * A cache for previously found {@link Constructor} instances and preferred constructor for previous successfully invoked constructors.
+     * A cache for previously found {@link Constructor} and {@link Method} instances and preferred constructor for previous successfully invoked constructors.
      */
-    private final ConstructorCache constructorCache;
-
-    /**
-     * A cache for previously found {@link Method} instances and preferred constructor for previous successfully invoked constructors.
-     */
-    private final MethodCache methodCache;
+    private final Cache constructorCache;
 
     /**
      * A map that contains deferred class types for a given type. With this you can defer the creation of a dummy instance to another type.
@@ -86,8 +81,7 @@ public class DummyCreator {
      */
     public DummyCreator(ClassBindings classBindings) {
 	this.classBindings = classBindings;
-	this.constructorCache = new ConstructorCache();
-	this.methodCache = new MethodCache();
+	this.constructorCache = new Cache();
     }
 
     /**
@@ -161,15 +155,13 @@ public class DummyCreator {
 		return enums[RandomCreator.getRandomInt(enums.length - 1)];
 	    }
 	    // Load the constructors
-	    List<Constructor<?>> consts = constructorCache.getCachedConstructors(clazz);
+	    List<Constructor<?>> consts = constructorCache.getConstructorCache(clazz);
 	    if (consts == null) {
 		consts = new ArrayList<Constructor<?>>();
 		Constructor<?>[] _con = clazz.getConstructors();
-		// Sort the constructors by their parameter-count
 		java.util.Arrays.sort(_con, new ConstructorComparator());
 		consts.addAll(Arrays.asList(_con));
-		// Add to cache
-		constructorCache.addConstructors(clazz, consts);
+		constructorCache.add(clazz, consts.toArray(new Constructor<?>[] {}));
 	    }
 
 	    // Check if we have a prefered Constructor and try it
@@ -299,18 +291,19 @@ public class DummyCreator {
     }
 
     private List<Method> discoverSetters(final Class<?> clazz) {
-	List<Method> setter = methodCache.getSetterForClass(clazz);
-	if (setter == null) {
-	    setter = new ArrayList<Method>();
+	List<Method> setters = constructorCache.getMethodCache(clazz);
+	if (setters == null) {
+	    setters = new ArrayList<Method>();
 	    Map<Class<?>, List<FieldWrapper>> fields = FieldUtils.collectFields(clazz, Object.class, EnumSet.allOf(Visibility.class), EnumSet.of(BeanRestriction.YES_SETTER));
 	    for (List<FieldWrapper> fieldWrappers : fields.values()) {
 		for (FieldWrapper fieldWrapper : fieldWrappers) {
-		    setter.add(fieldWrapper.getSetter());
+		    setters.add(fieldWrapper.getSetter());
 		}
 	    }
-	    methodCache.addSetterForClass(clazz, setter);
+	    
+	    constructorCache.add(clazz, setters.toArray(new Method[] {}));
 	}
-	return setter;
+	return setters;
     }
 
     @SuppressWarnings("unchecked")

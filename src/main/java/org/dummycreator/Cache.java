@@ -18,43 +18,43 @@
 package org.dummycreator;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 
- * @author Alexander Muthmann <amuthmann at dev-eth0.de>
- * @version 05/2010
- */
-class ConstructorCache {
+class Cache {
 
-    private final Map<Class<?>, List<Constructor<?>>> cache = new HashMap<Class<?>, List<Constructor<?>>>();
+    private final Map<Class<?>, List<Method>> methodCache = new HashMap<Class<?>, List<Method>>();
+    private final Map<Class<?>, List<Constructor<?>>> constructorCache = new HashMap<Class<?>, List<Constructor<?>>>();
     private final Map<Class<?>, Constructor<?>> preferedConstructors = new HashMap<Class<?>, Constructor<?>>();
-
-    public List<Constructor<?>> getCachedConstructors(final Class<?> clazz) {
-	List<Constructor<?>> cs = cache.get(clazz);
-	return cs == null ? null : Collections.unmodifiableList(cs);
+    
+    public List<Constructor<?>> getConstructorCache(final Class<?> clazz) {
+	return constructorCache.containsKey(clazz) ? constructorCache.get(clazz) : null;
     }
 
-    public void addConstructor(final Class<?> clazz, final Constructor<?> cons) {
-	List<Constructor<?>> cs = cache.get(clazz);
-	if (cs == null) {
-	    cs = new ArrayList<Constructor<?>>();
-	    cache.put(clazz, cs);
-	}
-	cs.add(cons);
+    public List<Method> getMethodCache(final Class<?> clazz) {
+	return methodCache.containsKey(clazz) ? methodCache.get(clazz) : null;
     }
 
-    public void addConstructors(final Class<?> clazz, final List<Constructor<?>> cons) {
-	List<Constructor<?>> cs = cache.get(clazz);
+    public void add(final Class<?> clazz, final Method... setter) {
+	List<Method> setters = methodCache.get(clazz);
+	if (setters == null) {
+	    setters = new ArrayList<Method>();
+	}
+	methodCache.put(clazz, setters);
+	setters.addAll(Arrays.asList(setter));
+    }
+
+    public void add(final Class<?> clazz, final Constructor<?>... cons) {
+	List<Constructor<?>> cs = constructorCache.get(clazz);
 	if (cs == null) {
 	    cs = new ArrayList<Constructor<?>>();
-	    cache.put(clazz, cs);
 	}
-	cs.addAll(cons);
+	constructorCache.put(clazz, cs);
+	cs.addAll(Arrays.asList(cons));
     }
 
     public Constructor<?> getPreferedConstructor(final Class<?> clazz) {
