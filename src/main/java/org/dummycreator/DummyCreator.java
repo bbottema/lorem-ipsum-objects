@@ -11,9 +11,6 @@
  * If applicable, add the following below the CDDL Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- *
- * The Original Software is dummyCreator. The Initial Developer of the Original
- * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
 package org.dummycreator;
 
@@ -49,8 +46,8 @@ import org.codemonkey.javareflection.FieldWrapper;
  * 
  * @see #create(Class)
  * 
- * @author Alexander Muthmann <amuthmann@dev-eth0.de>
- * @author Benny Bottema <b.bottema@projectnibble.org>
+ * @author Alexander Muthmann <amuthmann@dev-eth0.de> (original author)
+ * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
 public class DummyCreator {
 
