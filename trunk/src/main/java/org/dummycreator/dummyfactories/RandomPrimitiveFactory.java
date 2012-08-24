@@ -10,7 +10,7 @@ import org.dummycreator.RandomCreator;
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-public class RandomPrimitiveFactory<T> implements DummyFactory<T> {
+public class RandomPrimitiveFactory<T> extends DummyFactory<T> {
 
     private final Class<T> clazz;
 

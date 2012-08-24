@@ -35,7 +35,7 @@ import org.dummycreator.RandomCreator;
  * @param <T> The type of object that should be created by the dummy factory.
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-public class ClassBasedFactory<T> implements DummyFactory<T> {
+public class ClassBasedFactory<T> extends DummyFactory<T> {
 
     private static final Logger logger = Logger.getLogger(ClassBasedFactory.class);
 

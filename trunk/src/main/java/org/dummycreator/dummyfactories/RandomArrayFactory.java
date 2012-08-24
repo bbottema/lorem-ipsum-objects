@@ -11,7 +11,7 @@ import org.dummycreator.RandomCreator;
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-public class RandomArrayFactory<T> implements DummyFactory<Array> {
+public class RandomArrayFactory<T> extends DummyFactory<Array> {
 
     private Class<T> clazz;
 
