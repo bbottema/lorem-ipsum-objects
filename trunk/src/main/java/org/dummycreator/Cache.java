@@ -11,9 +11,6 @@
  * If applicable, add the following below the CDDL Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- *
- * The Original Software is dummyCreator. The Initial Developer of the Original
- * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
 package org.dummycreator;
 
@@ -25,12 +22,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Contains previously found class methods and constructors and contains references to preferred constructors (constructors called
+ * successfully previously).
+ * 
+ * @author Alexander Muthmann <amuthmann@dev-eth0.de> (original author)
+ * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
+ */
 class Cache {
 
     private final Map<Class<?>, List<Method>> methodCache = new HashMap<Class<?>, List<Method>>();
     private final Map<Class<?>, List<Constructor<?>>> constructorCache = new HashMap<Class<?>, List<Constructor<?>>>();
     private final Map<Class<?>, Constructor<?>> preferedConstructors = new HashMap<Class<?>, Constructor<?>>();
-    
+
     public List<Constructor<?>> getConstructorCache(final Class<?> clazz) {
 	return constructorCache.containsKey(clazz) ? constructorCache.get(clazz) : null;
     }

@@ -11,9 +11,6 @@
  * If applicable, add the following below the CDDL Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- *
- * The Original Software is dummyCreator. The Initial Developer of the Original
- * Software is Alexander Muthmann <amuthmann@dev-eth0.de>.
  */
 package org.dummycreator;
 
@@ -22,14 +19,19 @@ import java.util.Random;
 import de.svenjacobs.loremipsum.LoremIpsum;
 
 /**
+ * Utility class that contains various methods to generate dummy data for primitive types.
  * 
- * @author Alexander Muthmann <amuthmann@dev-eth0.de>
- * @version 04/2010
+ * @author Alexander Muthmann <amuthmann@dev-eth0.de> (original author)
+ * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-class RandomCreator {
+final class RandomCreator {
 
     private static final Random r = new Random();
     private static final LoremIpsum loremIpsum = new LoremIpsum();
+
+    private RandomCreator() {
+	// utility class, can't instantiate
+    };
 
     public static String getRandomString() {
 	String gibberish = "";
