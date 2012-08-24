@@ -1,4 +1,4 @@
-#summary The DummyCreator is the main class for automatic object creation
+#summary The !_DummyCreator_ is the main class for automatic object creation
 #labels Phase-Design,Featured
 
 = Introduction =
