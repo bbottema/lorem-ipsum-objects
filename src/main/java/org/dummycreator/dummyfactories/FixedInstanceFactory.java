@@ -10,23 +10,23 @@ import org.dummycreator.DummyFactory;
  */
 public class FixedInstanceFactory<T> extends DummyFactory<T> {
 
-    private final T instance;
+	private final T instance;
 
-    public FixedInstanceFactory(T instance) {
-	this.instance = instance;
-    }
-
-    @Override
-    public boolean isValidForType(Class<? super T> clazz) {
-	if (clazz.isAssignableFrom(instance.getClass())) {
-	    return true;
-	} else {
-	    throw new IllegalArgumentException("The object has to have a subclass of clazz");
+	public FixedInstanceFactory(T instance) {
+		this.instance = instance;
 	}
-    }
 
-    @Override
-    public T createDummy(List<Exception> constructorExceptions, ClassBindings classBindings) {
-	return instance;
-    }
+	@Override
+	public boolean isValidForType(Class<? super T> clazz) {
+		if (clazz.isAssignableFrom(instance.getClass())) {
+			return true;
+		} else {
+			throw new IllegalArgumentException("The object has to have a subclass of clazz");
+		}
+	}
+
+	@Override
+	public T createDummy(List<Exception> constructorExceptions, ClassBindings classBindings) {
+		return instance;
+	}
 }

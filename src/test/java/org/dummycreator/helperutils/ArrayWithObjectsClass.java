@@ -2,14 +2,14 @@ package org.dummycreator.helperutils;
 
 public class ArrayWithObjectsClass {
 
-    private PrimitiveClass[] primitivclasses;
+	private PrimitiveClass[] primitivclasses;
 
-    public PrimitiveClass[] getPrimitivclasses() {
-	return primitivclasses;
-    }
+	public PrimitiveClass[] getPrimitivclasses() {
+		return primitivclasses;
+	}
 
-    public void setPrimitivclasses(PrimitiveClass[] primitivclasses) {
-	this.primitivclasses = primitivclasses;
-    }
+	public void setPrimitivclasses(PrimitiveClass[] primitivclasses) {
+		this.primitivclasses = primitivclasses;
+	}
 
 }
