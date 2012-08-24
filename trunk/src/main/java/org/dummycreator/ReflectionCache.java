@@ -29,7 +29,7 @@ import java.util.Map;
  * @author Alexander Muthmann <amuthmann@dev-eth0.de> (original author)
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-class Cache {
+public class ReflectionCache {
 
     private final Map<Class<?>, List<Method>> methodCache = new HashMap<Class<?>, List<Method>>();
     private final Map<Class<?>, List<Constructor<?>>> constructorCache = new HashMap<Class<?>, List<Constructor<?>>>();

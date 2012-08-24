@@ -12,6 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.dummycreator.dummyfactories.ClassBasedFactory;
+import org.dummycreator.dummyfactories.ConstructorBasedFactory;
+import org.dummycreator.dummyfactories.FixedInstanceFactory;
 import org.dummycreator.helperutils.EnumClass;
 import org.dummycreator.helperutils.InheritedPrimitiveClass;
 import org.dummycreator.helperutils.LoopClass;
@@ -30,12 +33,13 @@ public class DummyCreatorTest {
     private DummyCreator dummyCreator;
 
     @Before
+    @SuppressWarnings("rawtypes")
     public void setUp() throws SecurityException, NoSuchMethodException {
 	ClassBindings classBindings = ClassBindings.defaultBindings();
-	classBindings.add(List.class, ArrayList.class);
-	classBindings.add(Integer.class, Integer.class.getConstructor(Integer.TYPE));
-	classBindings.add(Long.class, Long.MAX_VALUE);
-	classBindings.add(Double.class, Double.MIN_VALUE);
+	classBindings.add(List.class, new ClassBasedFactory<ArrayList>(ArrayList.class));
+	classBindings.add(Integer.class, new ConstructorBasedFactory<Integer>(Integer.class.getConstructor(Integer.TYPE)));
+	classBindings.add(Long.class, new FixedInstanceFactory<Long>(Long.MAX_VALUE));
+	classBindings.add(Double.class, new FixedInstanceFactory<Double>(Double.MIN_VALUE));
 	dummyCreator = new DummyCreator(classBindings);
     }
 
@@ -55,12 +59,13 @@ public class DummyCreatorTest {
     }
 
     @Test
+    @SuppressWarnings("rawtypes")
     public void CheckInterfaceBindings() throws Exception {
 	assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
 
 	ClassBindings classBindings = new ClassBindings();
-	classBindings.add(List.class, ArrayList.class);
-	classBindings.add(List.class, LinkedList.class);
+	classBindings.add(List.class, new ClassBasedFactory<ArrayList>(ArrayList.class));
+	classBindings.add(List.class, new ClassBasedFactory<LinkedList>(LinkedList.class));
 	DummyCreator dummyCreator = new DummyCreator(classBindings);
 	assertEquals(LinkedList.class, dummyCreator.create(List.class).getClass());
     }
@@ -78,10 +83,11 @@ public class DummyCreatorTest {
     }
 
     @Test
+    @SuppressWarnings("rawtypes")
     public void CheckObjectBinding() {
 	ClassBindings classBindings = new ClassBindings();
 	LinkedList<Object> list = new LinkedList<Object>();
-	classBindings.add(List.class, list);
+	classBindings.add(List.class, new FixedInstanceFactory<List>(list));
 	DummyCreator dummyCreator = new DummyCreator(classBindings);
 	List<?> dummy = dummyCreator.create(List.class);
 	assertEquals(LinkedList.class, dummy.getClass());
@@ -91,7 +97,7 @@ public class DummyCreatorTest {
     @Test
     public void CheckDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
 	ClassBindings classBindings = new ClassBindings();
-	classBindings.add(B.class, C.class.getConstructor(int.class));
+	classBindings.add(B.class, new ConstructorBasedFactory<C>(C.class.getConstructor(int.class)));
 	DummyCreator dummyCreator = new DummyCreator(classBindings);
 	B dummy = dummyCreator.create(B.class);
 	assertEquals(C.class, dummy.getClass());
@@ -100,7 +106,7 @@ public class DummyCreatorTest {
     @Test
     public void CheckDeferredSubTypeBinding() throws SecurityException, NoSuchMethodException {
 	ClassBindings classBindings = new ClassBindings();
-	classBindings.add(B.class, C.class);
+	classBindings.add(B.class, new ClassBasedFactory<C>(C.class));
 	DummyCreator dummyCreator = new DummyCreator(classBindings);
 	B dummy = dummyCreator.create(B.class);
 	assertEquals(C.class, dummy.getClass());

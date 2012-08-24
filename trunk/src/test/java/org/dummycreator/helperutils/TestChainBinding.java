@@ -10,7 +10,7 @@ public class TestChainBinding {
 	}
     };
 
-    public static class B extends A {
+    public static abstract class B extends A {
 
 	public B(int arg) {
 	    super(arg);

@@ -7,8 +7,10 @@ package org.dummycreator;
  * chain that returns to its own type).
  * 
  * @param <T> The type of the instance stored.
+ * @author Alexander Muthmann <amuthmann@dev-eth0.de> (original author)
+ * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-class ClassUsageInfo<T> {
+public class ClassUsageInfo<T> {
     private T instance = null;
     private boolean populated = false;
 
