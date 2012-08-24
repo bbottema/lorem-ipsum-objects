@@ -38,9 +38,7 @@ import org.dummycreator.dummyfactories.RandomStringFactory;
  * Deferred types are produced by {@link DummyFactory} implementations. Default factories are in place for strings, primitives, enums. In
  * addition,there are factories that can be configured to invoke a specific {@link Method} ({@link MethodBasedFactory}) or a specific
  * {@link Constructor} ({@link ConstructorBasedFactory}). Finally, there is a factory to return a fixed instance. The
- * {@link ClassBasedFactory} is used automatically internally if no class binding can be found for a particular type.
- * 
- * Examples are:
+ * {@link ClassBasedFactory} is used automatically internally if no class binding can be found for a particular type. Examples are:
  * <ul>
  * <li>List -> ArrayList (deferred to first succesfully invoked class constructor)</li>
  * <li>List -> LinkedList (idem)</li>
@@ -55,49 +53,49 @@ import org.dummycreator.dummyfactories.RandomStringFactory;
  */
 public class ClassBindings {
 
-    private final HashMap<Class<?>, DummyFactory<?>> bindings = new HashMap<Class<?>, DummyFactory<?>>();
+	private final HashMap<Class<?>, DummyFactory<?>> bindings = new HashMap<Class<?>, DummyFactory<?>>();
 
-    /**
-     * Initializes with basic bindings for primitives, arrays and strings.
-     */
-    public ClassBindings() {
-	add(Long.TYPE, new RandomPrimitiveFactory<Long>(Long.TYPE));
-	add(Integer.TYPE, new RandomPrimitiveFactory<Integer>(Integer.TYPE));
-	add(Float.TYPE, new RandomPrimitiveFactory<Float>(Float.TYPE));
-	add(Boolean.TYPE, new RandomPrimitiveFactory<Boolean>(Boolean.TYPE));
-	add(Character.TYPE, new RandomPrimitiveFactory<Character>(Character.TYPE));
-	add(Byte.TYPE, new RandomPrimitiveFactory<Byte>(Byte.TYPE));
-	add(Short.TYPE, new RandomPrimitiveFactory<Short>(Short.TYPE));
-	add(Double.TYPE, new RandomPrimitiveFactory<Double>(Double.TYPE));
-	add(Array.class, new RandomPrimitiveFactory<Array>(Array.class));
-	add(String.class, new RandomStringFactory());
-    }
-
-    public <T> void add(final Class<T> clazz, final DummyFactory<? extends T> factory) {
-	if (factory.isValidForType(clazz)) {
-		bindings.put(clazz, factory);
+	/**
+	 * Initializes with basic bindings for primitives, arrays and strings.
+	 */
+	public ClassBindings() {
+		add(Long.TYPE, new RandomPrimitiveFactory<Long>(Long.TYPE));
+		add(Integer.TYPE, new RandomPrimitiveFactory<Integer>(Integer.TYPE));
+		add(Float.TYPE, new RandomPrimitiveFactory<Float>(Float.TYPE));
+		add(Boolean.TYPE, new RandomPrimitiveFactory<Boolean>(Boolean.TYPE));
+		add(Character.TYPE, new RandomPrimitiveFactory<Character>(Character.TYPE));
+		add(Byte.TYPE, new RandomPrimitiveFactory<Byte>(Byte.TYPE));
+		add(Short.TYPE, new RandomPrimitiveFactory<Short>(Short.TYPE));
+		add(Double.TYPE, new RandomPrimitiveFactory<Double>(Double.TYPE));
+		add(Array.class, new RandomPrimitiveFactory<Array>(Array.class));
+		add(String.class, new RandomStringFactory());
 	}
-    }
 
-    /**
-     * This method returns a binding made for the given class. This binding might be of one of the following type: Constructor
-     * Implementation of a Interface Method Object
-     */
-    public Object find(final Class<?> _class) {
-	return bindings.get(_class);
-    }
+	public <T> void add(final Class<T> clazz, final DummyFactory<? extends T> factory) {
+		if (factory.isValidForType(clazz)) {
+			bindings.put(clazz, factory);
+		}
+	}
 
-    /**
-     * You can call this method to build some default bindings for common classes. This includes List.class, Map.class, Set.class.
-     * <p>
-     * These are in addition to the basic bindings added in {@link #ClassBindings()}.
-     */
-    @SuppressWarnings("rawtypes")
-    public static ClassBindings defaultBindings() {
-	ClassBindings classBindings = new ClassBindings();
-	classBindings.add(List.class, new ClassBasedFactory<ArrayList>(ArrayList.class));
-	classBindings.add(Map.class, new ClassBasedFactory<HashMap>(HashMap.class));
-	classBindings.add(Set.class, new ClassBasedFactory<HashSet>(HashSet.class));
-	return classBindings;
-    }
+	/**
+	 * This method returns a binding made for the given class. This binding might be of one of the following type: Constructor
+	 * Implementation of a Interface Method Object
+	 */
+	public Object find(final Class<?> _class) {
+		return bindings.get(_class);
+	}
+
+	/**
+	 * You can call this method to build some default bindings for common classes. This includes List.class, Map.class, Set.class.
+	 * <p>
+	 * These are in addition to the basic bindings added in {@link #ClassBindings()}.
+	 */
+	@SuppressWarnings("rawtypes")
+	public static ClassBindings defaultBindings() {
+		ClassBindings classBindings = new ClassBindings();
+		classBindings.add(List.class, new ClassBasedFactory<ArrayList>(ArrayList.class));
+		classBindings.add(Map.class, new ClassBasedFactory<HashMap>(HashMap.class));
+		classBindings.add(Set.class, new ClassBasedFactory<HashSet>(HashSet.class));
+		return classBindings;
+	}
 }

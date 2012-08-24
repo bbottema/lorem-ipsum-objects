@@ -25,48 +25,47 @@ import org.dummycreator.dummyfactories.ClassBasedFactory;
  * For numbers being generated a random number is being using, for strings a lorem ipsum generated is being used.
  * 
  * @see #create(Class)
- * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de> (original author)
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
 public class DummyCreator {
 
-    /**
-     * A map that contains deferred class types for a given type. With this you can defer the creation of a dummy instance to another type.
-     * This is useful if you need to instance dummy objects for an interface or abstract class.
-     * 
-     * @see ClassBindings
-     */
-    private final ClassBindings classBindings;
+	/**
+	 * A map that contains deferred class types for a given type. With this you can defer the creation of a dummy instance to another type.
+	 * This is useful if you need to instance dummy objects for an interface or abstract class.
+	 * 
+	 * @see ClassBindings
+	 */
+	private final ClassBindings classBindings;
 
-    /**
-     * Default constructor: configures the Dummy Creator with vanilla new bindings and caches.
-     */
-    public DummyCreator() {
-	this(new ClassBindings());
-    }
+	/**
+	 * Default constructor: configures the Dummy Creator with vanilla new bindings and caches.
+	 */
+	public DummyCreator() {
+		this(new ClassBindings());
+	}
 
-    /**
-     * Constructor: configures the Dummy Creator with a given {@link ClassBindings} instance and new caches.
-     */
-    public DummyCreator(ClassBindings classBindings) {
-	this.classBindings = classBindings;
-    }
+	/**
+	 * Constructor: configures the Dummy Creator with a given {@link ClassBindings} instance and new caches.
+	 */
+	public DummyCreator(ClassBindings classBindings) {
+		this.classBindings = classBindings;
+	}
 
-    /**
-     * Main method, creates a dummy object of a given type (using {@link ClassBasedFactory#createDummy(java.util.List, ClassBindings)}).
-     * <p>
-     * Provide your own {@link ClassBindings} in {@link #DummyCreator(ClassBindings)} to control how objects are created for specific types
-     * (such as the abstract List class). This is the main-method used to create a dummy of a certain class. It's called with the needed
-     * class. e.g. Integer i = createDummyOfClass(Integer.class)
-     * 
-     * @param <T> The type to be created and returned (returned type can be a sub type of <code>T</code>).
-     * @param clazz The type that should be created
-     * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured!).
-     * @throws IllegalArgumentException Thrown if an abstract type or interface was given for which no binding could be found in the
-     *             provided {@link ClassBindings}.
-     */
-    public <T> T create(final Class<T> clazz) {
-	return new ClassBasedFactory<T>(clazz).createDummy(null, classBindings);
-    }
+	/**
+	 * Main method, creates a dummy object of a given type (using {@link ClassBasedFactory#createDummy(java.util.List, ClassBindings)}).
+	 * <p>
+	 * Provide your own {@link ClassBindings} in {@link #DummyCreator(ClassBindings)} to control how objects are created for specific types
+	 * (such as the abstract List class). This is the main-method used to create a dummy of a certain class. It's called with the needed
+	 * class. e.g. Integer i = createDummyOfClass(Integer.class)
+	 * 
+	 * @param <T> The type to be created and returned (returned type can be a sub type of <code>T</code>).
+	 * @param clazz The type that should be created
+	 * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured!).
+	 * @throws IllegalArgumentException Thrown if an abstract type or interface was given for which no binding could be found in the
+	 *             provided {@link ClassBindings}.
+	 */
+	public <T> T create(final Class<T> clazz) {
+		return new ClassBasedFactory<T>(clazz).createDummy(null, classBindings);
+	}
 }
