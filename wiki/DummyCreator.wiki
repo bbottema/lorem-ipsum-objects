@@ -30,5 +30,6 @@ classBindings.add(Fruit.class, new ClassBasedFactory<Apple>(Apple.class));
 DummyCreator dummyCreator = new DummyCreator(classBindings);
 
 Fruit dummy = dummyCreator.create(Fruit.class); // dummy will be an Apple
-// alternatively, you can create an object which contains a field of type Fruit FruitBasket fruitBasket = dummyCreator.create(FruitBasket.class);
+// alternatively, you can create an object which contains a field of type Fruit 
+FruitBasket fruitBasket = dummyCreator.create(FruitBasket.class);
 }}}
