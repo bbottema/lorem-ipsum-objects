@@ -14,9 +14,9 @@
  */
 package org.dummycreator;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,25 +24,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.dummycreator.dummyfactories.ClassBasedFactory;
+import org.dummycreator.dummyfactories.ConstructorBasedFactory;
+import org.dummycreator.dummyfactories.MethodBasedFactory;
+import org.dummycreator.dummyfactories.RandomPrimitiveFactory;
+import org.dummycreator.dummyfactories.RandomStringFactory;
+
 /**
  * Stores a list of classes / interfaces and their associated deferred types. This list is used to tell {@link DummyCreator} which specific
- * implementation it should use to product new dummy instances for a certain type.
+ * implementation it should use to produce new dummy instances for a certain type. This is most useful to make sure Dummy Creator can create
+ * dummy objects for interface / abstract types it encounters.
  * <p>
- * Classes can be used as deferred types, but the following deferred types are allowed:
- * <ul>
- * <li>Class references: {@link #add(Class, Class)}</li>
- * <li>methods with a return type: {@link #add(Class, Method)}</li>
- * <li>constructors: {@link #add(Class, Constructor)}</li>
- * <li>instance objects: {@link #add(Class, Object)}</li>
- * </ul>
+ * Deferred types are produced by {@link DummyFactory} implementations. Default factories are in place for strings, primitives, enums. In
+ * addition,there are factories that can be configured to invoke a specific {@link Method} ({@link MethodBasedFactory}) or a specific
+ * {@link Constructor} ({@link ConstructorBasedFactory}). Finally, there is a factory to return a fixed instance. The
+ * {@link ClassBasedFactory} is used automatically internally if no class binding can be found for a particular type.
  * 
  * Examples are:
  * <ul>
- * <li>List -> ArrayList</li>
- * <li>List -> LinkedList</li>
- * <li>Integer -> 4443 (which is autoboxed to an Integer)</li>
- * <li>Foo -> FooFactory.class.getMethod('createFoo')</li>
- * <li>Apple -> Apple.class.getConstructor(String.class)</li>
+ * <li>List -> ArrayList (deferred to first succesfully invoked class constructor)</li>
+ * <li>List -> LinkedList (idem)</li>
+ * <li>Integer -> 4443 (which is autoboxed to an Integer and then acts as deferred instance)</li>
+ * <li>Foo -> FooFactory.class.getMethod('createFoo') (deferred to method call)</li>
+ * <li>Apple -> Apple.class.getConstructor(String.class) (deferred to constructor call)</li>
+ * <li>Apple -> new AppleFactory() (deferred to object factory call)</li>
  * </ul>
  * 
  * @author Alexander Muthmann <amuthmann@dev-eth0.de> (original author)
@@ -50,54 +55,47 @@ import java.util.Set;
  */
 public class ClassBindings {
 
+    private final HashMap<Class<?>, DummyFactory<?>> bindings = new HashMap<Class<?>, DummyFactory<?>>();
+
     /**
-     * The list with bindings
+     * Initializes with basic bindings for primitives, arrays and strings.
      */
-    private final HashMap<Class<?>, Object> bindings = new HashMap<Class<?>, Object>();
-
-    public <T> void add(final Class<T> clazz, final Constructor<? extends T> constructor) {
-	bindings.put(clazz, constructor);
+    public ClassBindings() {
+	add(Long.TYPE, new RandomPrimitiveFactory<Long>(Long.TYPE));
+	add(Integer.TYPE, new RandomPrimitiveFactory<Integer>(Integer.TYPE));
+	add(Float.TYPE, new RandomPrimitiveFactory<Float>(Float.TYPE));
+	add(Boolean.TYPE, new RandomPrimitiveFactory<Boolean>(Boolean.TYPE));
+	add(Character.TYPE, new RandomPrimitiveFactory<Character>(Character.TYPE));
+	add(Byte.TYPE, new RandomPrimitiveFactory<Byte>(Byte.TYPE));
+	add(Short.TYPE, new RandomPrimitiveFactory<Short>(Short.TYPE));
+	add(Double.TYPE, new RandomPrimitiveFactory<Double>(Double.TYPE));
+	add(Array.class, new RandomPrimitiveFactory<Array>(Array.class));
+	add(String.class, new RandomStringFactory());
     }
 
-    public <T> void add(final Class<T> clazz, final Class<? extends T> deferredSubtype) {
-	bindings.put(clazz, deferredSubtype);
-    }
-
-    public <T> void add(final Class<T> clazz, final Method method) {
-	if (Modifier.isStatic(method.getModifiers()) && method.getReturnType().equals(clazz)) {
-	    bindings.put(clazz, method);
-	} else {
-	    throw new IllegalArgumentException("The method has to be static and return an object of the given class!");
-	}
-    }
-
-    public <T> void add(final Class<T> clazz, final Object object) {
-	if (clazz.isAssignableFrom(object.getClass())) {
-	    bindings.put(clazz, object);
-	} else {
-	    throw new IllegalArgumentException("The object has to have a subclass of clazz");
-	}
+    public <T> void add(final Class<T> clazz, final DummyFactory<? extends T> factory) {
+	bindings.put(clazz, factory);
     }
 
     /**
      * This method returns a binding made for the given class. This binding might be of one of the following type: Constructor
      * Implementation of a Interface Method Object
-     * 
-     * @param _class
-     * @return
      */
     public Object find(final Class<?> _class) {
 	return bindings.get(_class);
     }
 
     /**
-     * You can call this method to build some default bindings for common classes. This includes List.class, Map.class, Set.class
+     * You can call this method to build some default bindings for common classes. This includes List.class, Map.class, Set.class.
+     * <p>
+     * These are in addition to the basic bindings added in {@link #ClassBindings()}.
      */
+    @SuppressWarnings("rawtypes")
     public static ClassBindings defaultBindings() {
 	ClassBindings classBindings = new ClassBindings();
-	classBindings.add(List.class, ArrayList.class);
-	classBindings.add(Map.class, HashMap.class);
-	classBindings.add(Set.class, HashSet.class);
+	classBindings.add(List.class, new ClassBasedFactory<ArrayList>(ArrayList.class));
+	classBindings.add(Map.class, new ClassBasedFactory<HashMap>(HashMap.class));
+	classBindings.add(Set.class, new ClassBasedFactory<HashSet>(HashSet.class));
 	return classBindings;
     }
 }

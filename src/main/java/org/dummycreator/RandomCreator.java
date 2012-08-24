@@ -24,7 +24,7 @@ import de.svenjacobs.loremipsum.LoremIpsum;
  * @author Alexander Muthmann <amuthmann@dev-eth0.de> (original author)
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-final class RandomCreator {
+public final class RandomCreator {
 
     private static final Random r = new Random();
     private static final LoremIpsum loremIpsum = new LoremIpsum();
