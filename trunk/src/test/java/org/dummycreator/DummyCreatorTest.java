@@ -33,11 +33,9 @@ public class DummyCreatorTest {
 	private DummyCreator dummyCreator;
 
 	@Before
-	@SuppressWarnings("rawtypes")
 	public void setUp()
 			throws SecurityException, NoSuchMethodException {
 		ClassBindings classBindings = ClassBindings.defaultBindings();
-		classBindings.add(List.class, new ClassBasedFactory<ArrayList>(ArrayList.class));
 		classBindings.add(Integer.class, new ConstructorBasedFactory<Integer>(Integer.class.getConstructor(Integer.TYPE)));
 		classBindings.add(Long.class, new FixedInstanceFactory<Long>(Long.MAX_VALUE));
 		classBindings.add(Double.class, new FixedInstanceFactory<Double>(Double.MIN_VALUE));
