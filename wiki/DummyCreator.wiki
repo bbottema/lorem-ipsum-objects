@@ -3,7 +3,7 @@
 
 = Introduction =
 
-The !_DummyCreator_ contains the following static method to create a new object of the given class:
+The _!DummyCreator_ contains the following static method to create a new object of the given class:
 {{{
 public <T> T create(final Class<T> clazz)
 }}}
