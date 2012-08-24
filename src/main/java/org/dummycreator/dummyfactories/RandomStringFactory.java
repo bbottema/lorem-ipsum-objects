@@ -10,7 +10,7 @@ import org.dummycreator.RandomCreator;
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-public class RandomStringFactory implements DummyFactory<String> {
+public class RandomStringFactory extends DummyFactory<String> {
 
     @Override
     public String createDummy(List<Exception> constructorExceptions, ClassBindings classBindings) {

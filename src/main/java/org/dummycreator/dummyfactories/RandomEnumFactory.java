@@ -10,7 +10,7 @@ import org.dummycreator.RandomCreator;
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-public class RandomEnumFactory<T extends Enum<?>> implements DummyFactory<T> {
+public class RandomEnumFactory<T extends Enum<?>> extends DummyFactory<T> {
 
     private final Class<T> clazz;
 

@@ -11,7 +11,7 @@ import org.dummycreator.DummyFactory;
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-public class ConstructorBasedFactory<T> implements DummyFactory<T> {
+public class ConstructorBasedFactory<T> extends DummyFactory<T> {
 
     private final Constructor<T> constructor;
 

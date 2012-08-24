@@ -74,7 +74,9 @@ public class ClassBindings {
     }
 
     public <T> void add(final Class<T> clazz, final DummyFactory<? extends T> factory) {
-	bindings.put(clazz, factory);
+	if (factory.isValidForType(clazz)) {
+		bindings.put(clazz, factory);
+	}
     }
 
     /**
