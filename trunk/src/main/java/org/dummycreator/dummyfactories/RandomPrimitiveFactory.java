@@ -18,6 +18,18 @@ public class RandomPrimitiveFactory<T> extends DummyFactory<T> {
 		this.clazz = clazz;
 	}
 
+	@Override
+	public boolean isValidForType(Class<? super T> clazz) {
+		return (clazz == java.lang.Integer.TYPE || //
+				clazz == java.lang.Long.TYPE || //
+				clazz == java.lang.Float.TYPE || //
+				clazz == java.lang.Boolean.TYPE || //
+				clazz == java.lang.Character.TYPE || //
+				clazz == java.lang.Byte.TYPE || //
+				clazz == java.lang.Short.TYPE || //
+		clazz == java.lang.Double.TYPE);
+	}
+
 	/**
 	 * @return Depending on requested type, will call the associated <code>RandomCreator.getRandomT()</code> method.
 	 * 

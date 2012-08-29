@@ -33,8 +33,7 @@ public class DummyCreatorTest {
 	private DummyCreator dummyCreator;
 
 	@Before
-	public void setUp()
-			throws SecurityException, NoSuchMethodException {
+	public void setUp() throws SecurityException, NoSuchMethodException {
 		ClassBindings classBindings = ClassBindings.defaultBindings();
 		classBindings.add(Integer.class, new ConstructorBasedFactory<Integer>(Integer.class.getConstructor(Integer.TYPE)));
 		classBindings.add(Long.class, new FixedInstanceFactory<Long>(Long.MAX_VALUE));
@@ -43,27 +42,19 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckObjectBindings()
-			throws Exception {
+	public void CheckObjectBindings() throws Exception {
 		assertEquals(Long.MAX_VALUE, dummyCreator.create(Long.class), 0);
 		assertEquals(Double.MIN_VALUE, dummyCreator.create(Double.class), 0);
 	}
 
 	@Test
-	public void CheckMethodBindings()
-			throws Exception {
-	}
-
-	@Test
-	public void CheckConstructorBindings()
-			throws Exception {
+	public void CheckConstructorBindings() throws Exception {
 		assertEquals(Integer.class, dummyCreator.create(Integer.class).getClass());
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void CheckInterfaceBindings()
-			throws Exception {
+	public void CheckInterfaceBindings() throws Exception {
 		assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
 
 		ClassBindings classBindings = new ClassBindings();
@@ -98,8 +89,7 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckDeferredSubTypeConstructorBinding()
-			throws SecurityException, NoSuchMethodException {
+	public void CheckDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
 		ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ConstructorBasedFactory<C>(C.class.getConstructor(int.class)));
 		DummyCreator dummyCreator = new DummyCreator(classBindings);
@@ -108,8 +98,7 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckDeferredSubTypeBinding()
-			throws SecurityException, NoSuchMethodException {
+	public void CheckDeferredSubTypeBinding() throws SecurityException, NoSuchMethodException {
 		ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ClassBasedFactory<C>(C.class));
 		DummyCreator dummyCreator = new DummyCreator(classBindings);
@@ -120,9 +109,7 @@ public class DummyCreatorTest {
 	@Test
 	public void CheckPrimitiveClassCreation() {
 		assertEquals(PrimitiveClass.class, dummyCreator.create(PrimitiveClass.class).getClass());
-
 		assertEquals(InheritedPrimitiveClass.class, dummyCreator.create(InheritedPrimitiveClass.class).getClass());
-
 		// TODO Check if all parameters have been set
 	}
 
@@ -193,8 +180,7 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckInterfaceBindingErrors()
-			throws Exception {
+	public void CheckInterfaceBindingErrors() throws Exception {
 		dummyCreator = new DummyCreator();
 		try {
 			assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());

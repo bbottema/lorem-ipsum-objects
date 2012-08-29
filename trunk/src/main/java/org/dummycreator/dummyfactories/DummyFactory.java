@@ -19,6 +19,8 @@ public abstract class DummyFactory<T> {
 	/**
 	 * Default implementation returns true. Should be used when a factory knows beforehand when it will be unable to produce an instance of
 	 * the requested type.
+	 * 
+	 * @throws IllegalArgumentException
 	 */
 	public boolean isValidForType(Class<? super T> clazz) {
 		return true;
@@ -30,7 +32,7 @@ public abstract class DummyFactory<T> {
 	 * @param classBindings A list of bindings to which a factory may defer dummy creation to.
 	 * @return See {@link #createDummy(Map, ClassBindings, List)}.
 	 */
-	public T createDummy(ClassBindings classBindings) {
+	public final T createDummy(ClassBindings classBindings) {
 		return createDummy(new HashMap<Class<?>, ClassUsageInfo<?>>(), classBindings, new ArrayList<Exception>());
 	}
 

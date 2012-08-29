@@ -28,6 +28,8 @@ import org.dummycreator.dummyfactories.ClassBasedFactory;
 import org.dummycreator.dummyfactories.ConstructorBasedFactory;
 import org.dummycreator.dummyfactories.DummyFactory;
 import org.dummycreator.dummyfactories.MethodBasedFactory;
+import org.dummycreator.dummyfactories.RandomArrayFactory;
+import org.dummycreator.dummyfactories.RandomBooleanFactory;
 import org.dummycreator.dummyfactories.RandomPrimitiveFactory;
 import org.dummycreator.dummyfactories.RandomStringFactory;
 
@@ -68,13 +70,31 @@ public class ClassBindings {
 		add(Byte.TYPE, new RandomPrimitiveFactory<Byte>(Byte.TYPE));
 		add(Short.TYPE, new RandomPrimitiveFactory<Short>(Short.TYPE));
 		add(Double.TYPE, new RandomPrimitiveFactory<Double>(Double.TYPE));
-		add(Array.class, new RandomPrimitiveFactory<Array>(Array.class));
+		add(Array.class, new RandomArrayFactory<Array>(Array.class));
 		add(String.class, new RandomStringFactory());
+		add(Boolean.class, new RandomBooleanFactory());
 	}
 
+	/**
+	 * Binds a {@link DummyFactory} to a specific <code>Class</code> instance.
+	 * 
+	 * @param clazz The class to bind the dummy factory to.
+	 * @param factory The factory to bind the the given class.
+	 * @throws IllegalArgumentException Thrown if {@link DummyFactory#isValidForType(Class)} returns <code>false</code> or throws an
+	 *             <code>IllegalArgumentException</code> itself.
+	 * @see DummyFactory#isValidForType(Class)
+	 */
 	public <T> void add(final Class<T> clazz, final DummyFactory<? extends T> factory) {
-		if (factory.isValidForType(clazz)) {
-			bindings.put(clazz, factory);
+		try {
+			if (factory.isValidForType(clazz)) {
+				bindings.put(clazz, factory);
+			} else {
+				// factory didn't throw an exception, so we'll do it ourself
+				throw new IllegalArgumentException();
+			}
+		} catch (IllegalArgumentException e) {
+			// note: exception is also thrown by DummyFactory.isValidForType
+			throw new IllegalArgumentException(String.format("dummy factory [%s] is not valid for class type [%s]", factory, clazz), e);
 		}
 	}
 
