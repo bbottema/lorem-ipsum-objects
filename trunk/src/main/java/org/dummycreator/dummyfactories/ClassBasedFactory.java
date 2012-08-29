@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +17,10 @@ import org.codemonkey.javareflection.FieldUtils;
 import org.codemonkey.javareflection.FieldUtils.BeanRestriction;
 import org.codemonkey.javareflection.FieldUtils.Visibility;
 import org.codemonkey.javareflection.FieldWrapper;
-import org.dummycreator.ReflectionCache;
 import org.dummycreator.ClassBindings;
 import org.dummycreator.ClassUsageInfo;
 import org.dummycreator.RandomCreator;
+import org.dummycreator.ReflectionCache;
 
 /**
  * Creates a populated dummy object of a given class <code>T</code>. First tries to defer creation using {@link #classBindings}, if no class
@@ -49,21 +48,8 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 */
 	private static final ReflectionCache constructorCache = new ReflectionCache();
 
-	/**
-	 * A list of previously created and populated objects for a specific type.
-	 */
-	private static Map<Class<?>, ClassUsageInfo<?>> knownInstances = new HashMap<Class<?>, ClassUsageInfo<?>>();
-
-	private ClassBindings classBindings;
-
 	public ClassBasedFactory(Class<T> clazz) {
 		this.clazz = clazz;
-	}
-
-	@Override
-	public T createDummy(List<Exception> exceptions, ClassBindings classBindings) {
-		this.classBindings = classBindings;
-		return create(clazz);
 	}
 
 	/**
@@ -73,92 +59,114 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * Will first try to defer dummy object creation to a bound {@link DummyFactory} and if found will defer dummy object creation to
 	 * {@link DummyFactory#createDummy(List, ClassBindings)}.
 	 * 
-	 * @param clazz The type that should be created
+	 * @param knownInstances See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param classBindings See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param exceptions See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param clazz See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
 	 * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
-	 * @throws IllegalArgumentException Thrown if class could not be instantiated. Possible constructor invocation exceptions are logged
-	 *             separately.
+	 * @throws IllegalArgumentException Thrown if class could not be instantiated. Constructor invocation exceptions are logged separately.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private T create(final Class<T> clazz) {
-		// list of Classes, we already used for population. by remembering, we can avoid recursive looping
+	@Override
+	@SuppressWarnings("unchecked")
+	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+		// list of classes, we already used for population. by remembering, we can avoid recursive looping
 		if (knownInstances.get(clazz) == null || !knownInstances.get(clazz).isPopulated()) {
-			// first, try to defer instantiation to a bound dummy factory, if available
-			List<Exception> exceptions = new ArrayList<Exception>();
 
-			T ret = null;
+			final T ret = create(knownInstances, classBindings, exceptions);
 
-			// first try possibly bound dummy factory
-			DummyFactory<T> factory = classBindings.find(clazz);
-			if (factory != null) {
-				ret = factory.createDummy(exceptions, classBindings);
+			if (ret != null) {
+				return ret;
+			} else {
+				logger.error("tried but failed to product dummy object...");
+				logger.error("errors logged:");
+				for (Exception e : exceptions) {
+					logger.error(e.getMessage(), e);
+				}
+				throw new IllegalArgumentException(String.format("Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
 			}
-
-			if (ret == null) {
-				ClassUsageInfo<T> usedInfo = new ClassUsageInfo<T>();
-				usedInfo.setInstance(ret);
-				knownInstances.put(clazz, usedInfo);
-
-				// is the class an enum?
-				if (clazz.isEnum()) {
-					return (T) new RandomEnumFactory<Enum>((Class<Enum>) clazz).createDummy(exceptions, classBindings);
-				}
-
-				// load the constructors
-				List<Constructor<?>> consts = constructorCache.getConstructorCache(clazz);
-				if (consts == null) {
-					consts = new ArrayList<Constructor<?>>();
-					Constructor<?>[] _con = clazz.getConstructors();
-					java.util.Arrays.sort(_con, new Comparator<Constructor<?>>() {
-						/**
-						 * Comparator to sort constructors by their number of parameters
-						 */
-						@Override
-						public int compare(Constructor<?> o1, Constructor<?> o2) {
-							int num_o1 = o1.getParameterTypes().length;
-							int num_o2 = o2.getParameterTypes().length;
-							return (num_o1 < num_o2) ? -1 : (num_o1 == num_o2) ? 0 : 1;
-						}
-					});
-					consts.addAll(Arrays.asList(_con));
-					constructorCache.add(clazz, consts.toArray(new Constructor<?>[] {}));
-				}
-
-				// check if we have a prefered Constructor and try it
-				Constructor<T> preferedConstructor = (Constructor<T>) constructorCache.getPreferedConstructor(clazz);
-				if (preferedConstructor != null) {
-					ret = new ConstructorBasedFactory<T>(preferedConstructor).createDummy(exceptions, classBindings);
-				}
-
-				if (ret == null) {
-					for (Constructor<?> co : consts) {
-						ret = new ConstructorBasedFactory<T>((Constructor<T>) co).createDummy(exceptions, classBindings);
-						if (ret != null) {
-							constructorCache.setPreferedConstructor(clazz, co);
-							// Worked
-							break;
-						}
-
-					}
-				}
-
-				if (ret == null) {
-					logger.error("tried but failed to product dummy object...");
-					logger.error("errors logged:");
-					for (Exception e : exceptions) {
-						logger.error(e.getMessage(), e);
-					}
-					throw new IllegalArgumentException(String.format("Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
-				}
-
-				usedInfo.setInstance(ret);
-				usedInfo.setPopulated(true);
-				populateObject(ret);
-			}
-
-			return ret;
 		} else {
 			return (T) knownInstances.get(clazz).getInstance();
 		}
+	}
+
+	/**
+	 * Will try to create a new object for the given type, while maintaining a track record of already created - and - populated objects to
+	 * avoid recursive loops.
+	 * <p>
+	 * Will first try to defer dummy object creation to a bound {@link DummyFactory} and if found will defer dummy object creation to
+	 * {@link DummyFactory#createDummy(Map, ClassBindings, List).
+	 * 
+	 * @param knownInstances See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param classBindings See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param exceptions See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private T create(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+		T ret = null;
+
+		// first try possibly bound dummy factory
+		DummyFactory<T> factory = classBindings.find(clazz);
+		if (factory != null) {
+			ret = factory.createDummy(knownInstances, classBindings, exceptions);
+		}
+
+		// if null, we need to create it ourself
+		if (ret == null) {
+			ClassUsageInfo<T> usedInfo = new ClassUsageInfo<T>();
+			usedInfo.setInstance(ret);
+			knownInstances.put(clazz, usedInfo);
+
+			// is the class an enum?
+			if (clazz.isEnum()) {
+				return (T) new RandomEnumFactory<Enum>((Class<Enum>) clazz).createDummy(knownInstances, classBindings, exceptions);
+			}
+
+			// load the constructors
+			List<Constructor<?>> consts = constructorCache.getConstructorCache(clazz);
+			if (consts == null) {
+				consts = new ArrayList<Constructor<?>>();
+				Constructor<?>[] _con = clazz.getConstructors();
+				java.util.Arrays.sort(_con, new Comparator<Constructor<?>>() {
+					/**
+					 * Comparator to sort constructors by their number of parameters
+					 */
+					@Override
+					public int compare(Constructor<?> o1, Constructor<?> o2) {
+						int num_o1 = o1.getParameterTypes().length;
+						int num_o2 = o2.getParameterTypes().length;
+						return (num_o1 < num_o2) ? -1 : (num_o1 == num_o2) ? 0 : 1;
+					}
+				});
+				consts.addAll(Arrays.asList(_con));
+				constructorCache.add(clazz, consts.toArray(new Constructor<?>[] {}));
+			}
+
+			// check if we have a prefered Constructor and try it
+			Constructor<T> preferedConstructor = (Constructor<T>) constructorCache.getPreferedConstructor(clazz);
+			if (preferedConstructor != null) {
+				ret = new ConstructorBasedFactory<T>(preferedConstructor).createDummy(knownInstances, classBindings, exceptions);
+			}
+
+			if (ret == null) {
+				for (Constructor<?> co : consts) {
+					ret = new ConstructorBasedFactory<T>((Constructor<T>) co).createDummy(knownInstances, classBindings, exceptions);
+					if (ret != null) {
+						constructorCache.setPreferedConstructor(clazz, co);
+						break;
+					}
+
+				}
+			}
+
+			if (ret != null) {
+				usedInfo.setInstance(ret);
+				usedInfo.setPopulated(true);
+				populateObject(ret, knownInstances, classBindings, exceptions);
+			}
+		}
+
+		return ret;
 	}
 
 	/**
@@ -181,43 +189,55 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * 
 	 * @param subject The object to populate with dummy values.
 	 * @param knownInstances A list of known instances to keep track of already processed classes (to avoid infinite loop)
+	 * @param exceptions Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for arrays, collections
+	 *            and maps.
 	 * @see #create(Class, Map)
 	 */
 	@SuppressWarnings({ "unchecked" })
-	private void populateObject(final T subject) {
+	private void populateObject(final T subject, Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		final Class<?> clazz = subject.getClass();
 
 		if (subject instanceof Collection) {
 			for (int i = 0; i < RandomCreator.getRandomInt(2) + 2; i++) {
 				// detect generic declarations
 				Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
+
+				final ClassBasedFactory<?> factory;
 				if (genericTypes.length > 0 && (genericTypes[0] instanceof Class)) {
 					// uses generic type if available, Integer for '<T extends List<Integer>>'
-					((Collection<Object>) subject).add(create((Class<T>) genericTypes[0]));
+					factory = new ClassBasedFactory<T>((Class<T>) genericTypes[0]);
 				} else {
 					// use default String value for raw type Collection
-					((Collection<Object>) subject).add(create((Class<T>) String.class));
+					factory = new ClassBasedFactory<String>(String.class);
 				}
+				((Collection<Object>) subject).add(factory.createDummy(knownInstances, classBindings, exceptions));
 			}
 		} else if (subject instanceof Map) {
 			for (int i = 0; i < RandomCreator.getRandomInt(2) + 2; i++) {
 				// detect generic declarations
 				Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
+
+				final ClassBasedFactory<?> factory1;
+				final ClassBasedFactory<?> factory2;
 				if (genericTypes.length > 0 && (genericTypes[0] instanceof Class) && (genericTypes[1] instanceof Class)) {
 					// uses generic type if available, String and Integer for '<T extends Map<String, Double>>'
-					((Map<Object, Object>) subject).put(create((Class<T>) genericTypes[0]), create((Class<T>) genericTypes[1]));
+					factory1 = new ClassBasedFactory<T>((Class<T>) genericTypes[0]);
+					factory2 = new ClassBasedFactory<T>((Class<T>) genericTypes[1]);
 				} else {
 					// use default String and String value for raw type Collection
-					((Map<Object, Object>) subject).put(create((Class<T>) String.class), create((Class<T>) String.class));
+					factory1 = new ClassBasedFactory<String>(String.class);
+					factory2 = new ClassBasedFactory<String>(String.class);
 				}
+				((Map<Object, Object>) subject).put(factory1.createDummy(knownInstances, classBindings, exceptions), factory2.createDummy(knownInstances, classBindings, exceptions));
 			}
 		} else {
 			List<Method> setter = discoverSetters(clazz);
 
 			Object parameter = null;
 			for (Method m : setter) {
-				// Load the parameter to pass to this method
-				parameter = create((Class<T>) m.getParameterTypes()[0]);
+				// load the parameter to pass to this method
+				ClassBasedFactory<T> factory = new ClassBasedFactory<T>((Class<T>) m.getParameterTypes()[0]);
+				parameter = factory.createDummy(knownInstances, classBindings, exceptions);
 				try {
 					m.invoke(subject, parameter);
 				} catch (Exception e) {

@@ -1,8 +1,10 @@
 package org.dummycreator.dummyfactories;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dummycreator.ClassBindings;
+import org.dummycreator.ClassUsageInfo;
 import org.dummycreator.RandomCreator;
 
 /**
@@ -16,9 +18,24 @@ public class RandomPrimitiveFactory<T> extends DummyFactory<T> {
 		this.clazz = clazz;
 	}
 
+	/**
+	 * @return Depending on requested type, will call the associated <code>RandomCreator.getRandomT()</code> method.
+	 * 
+	 * @param knownInstances Not used.
+	 * @param classBindings Not used.
+	 * @param exceptions Not used.
+	 * @see RandomCreator#getRandomInt()
+	 * @see RandomCreator#getRandomLong()
+	 * @see RandomCreator#getRandomFloat()
+	 * @see RandomCreator#getRandomBoolean()
+	 * @see RandomCreator#getRandomChar()
+	 * @see RandomCreator#getRandomByte()
+	 * @see RandomCreator#getRandomShort()
+	 * @see RandomCreator#getRandomDouble()
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public T createDummy(List<Exception> exceptions, ClassBindings classBindings) {
+	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		if (clazz == (java.lang.Integer.TYPE)) {
 			return (T) (Integer) RandomCreator.getRandomInt();
 		} else if (clazz == (java.lang.Long.TYPE)) {

@@ -1,8 +1,10 @@
 package org.dummycreator.dummyfactories;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dummycreator.ClassBindings;
+import org.dummycreator.ClassUsageInfo;
 import org.dummycreator.RandomCreator;
 
 /**
@@ -16,9 +18,15 @@ public class RandomEnumFactory<T extends Enum<?>> extends DummyFactory<T> {
 		this.clazz = clazz;
 	}
 
+	/**
+	 * @return A random enum from the list acquired by invoking {@link Class#getEnumConstants()} on the requested type.
+	 * @param knownInstances Not used.
+	 * @param classBindings Not used.
+	 * @param exceptions Not used.
+	 */
 	@Override
-	public T createDummy(List<Exception> exceptions, ClassBindings classBindings) {
-		T[] enums = clazz.getEnumConstants();
+	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+		final T[] enums = clazz.getEnumConstants();
 		return enums[RandomCreator.getRandomInt(enums.length - 1)];
 	}
 }
