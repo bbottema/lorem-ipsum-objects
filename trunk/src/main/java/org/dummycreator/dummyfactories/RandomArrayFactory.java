@@ -11,7 +11,7 @@ import org.dummycreator.RandomCreator;
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-public class RandomArrayFactory<T> extends DummyFactory<Array> {
+public class RandomArrayFactory<T> extends DummyFactory<T> {
 
 	private Class<T> clazz;
 
@@ -25,13 +25,14 @@ public class RandomArrayFactory<T> extends DummyFactory<Array> {
 	 * @param classBindings Not used, but passed on to {@link ClassBasedFactory#createDummy(Map, ClassBindings, List)}.
 	 * @param exceptions Not used, but passed on to {@link ClassBasedFactory#createDummy(Map, ClassBindings, List)}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public Array createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		int length = RandomCreator.getRandomInt(2) + 2;
-		Array dummyArray = (Array) Array.newInstance(clazz.getComponentType(), length);
+		Object dummyArray = Array.newInstance(clazz, length);
 		for (int i = 0; i < length; i++) {
 			Array.set(dummyArray, i, new ClassBasedFactory<T>(clazz).createDummy(knownInstances, classBindings, exceptions));
 		}
-		return dummyArray;
+		return (T) dummyArray;
 	}
 }

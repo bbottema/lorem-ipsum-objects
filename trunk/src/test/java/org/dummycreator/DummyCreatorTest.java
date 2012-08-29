@@ -65,6 +65,17 @@ public class DummyCreatorTest {
 	}
 
 	@Test
+	public void CheckArrayCreation() {
+		Integer[] integers = dummyCreator.create(new Integer[]{}.getClass());
+		assertNotNull(integers);
+		for (Integer i : integers) {
+			assertSame(Integer.class, i.getClass());
+		}
+		int[] ints = dummyCreator.create(new int[]{}.getClass());
+		assertNotNull(ints);
+	}
+
+	@Test
 	public void CheckStringCreation() {
 		String dummy = dummyCreator.create(String.class);
 		assertEquals(String.class, dummy.getClass());
