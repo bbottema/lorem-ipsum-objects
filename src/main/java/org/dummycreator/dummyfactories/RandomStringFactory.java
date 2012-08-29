@@ -3,7 +3,6 @@ package org.dummycreator.dummyfactories;
 import java.util.List;
 
 import org.dummycreator.ClassBindings;
-import org.dummycreator.DummyFactory;
 import org.dummycreator.RandomCreator;
 
 /**
@@ -12,7 +11,7 @@ import org.dummycreator.RandomCreator;
 public class RandomStringFactory extends DummyFactory<String> {
 
 	@Override
-	public String createDummy(List<Exception> constructorExceptions, ClassBindings classBindings) {
+	public String createDummy(List<Exception> exceptions, ClassBindings classBindings) {
 		return RandomCreator.getRandomString();
 	}
 }

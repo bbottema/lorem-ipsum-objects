@@ -3,7 +3,6 @@ package org.dummycreator.dummyfactories;
 import java.util.List;
 
 import org.dummycreator.ClassBindings;
-import org.dummycreator.DummyFactory;
 
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
@@ -26,7 +25,7 @@ public class FixedInstanceFactory<T> extends DummyFactory<T> {
 	}
 
 	@Override
-	public T createDummy(List<Exception> constructorExceptions, ClassBindings classBindings) {
+	public T createDummy(List<Exception> exceptions, ClassBindings classBindings) {
 		return instance;
 	}
 }

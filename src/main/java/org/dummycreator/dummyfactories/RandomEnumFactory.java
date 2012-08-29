@@ -3,7 +3,6 @@ package org.dummycreator.dummyfactories;
 import java.util.List;
 
 import org.dummycreator.ClassBindings;
-import org.dummycreator.DummyFactory;
 import org.dummycreator.RandomCreator;
 
 /**
@@ -18,7 +17,7 @@ public class RandomEnumFactory<T extends Enum<?>> extends DummyFactory<T> {
 	}
 
 	@Override
-	public T createDummy(List<Exception> constructorExceptions, ClassBindings classBindings) {
+	public T createDummy(List<Exception> exceptions, ClassBindings classBindings) {
 		T[] enums = clazz.getEnumConstants();
 		return enums[RandomCreator.getRandomInt(enums.length - 1)];
 	}

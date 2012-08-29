@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dummycreator.ClassBindings;
-import org.dummycreator.DummyFactory;
 
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
@@ -33,12 +32,12 @@ public class MethodBasedFactory<T> extends DummyFactory<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T createDummy(List<Exception> constructorExceptions, ClassBindings classBindings) {
+	public T createDummy(List<Exception> exceptions, ClassBindings classBindings) {
 		Method m = method;
 		Class<?>[] parameters = m.getParameterTypes();
 		final Object[] params = new Object[parameters.length];
 		for (int i = 0; i < params.length; i++) {
-			params[i] = new ClassBasedFactory<Object>((Class<Object>) parameters[i]).createDummy(constructorExceptions, classBindings);
+			params[i] = new ClassBasedFactory<Object>((Class<Object>) parameters[i]).createDummy(exceptions, classBindings);
 		}
 		try {
 			return (T) m.invoke(null, params);

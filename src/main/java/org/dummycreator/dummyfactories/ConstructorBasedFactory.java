@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.dummycreator.ClassBindings;
-import org.dummycreator.DummyFactory;
 
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
@@ -19,25 +18,25 @@ public class ConstructorBasedFactory<T> extends DummyFactory<T> {
 	}
 
 	@Override
-	public T createDummy(List<Exception> constructorExceptions, ClassBindings classbindings) {
+	public T createDummy(List<Exception> exceptions, ClassBindings classbindings) {
 		@SuppressWarnings("unchecked")
 		Class<T>[] parameters = (Class<T>[]) constructor.getParameterTypes();
 		try {
 			if (parameters.length > 0) {
 				final Object[] params = new Object[parameters.length];
 				for (int i = 0; i < params.length; i++) {
-					params[i] = new ClassBasedFactory<T>(parameters[i]).createDummy(constructorExceptions, classbindings);
+					params[i] = new ClassBasedFactory<T>(parameters[i]).createDummy(exceptions, classbindings);
 				}
 				return constructor.newInstance(params);
 			} else {
 				return constructor.newInstance();
 			}
 		} catch (InvocationTargetException e) {
-			constructorExceptions.add(e);
+			exceptions.add(e);
 		} catch (InstantiationException e) {
-			constructorExceptions.add(e);
+			exceptions.add(e);
 		} catch (IllegalAccessException e) {
-			constructorExceptions.add(e);
+			exceptions.add(e);
 		}
 		return null;
 	}

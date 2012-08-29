@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.dummycreator.dummyfactories.ClassBasedFactory;
 import org.dummycreator.dummyfactories.ConstructorBasedFactory;
+import org.dummycreator.dummyfactories.DummyFactory;
 import org.dummycreator.dummyfactories.MethodBasedFactory;
 import org.dummycreator.dummyfactories.RandomPrimitiveFactory;
 import org.dummycreator.dummyfactories.RandomStringFactory;
@@ -81,8 +82,9 @@ public class ClassBindings {
 	 * This method returns a binding made for the given class. This binding might be of one of the following type: Constructor
 	 * Implementation of a Interface Method Object
 	 */
-	public Object find(final Class<?> _class) {
-		return bindings.get(_class);
+	@SuppressWarnings("unchecked")
+	public <T> DummyFactory<T> find(final Class<T> _class) {
+		return (DummyFactory<T>) bindings.get(_class);
 	}
 
 	/**

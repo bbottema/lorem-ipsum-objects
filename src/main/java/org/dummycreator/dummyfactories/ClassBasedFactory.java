@@ -21,7 +21,6 @@ import org.codemonkey.javareflection.FieldWrapper;
 import org.dummycreator.ReflectionCache;
 import org.dummycreator.ClassBindings;
 import org.dummycreator.ClassUsageInfo;
-import org.dummycreator.DummyFactory;
 import org.dummycreator.RandomCreator;
 
 /**
@@ -62,7 +61,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	}
 
 	@Override
-	public T createDummy(List<Exception> constructorExceptions, ClassBindings classBindings) {
+	public T createDummy(List<Exception> exceptions, ClassBindings classBindings) {
 		this.classBindings = classBindings;
 		return create(clazz);
 	}
@@ -70,6 +69,9 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	/**
 	 * Will try to create a new object for the given type, while maintaining a track record of already created - and - populated objects to
 	 * avoid recursive loops.
+	 * <p>
+	 * Will first try to defer dummy object creation to a bound {@link DummyFactory} and if found will defer dummy object creation to
+	 * {@link DummyFactory#createDummy(List, ClassBindings)}.
 	 * 
 	 * @param clazz The type that should be created
 	 * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
@@ -78,23 +80,30 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private T create(final Class<T> clazz) {
-		// List of Classes, we already used for population. by remembering, we can avoid recursive looping
+		// list of Classes, we already used for population. by remembering, we can avoid recursive looping
 		if (knownInstances.get(clazz) == null || !knownInstances.get(clazz).isPopulated()) {
-			// try to defer instantiation to a binding, if available
-			List<Exception> constructorExceptions = new ArrayList<Exception>();
-			T ret = deferCreationToClassBinding(clazz, constructorExceptions);
+			// first, try to defer instantiation to a bound dummy factory, if available
+			List<Exception> exceptions = new ArrayList<Exception>();
+
+			T ret = null;
+
+			// first try possibly bound dummy factory
+			DummyFactory<T> factory = classBindings.find(clazz);
+			if (factory != null) {
+				ret = factory.createDummy(exceptions, classBindings);
+			}
 
 			if (ret == null) {
 				ClassUsageInfo<T> usedInfo = new ClassUsageInfo<T>();
 				usedInfo.setInstance(ret);
 				knownInstances.put(clazz, usedInfo);
 
-				// Is the class an enum?
+				// is the class an enum?
 				if (clazz.isEnum()) {
-					return (T) new RandomEnumFactory<Enum>((Class<Enum>) clazz).createDummy(constructorExceptions, classBindings);
+					return (T) new RandomEnumFactory<Enum>((Class<Enum>) clazz).createDummy(exceptions, classBindings);
 				}
 
-				// Load the constructors
+				// load the constructors
 				List<Constructor<?>> consts = constructorCache.getConstructorCache(clazz);
 				if (consts == null) {
 					consts = new ArrayList<Constructor<?>>();
@@ -114,15 +123,15 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 					constructorCache.add(clazz, consts.toArray(new Constructor<?>[] {}));
 				}
 
-				// Check if we have a prefered Constructor and try it
+				// check if we have a prefered Constructor and try it
 				Constructor<T> preferedConstructor = (Constructor<T>) constructorCache.getPreferedConstructor(clazz);
 				if (preferedConstructor != null) {
-					ret = new ConstructorBasedFactory<T>(preferedConstructor).createDummy(constructorExceptions, classBindings);
+					ret = new ConstructorBasedFactory<T>(preferedConstructor).createDummy(exceptions, classBindings);
 				}
 
 				if (ret == null) {
 					for (Constructor<?> co : consts) {
-						ret = new ConstructorBasedFactory<T>((Constructor<T>) co).createDummy(constructorExceptions, classBindings);
+						ret = new ConstructorBasedFactory<T>((Constructor<T>) co).createDummy(exceptions, classBindings);
 						if (ret != null) {
 							constructorCache.setPreferedConstructor(clazz, co);
 							// Worked
@@ -133,11 +142,12 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 				}
 
 				if (ret == null) {
-					for (Exception e : constructorExceptions) {
-						logger.error("tried but failed to use constructor: ", e);
+					logger.error("tried but failed to product dummy object...");
+					logger.error("errors logged:");
+					for (Exception e : exceptions) {
+						logger.error(e.getMessage(), e);
 					}
-					throw new IllegalArgumentException(String.format(
-							"Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
+					throw new IllegalArgumentException(String.format("Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
 				}
 
 				usedInfo.setInstance(ret);
@@ -148,22 +158,6 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 			return ret;
 		} else {
 			return (T) knownInstances.get(clazz).getInstance();
-		}
-	}
-
-	@SuppressWarnings({ "unchecked" })
-	private T deferCreationToClassBinding(final Class<T> clazz, List<Exception> constructorExceptions) {
-		Object bind = classBindings.find(clazz);
-		if (bind != null) {
-			if (bind instanceof DummyFactory<?>) {
-				return (T) ((DummyFactory<?>) bind).createDummy(constructorExceptions, classBindings);
-			} else if (bind.getClass() == Class.class) {
-				return create((Class<T>) bind);
-			} else {
-				return (T) bind;
-			}
-		} else {
-			return null;
 		}
 	}
 
@@ -237,8 +231,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 		List<Method> setters = constructorCache.getMethodCache(clazz);
 		if (setters == null) {
 			setters = new ArrayList<Method>();
-			Map<Class<?>, List<FieldWrapper>> fields = FieldUtils.collectFields(clazz, Object.class, EnumSet.allOf(Visibility.class),
-					EnumSet.of(BeanRestriction.YES_SETTER));
+			Map<Class<?>, List<FieldWrapper>> fields = FieldUtils.collectFields(clazz, Object.class, EnumSet.allOf(Visibility.class), EnumSet.of(BeanRestriction.YES_SETTER));
 			for (List<FieldWrapper> fieldWrappers : fields.values()) {
 				for (FieldWrapper fieldWrapper : fieldWrappers) {
 					setters.add(fieldWrapper.getSetter());
