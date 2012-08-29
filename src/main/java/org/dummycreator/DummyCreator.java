@@ -66,6 +66,6 @@ public class DummyCreator {
 	 *             provided {@link ClassBindings}.
 	 */
 	public <T> T create(final Class<T> clazz) {
-		return new ClassBasedFactory<T>(clazz).createDummy(null, classBindings);
+		return new ClassBasedFactory<T>(clazz).createDummy(classBindings);
 	}
 }

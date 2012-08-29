@@ -1,8 +1,10 @@
 package org.dummycreator.dummyfactories;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dummycreator.ClassBindings;
+import org.dummycreator.ClassUsageInfo;
 
 /**
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
@@ -24,8 +26,14 @@ public class FixedInstanceFactory<T> extends DummyFactory<T> {
 		}
 	}
 
+	/**
+	 * @return The instance that was passed into {@link #FixedInstanceFactory(Object)}.
+	 * @param knownInstances Not used.
+	 * @param classBindings Not used.
+	 * @param exceptions Not used.
+	 */
 	@Override
-	public T createDummy(List<Exception> exceptions, ClassBindings classBindings) {
+	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		return instance;
 	}
 }
