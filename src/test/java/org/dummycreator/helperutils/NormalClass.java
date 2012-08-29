@@ -5,6 +5,8 @@ public class NormalClass {
 	private int id;
 	private PrimitiveClass primitiveClass;
 
+	private Boolean someBoolean;
+
 	/**
 	 * Get the value of id
 	 * 
@@ -39,5 +41,13 @@ public class NormalClass {
 	 */
 	public void setPrimitiveClass(PrimitiveClass primitiveClass) {
 		this.primitiveClass = primitiveClass;
+	}
+
+	public Boolean getSomeBoolean() {
+		return someBoolean;
+	}
+
+	public void setSomeBoolean(Boolean someBoolean) {
+		this.someBoolean = someBoolean;
 	}
 }

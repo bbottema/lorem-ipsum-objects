@@ -145,7 +145,7 @@ public class PrimitiveClass {
 	 * 
 	 * @return the value of bool
 	 */
-	public boolean isBool() {
+	public boolean is_boolean() {
 		return _boolean;
 	}
 
@@ -154,7 +154,7 @@ public class PrimitiveClass {
 	 * 
 	 * @param bool new value of bool
 	 */
-	public void setBool(boolean bool) {
+	public void set_boolean(boolean bool) {
 		this._boolean = bool;
 	}
 
@@ -179,12 +179,11 @@ public class PrimitiveClass {
 	public PrimitiveClass() {
 	}
 
-	public double getSecondDouble() {
+	public double get_secondDouble() {
 		return _secondDouble;
 	}
 
-	public void setSecondDouble(double _secondDouble) {
+	public void set_secondDouble(double _secondDouble) {
 		this._secondDouble = _secondDouble;
 	}
-
 }
