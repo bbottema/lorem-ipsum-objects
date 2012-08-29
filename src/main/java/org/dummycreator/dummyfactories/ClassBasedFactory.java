@@ -110,6 +110,10 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 		if (factory != null) {
 			ret = factory.createDummy(knownInstances, classBindings, exceptions);
 		}
+		
+		if (ret == null && clazz.isArray()) {
+			ret = new RandomArrayFactory<T>((Class<T>) clazz.getComponentType()).createDummy(knownInstances, classBindings, exceptions);
+		}
 
 		// if null, we need to create it ourself
 		if (ret == null) {

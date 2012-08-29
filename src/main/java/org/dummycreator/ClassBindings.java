@@ -14,7 +14,6 @@
  */
 package org.dummycreator;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import org.dummycreator.dummyfactories.ClassBasedFactory;
 import org.dummycreator.dummyfactories.ConstructorBasedFactory;
 import org.dummycreator.dummyfactories.DummyFactory;
 import org.dummycreator.dummyfactories.MethodBasedFactory;
-import org.dummycreator.dummyfactories.RandomArrayFactory;
 import org.dummycreator.dummyfactories.RandomBooleanFactory;
 import org.dummycreator.dummyfactories.RandomPrimitiveFactory;
 import org.dummycreator.dummyfactories.RandomStringFactory;
@@ -70,7 +68,6 @@ public class ClassBindings {
 		add(Byte.TYPE, new RandomPrimitiveFactory<Byte>(Byte.TYPE));
 		add(Short.TYPE, new RandomPrimitiveFactory<Short>(Short.TYPE));
 		add(Double.TYPE, new RandomPrimitiveFactory<Double>(Double.TYPE));
-		add(Array.class, new RandomArrayFactory<Array>(Array.class));
 		add(String.class, new RandomStringFactory());
 		add(Boolean.class, new RandomBooleanFactory());
 	}
