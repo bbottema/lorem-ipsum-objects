@@ -1,9 +1,9 @@
 package org.dummycreator;
 
 /**
- * Stores an Java object <em>instance</em> and keeps track of whether the instance has been populated with dummy values.
+ * Stores a <em>object</em> and keeps track of whether the instance has been populated with dummy values.
  * <p>
- * Used by the {@link DummyCreator} to avoid a recursive loop when populating an object that has a field of its own type (or contains a
+ * Used by {@link DummyCreator} to avoid a recursive loop when populating an object that has a field of its own type (or contains a
  * chain that returns to its own type).
  * 
  * @param <T> The type of the instance stored.

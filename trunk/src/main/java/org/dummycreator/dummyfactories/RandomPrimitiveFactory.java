@@ -3,7 +3,6 @@ package org.dummycreator.dummyfactories;
 import java.util.List;
 
 import org.dummycreator.ClassBindings;
-import org.dummycreator.DummyFactory;
 import org.dummycreator.RandomCreator;
 
 /**
@@ -19,7 +18,7 @@ public class RandomPrimitiveFactory<T> extends DummyFactory<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T createDummy(List<Exception> constructorExceptions, ClassBindings classBindings) {
+	public T createDummy(List<Exception> exceptions, ClassBindings classBindings) {
 		if (clazz == (java.lang.Integer.TYPE)) {
 			return (T) (Integer) RandomCreator.getRandomInt();
 		} else if (clazz == (java.lang.Long.TYPE)) {
