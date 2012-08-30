@@ -25,13 +25,13 @@ public class RandomArrayFactory<T> extends DummyFactory<T> {
 	 * @param classBindings Not used, but passed on to {@link ClassBasedFactory#createDummy(Map, ClassBindings, List)}.
 	 * @param exceptions Not used, but passed on to {@link ClassBasedFactory#createDummy(Map, ClassBindings, List)}.
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
-		int length = RandomCreator.getRandomInt(2) + 2;
-		Object dummyArray = Array.newInstance(clazz, length);
+		int length = RandomCreator.getInstance().getRandomInt(2) + 2;
+		Object dummyArray = Array.newInstance(clazz.getComponentType(), length);
 		for (int i = 0; i < length; i++) {
-			Array.set(dummyArray, i, new ClassBasedFactory<T>(clazz).createDummy(knownInstances, classBindings, exceptions));
+			Array.set(dummyArray, i, new ClassBasedFactory(clazz.getComponentType()).createDummy(knownInstances, classBindings, exceptions));
 		}
 		return (T) dummyArray;
 	}

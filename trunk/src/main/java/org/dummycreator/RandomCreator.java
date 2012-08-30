@@ -24,16 +24,15 @@ import de.svenjacobs.loremipsum.LoremIpsum;
  * @author Alexander Muthmann <amuthmann@dev-eth0.de> (original author)
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
-public final class RandomCreator {
+public class RandomCreator {
 
-	private static final Random r = new Random();
-	private static final LoremIpsum loremIpsum = new LoremIpsum();
+	// we're using an instance here, so we can mock this instance in our junit tests
+	private static RandomCreator instance = new RandomCreator();
 
-	private RandomCreator() {
-		// utility class, can't instantiate
-	};
+	private final Random r = new Random();
+	private final LoremIpsum loremIpsum = new LoremIpsum();
 
-	public static String getRandomString() {
+	public String getRandomString() {
 		String gibberish = "";
 		for (int i = 0; i <= r.nextInt(3); i++) {
 			gibberish += (gibberish.length() != 0 ? " " : "") + loremIpsum.getWords(1, r.nextInt(50));
@@ -41,45 +40,53 @@ public final class RandomCreator {
 		return gibberish.replaceAll("\\s", "_").replaceAll("[\\.\\,]", "");
 	}
 
-	public static boolean getRandomBoolean() {
+	public boolean getRandomBoolean() {
 		return r.nextBoolean();
 	}
 
-	public static int getRandomInt() {
+	public int getRandomInt() {
 		return r.nextInt();
 	}
 
-	public static char getRandomChar() {
+	public char getRandomChar() {
 		return (char) r.nextInt();
 	}
 
-	public static byte getRandomByte() {
+	public byte getRandomByte() {
 		return (byte) r.nextInt();
 	}
 
-	public static long getRandomLong() {
+	public long getRandomLong() {
 		return r.nextLong();
 	}
 
 	/**
 	 * @return A float value between 00.00 and 100.00
 	 */
-	public static float getRandomFloat() {
+	public float getRandomFloat() {
 		return r.nextInt(100) + ((float) Math.round(r.nextFloat() * 100) / 100);
 	}
 
 	/**
 	 * @return A double value between 00.00 and 100.00
 	 */
-	public static double getRandomDouble() {
+	public double getRandomDouble() {
 		return r.nextInt(100) + ((double) Math.round(r.nextDouble() * 100) / 100);
 	}
 
-	public static short getRandomShort() {
+	public short getRandomShort() {
 		return (short) r.nextInt();
 	}
 
-	public static int getRandomInt(int max) {
+	public int getRandomInt(int max) {
 		return r.nextInt(max);
+	}
+
+	public static void setInstance(RandomCreator instance) {
+		RandomCreator.instance = instance;
+	}
+
+	public static RandomCreator getInstance() {
+		return instance;
 	}
 }

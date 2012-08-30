@@ -16,6 +16,7 @@ import org.dummycreator.ClassUsageInfo;
  * @author Benny Bottema <b.bottema@projectnibble.org> (further developed project)
  */
 public abstract class DummyFactory<T> {
+
 	/**
 	 * Default implementation returns true. Should be used when a factory knows beforehand when it will be unable to produce an instance of
 	 * the requested type.

@@ -49,21 +49,21 @@ public class RandomPrimitiveFactory<T> extends DummyFactory<T> {
 	@SuppressWarnings("unchecked")
 	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		if (clazz == (java.lang.Integer.TYPE)) {
-			return (T) (Integer) RandomCreator.getRandomInt();
+			return (T) (Integer) RandomCreator.getInstance().getRandomInt();
 		} else if (clazz == (java.lang.Long.TYPE)) {
-			return (T) (Long) RandomCreator.getRandomLong();
+			return (T) (Long) RandomCreator.getInstance().getRandomLong();
 		} else if (clazz == (java.lang.Float.TYPE)) {
-			return (T) (Float) RandomCreator.getRandomFloat();
+			return (T) (Float) RandomCreator.getInstance().getRandomFloat();
 		} else if (clazz == (java.lang.Boolean.TYPE)) {
-			return (T) (Boolean) RandomCreator.getRandomBoolean();
+			return (T) (Boolean) RandomCreator.getInstance().getRandomBoolean();
 		} else if (clazz == (java.lang.Character.TYPE)) {
-			return (T) (Character) RandomCreator.getRandomChar();
+			return (T) (Character) RandomCreator.getInstance().getRandomChar();
 		} else if (clazz == (java.lang.Byte.TYPE)) {
-			return (T) (Byte) RandomCreator.getRandomByte();
+			return (T) (Byte) RandomCreator.getInstance().getRandomByte();
 		} else if (clazz == (java.lang.Short.TYPE)) {
-			return (T) (Short) RandomCreator.getRandomShort();
+			return (T) (Short) RandomCreator.getInstance().getRandomShort();
 		} else if (clazz == (java.lang.Double.TYPE)) {
-			return (T) (Double) RandomCreator.getRandomDouble();
+			return (T) (Double) RandomCreator.getInstance().getRandomDouble();
 		}
 		return null;
 	}
