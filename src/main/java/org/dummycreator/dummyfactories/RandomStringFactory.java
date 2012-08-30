@@ -21,6 +21,6 @@ public class RandomStringFactory extends DummyFactory<String> {
 	 */
 	@Override
 	public String createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
-		return RandomCreator.getRandomString();
+		return RandomCreator.getInstance().getRandomString();
 	}
 }

@@ -24,6 +24,6 @@ public class RandomBooleanFactory extends DummyFactory<Boolean> {
 	 */
 	@Override
 	public Boolean createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
-		return RandomCreator.getRandomBoolean();
+		return RandomCreator.getInstance().getRandomBoolean();
 	}
 }

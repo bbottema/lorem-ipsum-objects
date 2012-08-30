@@ -89,7 +89,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 		}
 	}
 
-	/**
+/**
 	 * Will try to create a new object for the given type, while maintaining a track record of already created - and - populated objects to
 	 * avoid recursive loops.
 	 * <p>
@@ -110,16 +110,19 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 		if (factory != null) {
 			ret = factory.createDummy(knownInstances, classBindings, exceptions);
 		}
-		
+
 		if (ret == null && clazz.isArray()) {
-			ret = new RandomArrayFactory<T>((Class<T>) clazz.getComponentType()).createDummy(knownInstances, classBindings, exceptions);
+			ret = new RandomArrayFactory<T>((Class<T>) clazz).createDummy(knownInstances, classBindings, exceptions);
 		}
 
 		// if null, we need to create it ourself
 		if (ret == null) {
 			ClassUsageInfo<T> usedInfo = new ClassUsageInfo<T>();
 			usedInfo.setInstance(ret);
-			knownInstances.put(clazz, usedInfo);
+
+			if (!knownLoopSafeType(clazz)) {
+				knownInstances.put(clazz, usedInfo);
+			}
 
 			// is the class an enum?
 			if (clazz.isEnum()) {
@@ -127,11 +130,11 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 			}
 
 			// load the constructors
-			List<Constructor<?>> consts = constructorCache.getConstructorCache(clazz);
-			if (consts == null) {
-				consts = new ArrayList<Constructor<?>>();
-				Constructor<?>[] _con = clazz.getConstructors();
-				java.util.Arrays.sort(_con, new Comparator<Constructor<?>>() {
+			List<Constructor<?>> cachedConstructors = constructorCache.getConstructorCache(clazz);
+			if (cachedConstructors == null) {
+				cachedConstructors = new ArrayList<Constructor<?>>();
+				Constructor<?>[] foundConstructors = clazz.getConstructors();
+				java.util.Arrays.sort(foundConstructors, new Comparator<Constructor<?>>() {
 					/**
 					 * Comparator to sort constructors by their number of parameters
 					 */
@@ -142,8 +145,8 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 						return (num_o1 < num_o2) ? -1 : (num_o1 == num_o2) ? 0 : 1;
 					}
 				});
-				consts.addAll(Arrays.asList(_con));
-				constructorCache.add(clazz, consts.toArray(new Constructor<?>[] {}));
+				cachedConstructors.addAll(Arrays.asList(foundConstructors));
+				constructorCache.add(clazz, cachedConstructors.toArray(new Constructor<?>[] {}));
 			}
 
 			// check if we have a prefered Constructor and try it
@@ -153,7 +156,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 			}
 
 			if (ret == null) {
-				for (Constructor<?> co : consts) {
+				for (Constructor<?> co : cachedConstructors) {
 					ret = new ConstructorBasedFactory<T>((Constructor<T>) co).createDummy(knownInstances, classBindings, exceptions);
 					if (ret != null) {
 						constructorCache.setPreferedConstructor(clazz, co);
@@ -171,6 +174,31 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 		}
 
 		return ret;
+	}
+
+	/**
+	 * Determines whether the given <code>Class</code> represents a known loop-safe type. A loop-safe type is a type that does not refer to
+	 * itself or contains a method or constructor (that DummyCreator would invoke) that refers to itself.
+	 * <p>
+	 * This mechanism ensures that <code>Number</code> instances for example don't get locked down to a single known instance. Without this
+	 * mechanism, an <code>Integer</code> would be cached and reused for all fields Dummy Creator would encounter. By marking
+	 * <code>Integer.class</code> as loop-safe, a new Integer will be created each time a dummy should be created.
+	 * 
+	 * @param The type to check for loop-safety.
+	 * @return Whether the given type is known not to cause an infinite recursive loop.
+	 */
+	private boolean knownLoopSafeType(Class<T> clazz) {
+		final List<Class<?>> safeClasses = new ArrayList<Class<?>>();
+		safeClasses.add(Integer.class);
+		safeClasses.add(Long.class);
+		safeClasses.add(Float.class);
+		safeClasses.add(Boolean.class);
+		safeClasses.add(Character.class);
+		safeClasses.add(Byte.class);
+		safeClasses.add(Short.class);
+		safeClasses.add(Double.class);
+		safeClasses.add(String.class);
+		return safeClasses.contains(clazz);
 	}
 
 	/**
@@ -202,7 +230,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 		final Class<?> clazz = subject.getClass();
 
 		if (subject instanceof Collection) {
-			for (int i = 0; i < RandomCreator.getRandomInt(2) + 2; i++) {
+			for (int i = 0; i < RandomCreator.getInstance().getRandomInt(2) + 2; i++) {
 				// detect generic declarations
 				Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
 
@@ -217,7 +245,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 				((Collection<Object>) subject).add(factory.createDummy(knownInstances, classBindings, exceptions));
 			}
 		} else if (subject instanceof Map) {
-			for (int i = 0; i < RandomCreator.getRandomInt(2) + 2; i++) {
+			for (int i = 0; i < RandomCreator.getInstance().getRandomInt(2) + 2; i++) {
 				// detect generic declarations
 				Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
 

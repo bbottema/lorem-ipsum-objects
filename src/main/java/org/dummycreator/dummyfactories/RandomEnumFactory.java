@@ -27,6 +27,6 @@ public class RandomEnumFactory<T extends Enum<?>> extends DummyFactory<T> {
 	@Override
 	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		final T[] enums = clazz.getEnumConstants();
-		return enums[RandomCreator.getRandomInt(enums.length - 1)];
+		return enums[RandomCreator.getInstance().getRandomInt(enums.length - 1)];
 	}
 }
