@@ -4,13 +4,14 @@ http://code.google.com/p/dummycreator/
 RELEASE NOTES Dummy Creator
 
 
-v1.2
+v1.2 (unreleased)
 
-- Improved logging in case of failure
-- Fixed bug where Booleans were always generated 'false'
+- fixed bug where Booleans were always generated 'false'
+- fixed bug where all numbers would end up with the same values
+- improved logging in case of failure
+- improved array generation
 - Overhauled dummy generation apporach by using the Factory pattern
 - added lots of javadoc
-- improved array generation
 
 
 v1.1
