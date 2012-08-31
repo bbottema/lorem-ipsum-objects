@@ -1,6 +1,6 @@
 package org.dummycreator.dummyfactories;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.dummycreator.RandomCreator;
 import org.easymock.EasyMock;
