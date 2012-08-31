@@ -197,12 +197,14 @@ public class DummyCreatorTest {
 			assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
 		} catch (IllegalArgumentException e) {
+			System.out.println(e);
 			// ok
 		}
 		try {
 			assertEquals(ArrayList.class, dummyCreator.create(AbstractList.class).getClass());
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
 		} catch (IllegalArgumentException e) {
+			System.out.println(e);
 			// ok
 		}
 	}

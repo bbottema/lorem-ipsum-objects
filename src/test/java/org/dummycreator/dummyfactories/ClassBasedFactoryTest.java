@@ -201,12 +201,14 @@ public class ClassBasedFactoryTest {
 			assertEquals(ArrayList.class, new ClassBasedFactory<List>(List.class).createDummy(new ClassBindings()).getClass());
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
 		} catch (IllegalArgumentException e) {
+			System.out.println(e);
 			// ok
 		}
 		try {
 			assertEquals(ArrayList.class, new ClassBasedFactory<AbstractList>(AbstractList.class).createDummy(new ClassBindings()).getClass());
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
 		} catch (IllegalArgumentException e) {
+			System.out.println(e);
 			// ok
 		}
 	}

@@ -77,10 +77,12 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 			if (ret != null) {
 				return ret;
 			} else {
-				logger.error("tried but failed to product dummy object...");
-				logger.error("errors logged:");
-				for (Exception e : exceptions) {
-					logger.error(e.getMessage(), e);
+				logger.error("tried but failed to produce dummy object...");
+				if (!exceptions.isEmpty()) {
+					logger.error("errors logged:");
+					for (Exception e : exceptions) {
+						logger.error(e.getMessage(), e);
+					}
 				}
 				throw new IllegalArgumentException(String.format("Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
 			}
