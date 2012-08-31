@@ -2,6 +2,7 @@ package org.dummycreator.dummyfactories;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +30,14 @@ public class ConstructorBasedFactory<T> extends DummyFactory<T> {
 	 *            parameters for the <code>Constructor</code>.
 	 */
 	@Override
-	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classbindings, List<Exception> exceptions) {
+	public T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classbindings, List<Exception> exceptions) {
 		@SuppressWarnings("unchecked")
 		Class<T>[] parameters = (Class<T>[]) constructor.getParameterTypes();
 		try {
 			if (parameters.length > 0) {
 				final Object[] params = new Object[parameters.length];
 				for (int i = 0; i < params.length; i++) {
-					params[i] = new ClassBasedFactory<T>(parameters[i]).createDummy(knownInstances, classbindings, exceptions);
+					params[i] = new ClassBasedFactory<T>(parameters[i]).createDummy(genericMetaData, knownInstances, classbindings, exceptions);
 				}
 				return constructor.newInstance(params);
 			} else {

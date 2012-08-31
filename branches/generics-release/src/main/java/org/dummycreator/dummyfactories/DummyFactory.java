@@ -1,6 +1,7 @@
 package org.dummycreator.dummyfactories;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,7 @@ public abstract class DummyFactory<T> {
 	 * @return See {@link #createDummy(Map, ClassBindings, List)}.
 	 */
 	public final T createDummy(ClassBindings classBindings) {
-		return createDummy(new HashMap<Class<?>, ClassUsageInfo<?>>(), classBindings, new ArrayList<Exception>());
+		return createDummy(null, new HashMap<String, ClassUsageInfo<?>>(), classBindings, new ArrayList<Exception>());
 	}
 
 	/**
@@ -44,6 +45,7 @@ public abstract class DummyFactory<T> {
 	 * If there are known exceptions (reflection exceptions when invoking a {@link Constructor} for example), don't throw them, but record
 	 * them in the given <code>exceptions</code> list. Not all failures are counted towards complete failures.
 	 * 
+	 * @param Can be <code>null</code>. Should be non-null when requested type is a {@link List} or {@link Map}.
 	 * @param knownInstances A list of previously created and populated objects for a specific type.
 	 * @param classBindings A list of bindings to which a factory may defer dummy creation to.
 	 * @param exceptions A list in which to store exceptions so they can be logged at some later point. This is done so, because not all
@@ -51,5 +53,5 @@ public abstract class DummyFactory<T> {
 	 *            suitable constructor can be found otherwise).
 	 * @return A new instance of the given type.
 	 */
-	public abstract T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions);
+	public abstract T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions);
 }

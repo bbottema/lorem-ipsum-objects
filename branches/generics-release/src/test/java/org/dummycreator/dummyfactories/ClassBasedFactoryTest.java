@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +22,12 @@ import org.dummycreator.helperutils.LoopClass;
 import org.dummycreator.helperutils.MultiConstructorClass;
 import org.dummycreator.helperutils.MyCustomTestClass;
 import org.dummycreator.helperutils.MyCustomTestClassList;
+import org.dummycreator.helperutils.NestedListClass.NestedDoubleListClass;
+import org.dummycreator.helperutils.NestedListClass.NestedQuadrupleListClass;
+import org.dummycreator.helperutils.NestedListClass.NestedSingleListClass;
+import org.dummycreator.helperutils.NestedListClass.NestedTripleListClass;
+import org.dummycreator.helperutils.NestedMapClass.NestedDoubleMapClass;
+import org.dummycreator.helperutils.NestedMapClass.NestedSingleMapClass;
 import org.dummycreator.helperutils.NormalClass;
 import org.dummycreator.helperutils.PrimitiveClass;
 import org.dummycreator.helperutils.TestChainBinding.B;
@@ -238,15 +246,96 @@ public class ClassBasedFactoryTest {
 	}
 
 	/**
-	 * Tests whether a <code>List</code> of <code>Integer</code> will be produced correctly.
+	 * Tests whether a <code>List</code> of <code>Integer</code> will be produced correctly. The Result should contain strings, because the
+	 * generic meta data is not available in runtime.
 	 */
 	@Test
 	public void testList() {
 		List<Integer> numbers = new ArrayList<Integer>();
 		@SuppressWarnings("unchecked")
-		List<Integer> ec = new ClassBasedFactory<List<Integer>>((Class<List<Integer>>) numbers.getClass()).createDummy(classBindings);
+		ClassBasedFactory<List<Integer>> factory = new ClassBasedFactory<List<Integer>>((Class<List<Integer>>) numbers.getClass());
+		List<Integer> ec = factory.createDummy(classBindings);
 		assertNotNull(ec);
-		//assertSame(Integer.class, ec.get(0).getClass());
+		assertSame(String.class, ((Object) ec.get(0)).getClass());
+	}
+
+	/**
+	 * Tests whether a nested <code>List</code> of <code>Double</code> will be produced correctly (generics should be preserved). Includes
+	 * testing nested list of lists up to 4 deep.
+	 */
+	@Test
+	public void testNestedGenericList() {
+		// single nested list
+		ClassBasedFactory<NestedSingleListClass> factorySingle = new ClassBasedFactory<NestedSingleListClass>(NestedSingleListClass.class);
+		NestedSingleListClass dummySingle = factorySingle.createDummy(classBindings);
+		assertSame(ArrayList.class, dummySingle.getNumbers().getClass());
+		assertSame(Double.class, dummySingle.getNumbers().get(0).getClass());
+
+		// double nested list
+		ClassBasedFactory<NestedDoubleListClass> factoryDouble = new ClassBasedFactory<NestedDoubleListClass>(NestedDoubleListClass.class);
+		NestedDoubleListClass dummyDouble = factoryDouble.createDummy(classBindings);
+		assertSame(ArrayList.class, dummyDouble.getListsOfNumbers().get(0).getClass());
+		assertSame(Double.class, dummyDouble.getListsOfNumbers().get(0).get(0).getClass());
+
+		// triple nested list
+		ClassBasedFactory<NestedTripleListClass> factoryTriple = new ClassBasedFactory<NestedTripleListClass>(NestedTripleListClass.class);
+		NestedTripleListClass dummyTriple = factoryTriple.createDummy(classBindings);
+		assertSame(ArrayList.class, dummyTriple.getListsOflistsOfNumbers().get(0).getClass());
+		assertSame(ArrayList.class, dummyTriple.getListsOflistsOfNumbers().get(0).get(0).getClass());
+		assertSame(Double.class, dummyTriple.getListsOflistsOfNumbers().get(0).get(0).get(0).getClass());
+
+		// quadruple nested list
+		ClassBasedFactory<NestedQuadrupleListClass> factoryQuadruple = new ClassBasedFactory<NestedQuadrupleListClass>(NestedQuadrupleListClass.class);
+		NestedQuadrupleListClass dummyQuadruple = factoryQuadruple.createDummy(classBindings);
+		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).getClass());
+		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).getClass());
+		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).get(0).getClass());
+		assertSame(LoopClass.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).get(0).get(0).getClass());
+	}
+
+	/**
+	 * Tests whether a nested <code>Map</code> will be produced correctly (generics should be preserved). Includes
+	 * testing nested maps up to 2 deep.
+	 */
+	@Test
+	public void testNestedGenericMap() {
+		// single nested list
+		ClassBasedFactory<NestedSingleMapClass> factorySingle = new ClassBasedFactory<NestedSingleMapClass>(NestedSingleMapClass.class);
+		NestedSingleMapClass dummySingle = factorySingle.createDummy(classBindings);
+		assertSame(HashMap.class, dummySingle.getNumbers().getClass());
+		Entry<Double, LoopClass> firstEntrySingleMap = dummySingle.getNumbers().entrySet().iterator().next();
+		assertSame(Double.class, firstEntrySingleMap.getKey().getClass());
+		assertSame(LoopClass.class, firstEntrySingleMap.getValue().getClass());
+
+		// double nested list
+		ClassBasedFactory<NestedDoubleMapClass> factoryDouble = new ClassBasedFactory<NestedDoubleMapClass>(NestedDoubleMapClass.class);
+		NestedDoubleMapClass dummyDouble = factoryDouble.createDummy(classBindings);
+		assertSame(HashMap.class, dummyDouble.getMapsOfNumbers().getClass());
+		Entry<Map<Integer, NestedDoubleMapClass>, Map<Double, LoopClass>> firstEntry = dummyDouble.getMapsOfNumbers().entrySet().iterator().next();
+		
+		assertSame(HashMap.class, firstEntry.getKey());
+		assertSame(HashMap.class, firstEntry.getValue());
+		
+		Entry<Integer, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
+		Entry<Double, LoopClass> nestedValueMap = firstEntry.getValue().entrySet().iterator().next();
+		
+		assertSame(Integer.class, nestedKeyMap.getKey());
+		assertSame(NestedDoubleMapClass.class, nestedKeyMap.getValue());
+		assertSame(Double.class, nestedValueMap.getKey());
+		assertSame(LoopClass.class, nestedValueMap.getValue());
+	}
+
+	@Test
+	public void testCreateTypeMarker() throws SecurityException, NoSuchFieldException {
+		Field fieldSingle = NestedSingleListClass.class.getField("numbers");
+		Field fieldDouble = NestedDoubleListClass.class.getField("listsOfNumbers");
+		Field fieldTriple = NestedTripleListClass.class.getField("listsOflistsOfNumbers");
+		String markerSingle = ClassBasedFactory.createTypeMarker(fieldSingle.getType(), new Type[] { fieldSingle.getGenericType() });
+		String markerDouble = ClassBasedFactory.createTypeMarker(fieldDouble.getType(), new Type[] { fieldDouble.getGenericType() });
+		String markerTriple = ClassBasedFactory.createTypeMarker(fieldTriple.getType(), new Type[] { fieldTriple.getGenericType() });
+		assertEquals("java.util.List|java.util.List|java.lang.Double", markerSingle);
+		assertEquals("java.util.List|java.util.List|java.util.List|java.lang.Double", markerDouble);
+		assertEquals("java.util.List|java.util.List|java.util.List|java.util.List|java.lang.Double", markerTriple);
 	}
 
 	/**
@@ -263,7 +352,8 @@ public class ClassBasedFactoryTest {
 	}
 
 	/**
-	 * Tests whether a <code>Map<Integer, String></code> will be produced correctly.
+	 * Tests whether a <code>Map<Integer, String></code> will be produced correctly. The Result should contain strings for keys and values,
+	 * because the generic meta data is not available in runtime.
 	 */
 	@Test
 	public void testMap() {
@@ -272,9 +362,9 @@ public class ClassBasedFactoryTest {
 		ClassBasedFactory<Map<Integer, Double>> factory = new ClassBasedFactory<Map<Integer, Double>>((Class<Map<Integer, Double>>) numbers.getClass());
 		Map<Integer, Double> ec = factory.createDummy(classBindings);
 		assertNotNull(ec);
-		//Entry<Integer, Double> firstItem = ec.entrySet().iterator().next();
-		//assertSame(Integer.class, firstItem.getKey().getClass());
-		//assertSame(Double.class, firstItem.getValue().getClass());
+		Entry<Integer, Double> firstItem = ec.entrySet().iterator().next();
+		assertSame(String.class, ((Object) firstItem.getKey()).getClass());
+		assertSame(String.class, ((Object) firstItem.getValue()).getClass());
 	}
 
 	/**

@@ -236,14 +236,16 @@ public class DummyCreatorTest {
 	}
 
 	/**
-	 * Tests whether a <code>List</code> of <code>Integer</code> will be produced correctly.
+	 * Tests whether a <code>List</code> of <code>Integer</code> will be produced correctly. The Result should contain strings, because the
+	 * generic meta data is not available in runtime.
 	 */
 	@Test
 	public void testList() {
 		List<Integer> numbers = new ArrayList<Integer>();
-		List<?> ec = dummyCreator.create(numbers.getClass());
+		@SuppressWarnings("unchecked")
+		List<Integer> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
-		//assertSame(Integer.class, ec.get(0).getClass());
+		assertSame(String.class, ((Object) ec.get(0)).getClass());
 	}
 
 	/**
@@ -258,7 +260,8 @@ public class DummyCreatorTest {
 	}
 
 	/**
-	 * Tests whether a <code>Map<Integer, String></code> will be produced correctly.
+	 * Tests whether a <code>Map<Integer, String></code> will be produced correctly. The Result should contain strings for keys and values,
+	 * because the generic meta data is not available in runtime.
 	 */
 	@Test
 	public void testMap() {
@@ -266,9 +269,9 @@ public class DummyCreatorTest {
 		@SuppressWarnings("unchecked")
 		Map<Integer, Double> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
-		//Entry<Integer, Double> firstItem = ec.entrySet().iterator().next();
-		//assertSame(Integer.class, firstItem.getKey().getClass());
-		//assertSame(Double.class, firstItem.getValue().getClass());
+		Entry<Integer, Double> firstItem = ec.entrySet().iterator().next();
+		assertSame(String.class, ((Object) firstItem.getKey()).getClass());
+		assertSame(String.class, ((Object) firstItem.getValue()).getClass());
 	}
 
 	/**
