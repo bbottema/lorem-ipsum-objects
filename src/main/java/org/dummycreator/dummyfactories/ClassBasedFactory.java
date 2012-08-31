@@ -229,8 +229,6 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 */
 	@SuppressWarnings({ "unchecked" })
 	private void populateObject(final T subject, Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
-		final Class<?> clazz = subject.getClass();
-
 		if (subject instanceof Collection) {
 			for (int i = 0; i < RandomCreator.getInstance().getRandomInt(2) + 2; i++) {
 				// detect generic declarations
@@ -265,13 +263,10 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 				((Map<Object, Object>) subject).put(factory1.createDummy(knownInstances, classBindings, exceptions), factory2.createDummy(knownInstances, classBindings, exceptions));
 			}
 		} else {
-			List<Method> setter = discoverSetters(clazz);
-
-			Object parameter = null;
-			for (Method m : setter) {
+			for (Method m : discoverSetters(subject.getClass())) {
 				// load the parameter to pass to this method
 				ClassBasedFactory<T> factory = new ClassBasedFactory<T>((Class<T>) m.getParameterTypes()[0]);
-				parameter = factory.createDummy(knownInstances, classBindings, exceptions);
+				Object parameter = factory.createDummy(knownInstances, classBindings, exceptions);
 				try {
 					m.invoke(subject, parameter);
 				} catch (Exception e) {
