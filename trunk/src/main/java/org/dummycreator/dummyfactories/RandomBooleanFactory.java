@@ -16,7 +16,7 @@ import org.dummycreator.RandomCreator;
 public class RandomBooleanFactory extends DummyFactory<Boolean> {
 
 	/**
-	 * @return The result of {@link RandomCreator#getRandomString()}.
+	 * @return The result of {@link RandomCreator#getRandomBoolean()}.
 	 * 
 	 * @param knownInstances Not used.
 	 * @param classBindings Not used.
