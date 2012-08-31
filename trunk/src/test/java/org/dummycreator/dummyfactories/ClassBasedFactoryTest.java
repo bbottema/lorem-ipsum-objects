@@ -40,19 +40,19 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void CheckObjectBindings() throws Exception {
+	public void testObjectBindings() throws Exception {
 		assertEquals(Long.MAX_VALUE, new ClassBasedFactory<Long>(Long.class).createDummy(classBindings), 0);
 		assertEquals(Double.MIN_VALUE, new ClassBasedFactory<Double>(Double.class).createDummy(classBindings), 0);
 	}
 
 	@Test
-	public void CheckConstructorBindings() throws Exception {
+	public void testConstructorBindings() throws Exception {
 		assertEquals(Integer.class, new ClassBasedFactory<Integer>(Integer.class).createDummy(classBindings).getClass());
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void CheckInterfaceBindings() throws Exception {
+	public void testInterfaceBindings() throws Exception {
 		assertEquals(ArrayList.class, new ClassBasedFactory<List>(List.class).createDummy(classBindings).getClass());
 
 		ClassBindings classBindings = new ClassBindings();
@@ -62,7 +62,7 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void CheckArrayCreation() {
+	public void testArrayCreation() {
 		@SuppressWarnings("unchecked")
 		Integer[] integers = new ClassBasedFactory<Integer[]>((Class<Integer[]>) new Integer[]{}.getClass()).createDummy(classBindings);
 		assertNotNull(integers);
@@ -75,20 +75,20 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void CheckStringCreation() {
+	public void testStringCreation() {
 		String dummy = new ClassBasedFactory<String>(String.class).createDummy(classBindings);
 		assertEquals(String.class, dummy.getClass());
 	}
 
 	@Test
-	public void CheckSimpleObjectCreation() {
+	public void testSimpleObjectCreation() {
 		assertEquals(Byte.class, new ClassBasedFactory<Byte>(Byte.class).createDummy(classBindings).getClass());
 		assertEquals(Long.class, new ClassBasedFactory<Long>(Long.class).createDummy(classBindings).getClass());
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void CheckObjectBinding() {
+	public void testObjectBinding() {
 		ClassBindings classBindings = new ClassBindings();
 		LinkedList<Object> list = new LinkedList<Object>();
 		classBindings.add(List.class, new FixedInstanceFactory<List>(list));
@@ -98,7 +98,7 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void CheckDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
+	public void testDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
 		ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ConstructorBasedFactory<C>(C.class.getConstructor(int.class)));
 		B dummy = new ClassBasedFactory<B>(B.class).createDummy(classBindings);
@@ -106,7 +106,7 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void CheckDeferredSubTypeBinding() throws SecurityException, NoSuchMethodException {
+	public void testDeferredSubTypeBinding() throws SecurityException, NoSuchMethodException {
 		ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ClassBasedFactory<C>(C.class));
 		B dummy = new ClassBasedFactory<B>(B.class).createDummy(classBindings);
@@ -114,7 +114,7 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void CheckPrimitiveClassCreation() {
+	public void testPrimitiveClassCreation() {
 		PrimitiveClass primitive = new ClassBasedFactory<PrimitiveClass>(PrimitiveClass.class).createDummy(classBindings);
 		InheritedPrimitiveClass inheritedPrimitive = new ClassBasedFactory<InheritedPrimitiveClass>(InheritedPrimitiveClass.class).createDummy(classBindings);
 		assertEquals(PrimitiveClass.class, primitive.getClass());
@@ -123,24 +123,24 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void CheckNormalClassCreation() {
+	public void testNormalClassCreation() {
 		assertEquals(NormalClass.class, new ClassBasedFactory<NormalClass>(NormalClass.class).createDummy(classBindings).getClass());
 		// TODO Check if all parameters have been set
 	}
 
 	@Test
-	public void CheckLoopClassCreation() {
+	public void testLoopClassCreation() {
 		assertEquals(LoopClass.class, new ClassBasedFactory<LoopClass>(LoopClass.class).createDummy(classBindings).getClass());
 	}
 
 	@Test
-	public void CheckMultiConstructorClassCreation() {
+	public void testMultiConstructorClassCreation() {
 		MultiConstructorClass dummy = new ClassBasedFactory<MultiConstructorClass>(MultiConstructorClass.class).createDummy(classBindings);
 		assertEquals(MultiConstructorClass.class, dummy.getClass());
 	}
 
 	@Test
-	public void CheckEnumClassCreation() {
+	public void testEnumClassCreation() {
 		EnumClass ec = new ClassBasedFactory<EnumClass>(EnumClass.class).createDummy(classBindings);
 		assertNotNull(ec.getEnumTester());
 		assertNotNull(ec.getInternalEnum());
@@ -151,7 +151,7 @@ public class ClassBasedFactoryTest {
 	};
 
 	@Test
-	public void checkGenericMap() {
+	public void testGenericMap() {
 		Map<Integer, String> numberStringMap = new NumberStringMap();
 		@SuppressWarnings("unchecked")
 		Map<Integer, String> ec = new ClassBasedFactory<Map<Integer, String>>((Class<Map<Integer, String>>) numberStringMap.getClass()).createDummy(classBindings);
@@ -163,7 +163,7 @@ public class ClassBasedFactoryTest {
 	};
 
 	@Test
-	public void checkGenericList() {
+	public void testGenericList() {
 		List<Integer> numbers = new NumberStringList();
 		@SuppressWarnings("unchecked")
 		List<Integer> ec = new ClassBasedFactory<List<Integer>>((Class<List<Integer>>) numbers.getClass()).createDummy(classBindings);
@@ -171,7 +171,7 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void checkList() {
+	public void testList() {
 		List<Integer> numbers = new ArrayList<Integer>();
 		@SuppressWarnings("unchecked")
 		List<Integer> ec = new ClassBasedFactory<List<Integer>>((Class<List<Integer>>) numbers.getClass()).createDummy(classBindings);
@@ -179,7 +179,7 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void checkMooooList() {
+	public void testMyCustomTestClassList() {
 		List<MyCustomTestClass> numbers = new MyCustomTestClassList();
 		@SuppressWarnings("unchecked")
 		List<MyCustomTestClass> ec = new ClassBasedFactory<List<MyCustomTestClass>>((Class<List<MyCustomTestClass>>) numbers.getClass()).createDummy(classBindings);
@@ -187,7 +187,7 @@ public class ClassBasedFactoryTest {
 	}
 
 	@Test
-	public void checkMap() {
+	public void testMap() {
 		Map<Integer, String> numbers = new HashMap<Integer, String>();
 		@SuppressWarnings("unchecked")
 		Map<Integer, String> ec = new ClassBasedFactory<Map<Integer, String>>((Class<Map<Integer, String>>) numbers.getClass()).createDummy(classBindings);
@@ -196,7 +196,7 @@ public class ClassBasedFactoryTest {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void CheckInterfaceBindingErrors() throws Exception {
+	public void testInterfaceBindingErrors() throws Exception {
 		try {
 			assertEquals(ArrayList.class, new ClassBasedFactory<List>(List.class).createDummy(new ClassBindings()).getClass());
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
