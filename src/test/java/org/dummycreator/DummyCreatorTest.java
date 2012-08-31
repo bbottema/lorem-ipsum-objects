@@ -42,19 +42,19 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckObjectBindings() throws Exception {
+	public void testObjectBindings() throws Exception {
 		assertEquals(Long.MAX_VALUE, dummyCreator.create(Long.class), 0);
 		assertEquals(Double.MIN_VALUE, dummyCreator.create(Double.class), 0);
 	}
 
 	@Test
-	public void CheckConstructorBindings() throws Exception {
+	public void testConstructorBindings() throws Exception {
 		assertEquals(Integer.class, dummyCreator.create(Integer.class).getClass());
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void CheckInterfaceBindings() throws Exception {
+	public void testInterfaceBindings() throws Exception {
 		assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
 
 		ClassBindings classBindings = new ClassBindings();
@@ -65,7 +65,7 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckArrayCreation() {
+	public void testArrayCreation() {
 		Integer[] integers = dummyCreator.create(new Integer[]{}.getClass());
 		assertNotNull(integers);
 		for (Integer i : integers) {
@@ -76,20 +76,20 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckStringCreation() {
+	public void testStringCreation() {
 		String dummy = dummyCreator.create(String.class);
 		assertEquals(String.class, dummy.getClass());
 	}
 
 	@Test
-	public void CheckSimpleObjectCreation() {
+	public void testSimpleObjectCreation() {
 		assertEquals(Byte.class, dummyCreator.create(Byte.class).getClass());
 		assertEquals(Long.class, dummyCreator.create(Long.class).getClass());
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void CheckObjectBinding() {
+	public void testObjectBinding() {
 		ClassBindings classBindings = new ClassBindings();
 		LinkedList<Object> list = new LinkedList<Object>();
 		classBindings.add(List.class, new FixedInstanceFactory<List>(list));
@@ -100,7 +100,7 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
+	public void testDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
 		ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ConstructorBasedFactory<C>(C.class.getConstructor(int.class)));
 		DummyCreator dummyCreator = new DummyCreator(classBindings);
@@ -109,7 +109,7 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckDeferredSubTypeBinding() throws SecurityException, NoSuchMethodException {
+	public void testDeferredSubTypeBinding() throws SecurityException, NoSuchMethodException {
 		ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ClassBasedFactory<C>(C.class));
 		DummyCreator dummyCreator = new DummyCreator(classBindings);
@@ -118,30 +118,30 @@ public class DummyCreatorTest {
 	}
 
 	@Test
-	public void CheckPrimitiveClassCreation() {
+	public void testPrimitiveClassCreation() {
 		assertEquals(PrimitiveClass.class, dummyCreator.create(PrimitiveClass.class).getClass());
 		assertEquals(InheritedPrimitiveClass.class, dummyCreator.create(InheritedPrimitiveClass.class).getClass());
 		// TODO Check if all parameters have been set
 	}
 
 	@Test
-	public void CheckNormalClassCreation() {
+	public void testNormalClassCreation() {
 		assertEquals(NormalClass.class, dummyCreator.create(NormalClass.class).getClass());
 		// TODO Check if all parameters have been set
 	}
 
 	@Test
-	public void CheckLoopClassCreation() {
+	public void testLoopClassCreation() {
 		assertEquals(LoopClass.class, dummyCreator.create(LoopClass.class).getClass());
 	}
 
 	@Test
-	public void CheckMultiConstructorClassCreation() {
+	public void testMultiConstructorClassCreation() {
 		assertEquals(MultiConstructorClass.class, dummyCreator.create(MultiConstructorClass.class).getClass());
 	}
 
 	@Test
-	public void CheckEnumClassCreation() {
+	public void testEnumClassCreation() {
 		EnumClass ec = dummyCreator.create(EnumClass.class);
 		assertNotNull(ec.getEnumTester());
 		assertNotNull(ec.getInternalEnum());
@@ -152,7 +152,7 @@ public class DummyCreatorTest {
 	};
 
 	@Test
-	public void checkGenericMap() {
+	public void testGenericMap() {
 		Map<Integer, String> numberStringMap = new NumberStringMap();
 		Map<?, ?> ec = dummyCreator.create(numberStringMap.getClass());
 		assertNotNull(ec);
@@ -163,35 +163,35 @@ public class DummyCreatorTest {
 	};
 
 	@Test
-	public void checkGenericList() {
+	public void testGenericList() {
 		List<Integer> numbers = new NumberStringList();
 		List<?> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
 	}
 
 	@Test
-	public void checkList() {
+	public void testList() {
 		List<Integer> numbers = new ArrayList<Integer>();
 		List<?> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
 	}
 
 	@Test
-	public void checkMooooList() {
+	public void testMyCustomTestClassList() {
 		List<MyCustomTestClass> numbers = new MyCustomTestClassList();
 		List<?> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
 	}
 
 	@Test
-	public void checkMap() {
+	public void testMap() {
 		Map<Integer, String> numbers = new HashMap<Integer, String>();
 		Map<?, ?> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
 	}
 
 	@Test
-	public void CheckInterfaceBindingErrors() throws Exception {
+	public void testInterfaceBindingErrors() throws Exception {
 		dummyCreator = new DummyCreator();
 		try {
 			assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
