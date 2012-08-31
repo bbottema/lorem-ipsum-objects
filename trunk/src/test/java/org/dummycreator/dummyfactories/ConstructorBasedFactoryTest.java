@@ -12,8 +12,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Tests for {@link ConstructorBasedFactory}
+ */
 public class ConstructorBasedFactoryTest {
-	
+
 	private RandomCreator mock;
 
 	@Before
@@ -27,37 +30,45 @@ public class ConstructorBasedFactoryTest {
 		RandomCreator.setInstance(new RandomCreator());
 	};
 
+	/**
+	 * Test for {@link ConstructorBasedFactory#createDummy(java.util.Map, ClassBindings, java.util.List)}. Tests if
+	 * <code>new Integer(12345)</code> is invoked correctly.
+	 */
 	@Test
 	public void testCreateDummyInteger() throws SecurityException, NoSuchMethodException {
 		Constructor<Integer> constructor = Integer.class.getConstructor(int.class);
 		ConstructorBasedFactory<Integer> factory = new ConstructorBasedFactory<Integer>(constructor);
-		
+
 		EasyMock.expect(mock.getRandomInt()).andReturn(12345);
 		EasyMock.replay(mock);
-		
+
 		Integer dummy = factory.createDummy(new ClassBindings());
-		
+
 		assertNotNull(dummy.getClass());
 		assertEquals(Integer.class, dummy.getClass());
 		assertEquals(Integer.valueOf(12345), dummy);
-		
+
 		EasyMock.verify(mock);
 	}
 
+	/**
+	 * Test for {@link ConstructorBasedFactory#createDummy(java.util.Map, ClassBindings, java.util.List)}. Tests if
+	 * <code>new Integer("98765")</code> is invoked correctly.
+	 */
 	@Test
 	public void testCreateDummyString() throws SecurityException, NoSuchMethodException {
 		Constructor<Integer> constructor = Integer.class.getConstructor(String.class);
 		ConstructorBasedFactory<Integer> factory = new ConstructorBasedFactory<Integer>(constructor);
-		
+
 		EasyMock.expect(mock.getRandomString()).andReturn("98765");
 		EasyMock.replay(mock);
-		
+
 		Integer dummy = factory.createDummy(new ClassBindings());
-		
+
 		assertNotNull(dummy.getClass());
 		assertEquals(Integer.class, dummy.getClass());
 		assertEquals(Integer.valueOf(98765), dummy);
-		
+
 		EasyMock.verify(mock);
 	}
 }

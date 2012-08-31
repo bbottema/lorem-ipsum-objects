@@ -10,6 +10,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Tests for {@link FixedInstanceFactory}
+ */
 public class RandomPrimitiveFactoryTest {
 
 	private RandomCreator mock;
@@ -25,6 +28,9 @@ public class RandomPrimitiveFactoryTest {
 		RandomCreator.setInstance(new RandomCreator());
 	};
 
+	/**
+	 * Test for {@link RandomPrimitiveFactory#createDummy(java.util.Map, org.dummycreator.ClassBindings, java.util.List)}.
+	 */
 	@Test
 	public void testCreateDummy() {
 		EasyMock.expect(mock.getRandomInt()).andReturn(5);
@@ -41,6 +47,9 @@ public class RandomPrimitiveFactoryTest {
 		EasyMock.verify(mock);
 	}
 
+	/**
+	 * Test for {@link RandomPrimitiveFactory#isValidForType(Class)}.
+	 */
 	@Test
 	public void testIsValidForType() {
 		assertTrue(new RandomPrimitiveFactory<Integer>(int.class).isValidForType(int.class));

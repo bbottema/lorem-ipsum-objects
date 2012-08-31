@@ -8,8 +8,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Tests for {@link RandomBooleanFactory}
+ */
 public class RandomBooleanFactoryTest {
-	
+
 	private RandomCreator mock;
 
 	@Before
@@ -23,6 +26,9 @@ public class RandomBooleanFactoryTest {
 		RandomCreator.setInstance(new RandomCreator());
 	};
 
+	/**
+	 * Test for {@link RandomBooleanFactory#createDummy(java.util.Map, org.dummycreator.ClassBindings, java.util.List)}.
+	 */
 	@Test
 	public void test() {
 		EasyMock.expect(mock.getRandomBoolean()).andReturn(true);
@@ -30,12 +36,12 @@ public class RandomBooleanFactoryTest {
 		EasyMock.expect(mock.getRandomBoolean()).andReturn(false);
 		EasyMock.expect(mock.getRandomBoolean()).andReturn(false);
 		EasyMock.replay(mock);
-		
+
 		assertEquals(true, new RandomBooleanFactory().createDummy(null));
 		assertEquals(true, new RandomBooleanFactory().createDummy(null));
 		assertEquals(false, new RandomBooleanFactory().createDummy(null));
 		assertEquals(false, new RandomBooleanFactory().createDummy(null));
-		
+
 		EasyMock.verify(mock);
 	}
 }
