@@ -87,7 +87,7 @@ public class ClassBasedFactoryTest {
 	public void testInterfaceBindings()
 			throws Exception {
 		assertEquals(ArrayList.class, new ClassBasedFactory<List>(List.class).createDummy(classBindings).getClass());
-		ClassBindings classBindings = new ClassBindings();
+		final ClassBindings classBindings = new ClassBindings();
 		classBindings.add(List.class, new ClassBasedFactory<ArrayList>(ArrayList.class));
 		classBindings.add(List.class, new ClassBasedFactory<LinkedList>(LinkedList.class));
 		assertEquals(LinkedList.class, new ClassBasedFactory<List>(List.class).createDummy(classBindings).getClass());
@@ -99,13 +99,14 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testArrayCreation() {
 		@SuppressWarnings("unchecked")
-		Integer[] integers = new ClassBasedFactory<Integer[]>((Class<Integer[]>) new Integer[] {}.getClass()).createDummy(classBindings);
+		final Integer[] integers = new ClassBasedFactory<Integer[]>((Class<Integer[]>) new Integer[] {}.getClass())
+				.createDummy(classBindings);
 		assertNotNull(integers);
-		for (Integer i : integers) {
+		for (final Integer i : integers) {
 			assertSame(Integer.class, i.getClass());
 		}
 		@SuppressWarnings("unchecked")
-		int[] ints = new ClassBasedFactory<int[]>((Class<int[]>) new int[] {}.getClass()).createDummy(classBindings);
+		final int[] ints = new ClassBasedFactory<int[]>((Class<int[]>) new int[] {}.getClass()).createDummy(classBindings);
 		assertNotNull(ints);
 	}
 
@@ -114,7 +115,7 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testStringCreation() {
-		String dummy = new ClassBasedFactory<String>(String.class).createDummy(classBindings);
+		final String dummy = new ClassBasedFactory<String>(String.class).createDummy(classBindings);
 		assertEquals(String.class, dummy.getClass());
 	}
 
@@ -133,10 +134,10 @@ public class ClassBasedFactoryTest {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testObjectBinding() {
-		ClassBindings classBindings = new ClassBindings();
-		LinkedList<Object> list = new LinkedList<Object>();
+		final ClassBindings classBindings = new ClassBindings();
+		final LinkedList<Object> list = new LinkedList<Object>();
 		classBindings.add(List.class, new FixedInstanceFactory<List>(list));
-		List<?> dummy = new ClassBasedFactory<List>(List.class).createDummy(classBindings);
+		final List<?> dummy = new ClassBasedFactory<List>(List.class).createDummy(classBindings);
 		assertEquals(LinkedList.class, dummy.getClass());
 		assertSame(list, dummy);
 	}
@@ -147,9 +148,9 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testDeferredSubTypeConstructorBinding()
 			throws SecurityException, NoSuchMethodException {
-		ClassBindings classBindings = new ClassBindings();
+		final ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ConstructorBasedFactory<C>(C.class.getConstructor(int.class)));
-		B dummy = new ClassBasedFactory<B>(B.class).createDummy(classBindings);
+		final B dummy = new ClassBasedFactory<B>(B.class).createDummy(classBindings);
 		assertEquals(C.class, dummy.getClass());
 	}
 
@@ -160,9 +161,9 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testDeferredSubTypeBinding()
 			throws SecurityException, NoSuchMethodException {
-		ClassBindings classBindings = new ClassBindings();
+		final ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ClassBasedFactory<C>(C.class));
-		B dummy = new ClassBasedFactory<B>(B.class).createDummy(classBindings);
+		final B dummy = new ClassBasedFactory<B>(B.class).createDummy(classBindings);
 		assertEquals(C.class, dummy.getClass());
 	}
 
@@ -172,8 +173,8 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testPrimitiveClassCreation() {
-		PrimitiveClass primitive = new ClassBasedFactory<PrimitiveClass>(PrimitiveClass.class).createDummy(classBindings);
-		InheritedPrimitiveClass inheritedPrimitive = new ClassBasedFactory<InheritedPrimitiveClass>(InheritedPrimitiveClass.class)
+		final PrimitiveClass primitive = new ClassBasedFactory<PrimitiveClass>(PrimitiveClass.class).createDummy(classBindings);
+		final InheritedPrimitiveClass inheritedPrimitive = new ClassBasedFactory<InheritedPrimitiveClass>(InheritedPrimitiveClass.class)
 				.createDummy(classBindings);
 		assertEquals(PrimitiveClass.class, primitive.getClass());
 		assertEquals(InheritedPrimitiveClass.class, inheritedPrimitive.getClass());
@@ -195,7 +196,7 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testLoopClassCreation() {
-		LoopClass loopDummy = new ClassBasedFactory<LoopClass>(LoopClass.class).createDummy(classBindings);
+		final LoopClass loopDummy = new ClassBasedFactory<LoopClass>(LoopClass.class).createDummy(classBindings);
 		assertEquals(LoopClass.class, loopDummy.getClass());
 		assertSame(loopDummy, loopDummy.getLoopObject());
 	}
@@ -205,7 +206,8 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testMultiConstructorClassCreation() {
-		MultiConstructorClass dummy = new ClassBasedFactory<MultiConstructorClass>(MultiConstructorClass.class).createDummy(classBindings);
+		final MultiConstructorClass dummy = new ClassBasedFactory<MultiConstructorClass>(MultiConstructorClass.class)
+				.createDummy(classBindings);
 		assertEquals(MultiConstructorClass.class, dummy.getClass());
 		// TODO Check if all parameters have been set
 	}
@@ -215,7 +217,7 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testEnumClassCreation() {
-		EnumClass ec = new ClassBasedFactory<EnumClass>(EnumClass.class).createDummy(classBindings);
+		final EnumClass ec = new ClassBasedFactory<EnumClass>(EnumClass.class).createDummy(classBindings);
 		assertNotNull(ec.getEnumTester());
 		assertNotNull(ec.getInternalEnum());
 	}
@@ -229,13 +231,13 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testGenericMap() {
-		Map<Integer, String> numberStringMap = new NumberStringMap();
+		final Map<Integer, String> numberStringMap = new NumberStringMap();
 		@SuppressWarnings("unchecked")
-		ClassBasedFactory<Map<Integer, String>> factory = new ClassBasedFactory<Map<Integer, String>>(
+		final ClassBasedFactory<Map<Integer, String>> factory = new ClassBasedFactory<Map<Integer, String>>(
 				(Class<Map<Integer, String>>) numberStringMap.getClass());
-		Map<Integer, String> ec = factory.createDummy(classBindings);
+		final Map<Integer, String> ec = factory.createDummy(classBindings);
 		assertNotNull(ec);
-		Entry<Integer, String> firstItem = ec.entrySet().iterator().next();
+		final Entry<Integer, String> firstItem = ec.entrySet().iterator().next();
 		assertSame(Integer.class, firstItem.getKey().getClass());
 		assertSame(String.class, firstItem.getValue().getClass());
 	}
@@ -249,9 +251,9 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testGenericList() {
-		List<Integer> numbers = new NumberStringList();
+		final List<Integer> numbers = new NumberStringList();
 		@SuppressWarnings("unchecked")
-		List<Integer> ec = new ClassBasedFactory<List<Integer>>((Class<List<Integer>>) numbers.getClass()).createDummy(classBindings);
+		final List<Integer> ec = new ClassBasedFactory<List<Integer>>((Class<List<Integer>>) numbers.getClass()).createDummy(classBindings);
 		assertNotNull(ec);
 		assertSame(Integer.class, ec.get(0).getClass());
 	}
@@ -262,10 +264,10 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testList() {
-		List<Integer> numbers = new ArrayList<Integer>();
+		final List<Integer> numbers = new ArrayList<Integer>();
 		@SuppressWarnings("unchecked")
-		ClassBasedFactory<List<Integer>> factory = new ClassBasedFactory<List<Integer>>((Class<List<Integer>>) numbers.getClass());
-		List<Integer> ec = factory.createDummy(classBindings);
+		final ClassBasedFactory<List<Integer>> factory = new ClassBasedFactory<List<Integer>>((Class<List<Integer>>) numbers.getClass());
+		final List<Integer> ec = factory.createDummy(classBindings);
 		assertNotNull(ec);
 		assertSame(String.class, ((Object) ec.get(0)).getClass());
 	}
@@ -277,28 +279,31 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testNestedGenericList() {
 		// single nested list
-		ClassBasedFactory<NestedSingleListClass> factorySingle = new ClassBasedFactory<NestedSingleListClass>(NestedSingleListClass.class);
-		NestedSingleListClass dummySingle = factorySingle.createDummy(classBindings);
+		final ClassBasedFactory<NestedSingleListClass> factorySingle = new ClassBasedFactory<NestedSingleListClass>(
+				NestedSingleListClass.class);
+		final NestedSingleListClass dummySingle = factorySingle.createDummy(classBindings);
 		assertSame(ArrayList.class, dummySingle.getNumbers().getClass());
 		assertSame(Double.class, dummySingle.getNumbers().get(0).getClass());
 
 		// double nested list
-		ClassBasedFactory<NestedDoubleListClass> factoryDouble = new ClassBasedFactory<NestedDoubleListClass>(NestedDoubleListClass.class);
-		NestedDoubleListClass dummyDouble = factoryDouble.createDummy(classBindings);
+		final ClassBasedFactory<NestedDoubleListClass> factoryDouble = new ClassBasedFactory<NestedDoubleListClass>(
+				NestedDoubleListClass.class);
+		final NestedDoubleListClass dummyDouble = factoryDouble.createDummy(classBindings);
 		assertSame(ArrayList.class, dummyDouble.getListsOfNumbers().get(0).getClass());
 		assertSame(Double.class, dummyDouble.getListsOfNumbers().get(0).get(0).getClass());
 
 		// triple nested list
-		ClassBasedFactory<NestedTripleListClass> factoryTriple = new ClassBasedFactory<NestedTripleListClass>(NestedTripleListClass.class);
-		NestedTripleListClass dummyTriple = factoryTriple.createDummy(classBindings);
+		final ClassBasedFactory<NestedTripleListClass> factoryTriple = new ClassBasedFactory<NestedTripleListClass>(
+				NestedTripleListClass.class);
+		final NestedTripleListClass dummyTriple = factoryTriple.createDummy(classBindings);
 		assertSame(ArrayList.class, dummyTriple.getListsOflistsOfNumbers().get(0).getClass());
 		assertSame(ArrayList.class, dummyTriple.getListsOflistsOfNumbers().get(0).get(0).getClass());
 		assertSame(Double.class, dummyTriple.getListsOflistsOfNumbers().get(0).get(0).get(0).getClass());
 
 		// quadruple nested list
-		ClassBasedFactory<NestedQuadrupleListClass> factoryQuadruple = new ClassBasedFactory<NestedQuadrupleListClass>(
+		final ClassBasedFactory<NestedQuadrupleListClass> factoryQuadruple = new ClassBasedFactory<NestedQuadrupleListClass>(
 				NestedQuadrupleListClass.class);
-		NestedQuadrupleListClass dummyQuadruple = factoryQuadruple.createDummy(classBindings);
+		final NestedQuadrupleListClass dummyQuadruple = factoryQuadruple.createDummy(classBindings);
 		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).getClass());
 		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).getClass());
 		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).get(0).getClass());
@@ -311,10 +316,11 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testSingleNestedGenericMap() {
 		// single nested map
-		ClassBasedFactory<NestedSingleMapClass> factorySingle = new ClassBasedFactory<NestedSingleMapClass>(NestedSingleMapClass.class);
-		NestedSingleMapClass dummySingle = factorySingle.createDummy(classBindings);
+		final ClassBasedFactory<NestedSingleMapClass> factorySingle = new ClassBasedFactory<NestedSingleMapClass>(
+				NestedSingleMapClass.class);
+		final NestedSingleMapClass dummySingle = factorySingle.createDummy(classBindings);
 		assertSame(HashMap.class, dummySingle.getNumbers().getClass());
-		Entry<Double, LoopClass> firstEntrySingleMap = dummySingle.getNumbers().entrySet().iterator().next();
+		final Entry<Double, LoopClass> firstEntrySingleMap = dummySingle.getNumbers().entrySet().iterator().next();
 		assertSame(Double.class, firstEntrySingleMap.getKey().getClass());
 		assertSame(LoopClass.class, firstEntrySingleMap.getValue().getClass());
 	}
@@ -325,17 +331,18 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testDoubleNestedGenericMap() {
 		// double nested map
-		ClassBasedFactory<NestedDoubleMapClass> factoryDouble = new ClassBasedFactory<NestedDoubleMapClass>(NestedDoubleMapClass.class);
-		NestedDoubleMapClass dummyDouble = factoryDouble.createDummy(classBindings);
+		final ClassBasedFactory<NestedDoubleMapClass> factoryDouble = new ClassBasedFactory<NestedDoubleMapClass>(
+				NestedDoubleMapClass.class);
+		final NestedDoubleMapClass dummyDouble = factoryDouble.createDummy(classBindings);
 		assertSame(HashMap.class, dummyDouble.getMapsOfNumbers().getClass());
-		Entry<Map<Integer, NestedDoubleMapClass>, Map<Double, LoopClass>> firstEntry = dummyDouble.getMapsOfNumbers().entrySet().iterator()
-				.next();
+		final Entry<Map<Integer, NestedDoubleMapClass>, Map<Double, LoopClass>> firstEntry = dummyDouble.getMapsOfNumbers().entrySet()
+				.iterator().next();
 
 		assertSame(HashMap.class, firstEntry.getKey().getClass());
 		assertSame(HashMap.class, firstEntry.getValue().getClass());
 
-		Entry<Integer, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
-		Entry<Double, LoopClass> nestedValueMap = firstEntry.getValue().entrySet().iterator().next();
+		final Entry<Integer, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
+		final Entry<Double, LoopClass> nestedValueMap = firstEntry.getValue().entrySet().iterator().next();
 
 		assertSame(Integer.class, nestedKeyMap.getKey().getClass());
 		assertSame(NestedDoubleMapClass.class, nestedKeyMap.getValue().getClass());
@@ -350,16 +357,17 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testDoubleNestedAsymmetricGenericMap() {
 		// double nested map
-		ClassBasedFactory<NestedDoubleAssymetricMapClass> factoryDouble = new ClassBasedFactory<NestedDoubleAssymetricMapClass>(
+		final ClassBasedFactory<NestedDoubleAssymetricMapClass> factoryDouble = new ClassBasedFactory<NestedDoubleAssymetricMapClass>(
 				NestedDoubleAssymetricMapClass.class);
-		NestedDoubleAssymetricMapClass dummyDouble = factoryDouble.createDummy(classBindings);
+		final NestedDoubleAssymetricMapClass dummyDouble = factoryDouble.createDummy(classBindings);
 		assertSame(HashMap.class, dummyDouble.getMapsOfCharacters().getClass());
-		Entry<Map<Integer, NestedDoubleMapClass>, Character> firstEntry = dummyDouble.getMapsOfCharacters().entrySet().iterator().next();
+		final Entry<Map<Integer, NestedDoubleMapClass>, Character> firstEntry = dummyDouble.getMapsOfCharacters().entrySet().iterator()
+				.next();
 
 		assertSame(HashMap.class, firstEntry.getKey().getClass());
 		assertSame(Character.class, firstEntry.getValue().getClass());
 
-		Entry<Integer, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
+		final Entry<Integer, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
 
 		assertSame(Integer.class, nestedKeyMap.getKey().getClass());
 		assertSame(NestedDoubleMapClass.class, nestedKeyMap.getValue().getClass());
@@ -372,16 +380,17 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testDoubleNestedGenericMapsAndLists() {
 		// double nested map
-		ClassBasedFactory<NestedEverythingClass> factoryDouble = new ClassBasedFactory<NestedEverythingClass>(NestedEverythingClass.class);
-		NestedEverythingClass dummyDouble = factoryDouble.createDummy(classBindings);
+		final ClassBasedFactory<NestedEverythingClass> factoryDouble = new ClassBasedFactory<NestedEverythingClass>(
+				NestedEverythingClass.class);
+		final NestedEverythingClass dummyDouble = factoryDouble.createDummy(classBindings);
 		assertSame(HashMap.class, dummyDouble.getMapsOfLists().getClass());
-		Entry<Map<List<List<String>>, NestedDoubleMapClass>, List<Byte>> firstEntry = dummyDouble.getMapsOfLists().entrySet().iterator()
-				.next();
+		final Entry<Map<List<List<String>>, NestedDoubleMapClass>, List<Byte>> firstEntry = dummyDouble.getMapsOfLists().entrySet()
+				.iterator().next();
 
 		assertSame(HashMap.class, firstEntry.getKey().getClass());
 		assertSame(ArrayList.class, firstEntry.getValue().getClass());
 
-		Entry<List<List<String>>, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
+		final Entry<List<List<String>>, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
 
 		assertSame(NestedDoubleMapClass.class, nestedKeyMap.getValue().getClass());
 		assertSame(Byte.class, firstEntry.getValue().get(0).getClass());
@@ -396,25 +405,26 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testTripleNestedGenericMap() {
 		// triple nested map
-		ClassBasedFactory<NestedTripleMapClass> factoryTriple = new ClassBasedFactory<NestedTripleMapClass>(NestedTripleMapClass.class);
-		NestedTripleMapClass dummyTriple = factoryTriple.createDummy(classBindings);
+		final ClassBasedFactory<NestedTripleMapClass> factoryTriple = new ClassBasedFactory<NestedTripleMapClass>(
+				NestedTripleMapClass.class);
+		final NestedTripleMapClass dummyTriple = factoryTriple.createDummy(classBindings);
 		assertSame(HashMap.class, dummyTriple.getMapsOfMapsOfNumbers().getClass());
-		Entry<Map<Integer, Map<Double, LoopClass>>, Map<Double, Map<Double, LoopClass>>> firstEntryTriple = dummyTriple
+		final Entry<Map<Integer, Map<Double, LoopClass>>, Map<Double, Map<Double, LoopClass>>> firstEntryTriple = dummyTriple
 				.getMapsOfMapsOfNumbers().entrySet().iterator().next();
 
 		assertSame(HashMap.class, firstEntryTriple.getKey().getClass());
 		assertSame(HashMap.class, firstEntryTriple.getValue().getClass());
 
-		Entry<Integer, Map<Double, LoopClass>> nestedKeyMapTriple = firstEntryTriple.getKey().entrySet().iterator().next();
-		Entry<Double, Map<Double, LoopClass>> nestedValueMapTriple = firstEntryTriple.getValue().entrySet().iterator().next();
+		final Entry<Integer, Map<Double, LoopClass>> nestedKeyMapTriple = firstEntryTriple.getKey().entrySet().iterator().next();
+		final Entry<Double, Map<Double, LoopClass>> nestedValueMapTriple = firstEntryTriple.getValue().entrySet().iterator().next();
 
 		assertSame(Integer.class, nestedKeyMapTriple.getKey().getClass());
 		assertSame(HashMap.class, nestedKeyMapTriple.getValue().getClass());
 		assertSame(Double.class, nestedValueMapTriple.getKey().getClass());
 		assertSame(HashMap.class, nestedValueMapTriple.getValue().getClass());
 
-		Entry<Double, LoopClass> nestedNestedValueMapTriple = nestedKeyMapTriple.getValue().entrySet().iterator().next();
-		Entry<Double, LoopClass> nestedNestedKeyMapTriple = nestedValueMapTriple.getValue().entrySet().iterator().next();
+		final Entry<Double, LoopClass> nestedNestedValueMapTriple = nestedKeyMapTriple.getValue().entrySet().iterator().next();
+		final Entry<Double, LoopClass> nestedNestedKeyMapTriple = nestedValueMapTriple.getValue().entrySet().iterator().next();
 
 		assertSame(Double.class, nestedNestedValueMapTriple.getKey().getClass());
 		assertSame(LoopClass.class, nestedNestedValueMapTriple.getValue().getClass());
@@ -425,12 +435,12 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testCreateTypeMarkerLists()
 			throws SecurityException, NoSuchFieldException {
-		Field fieldSingle = NestedSingleListClass.class.getField("numbers");
-		Field fieldDouble = NestedDoubleListClass.class.getField("listsOfNumbers");
-		Field fieldTriple = NestedTripleListClass.class.getField("listsOflistsOfNumbers");
-		String markerSingle = ClassBasedFactory.createTypeMarker(fieldSingle.getType(), new Type[] { fieldSingle.getGenericType() });
-		String markerDouble = ClassBasedFactory.createTypeMarker(fieldDouble.getType(), new Type[] { fieldDouble.getGenericType() });
-		String markerTriple = ClassBasedFactory.createTypeMarker(fieldTriple.getType(), new Type[] { fieldTriple.getGenericType() });
+		final Field fieldSingle = NestedSingleListClass.class.getField("numbers");
+		final Field fieldDouble = NestedDoubleListClass.class.getField("listsOfNumbers");
+		final Field fieldTriple = NestedTripleListClass.class.getField("listsOflistsOfNumbers");
+		final String markerSingle = ClassBasedFactory.createTypeMarker(fieldSingle.getType(), new Type[] { fieldSingle.getGenericType() });
+		final String markerDouble = ClassBasedFactory.createTypeMarker(fieldDouble.getType(), new Type[] { fieldDouble.getGenericType() });
+		final String markerTriple = ClassBasedFactory.createTypeMarker(fieldTriple.getType(), new Type[] { fieldTriple.getGenericType() });
 		assertEquals("|java.util.List|java.util.List|java.lang.Double|", markerSingle);
 		assertEquals("|java.util.List|java.util.List|java.util.List|java.lang.Double|", markerDouble);
 		assertEquals("|java.util.List|java.util.List|java.util.List|java.util.List|java.lang.Double|", markerTriple);
@@ -439,12 +449,12 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testCreateTypeMarkerMaps()
 			throws SecurityException, NoSuchFieldException {
-		Field fieldSingle = NestedSingleMapClass.class.getField("numbers");
-		Field fieldDouble = NestedDoubleMapClass.class.getField("MapsOfNumbers");
-		Field fieldTriple = NestedTripleMapClass.class.getField("mapsOfMapsOfNumbers");
-		String markerSingle = ClassBasedFactory.createTypeMarker(fieldSingle.getType(), new Type[] { fieldSingle.getGenericType() });
-		String markerDouble = ClassBasedFactory.createTypeMarker(fieldDouble.getType(), new Type[] { fieldDouble.getGenericType() });
-		String markerTriple = ClassBasedFactory.createTypeMarker(fieldTriple.getType(), new Type[] { fieldTriple.getGenericType() });
+		final Field fieldSingle = NestedSingleMapClass.class.getField("numbers");
+		final Field fieldDouble = NestedDoubleMapClass.class.getField("MapsOfNumbers");
+		final Field fieldTriple = NestedTripleMapClass.class.getField("mapsOfMapsOfNumbers");
+		final String markerSingle = ClassBasedFactory.createTypeMarker(fieldSingle.getType(), new Type[] { fieldSingle.getGenericType() });
+		final String markerDouble = ClassBasedFactory.createTypeMarker(fieldDouble.getType(), new Type[] { fieldDouble.getGenericType() });
+		final String markerTriple = ClassBasedFactory.createTypeMarker(fieldTriple.getType(), new Type[] { fieldTriple.getGenericType() });
 		assertEquals("|java.util.Map|java.util.Map|java.lang.Double|org.dummycreator.helperutils.LoopClass|", markerSingle);
 		assertEquals(
 				"|java.util.Map|java.util.Map|java.util.Map|java.lang.Integer|org.dummycreator.helperutils.NestedMapClass$NestedDoubleMapClass|java.util.Map|java.lang.Double|org.dummycreator.helperutils.LoopClass|",
@@ -459,11 +469,11 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testMyCustomTestClassList() {
-		List<MyCustomTestClass> numbers = new MyCustomTestClassList();
+		final List<MyCustomTestClass> numbers = new MyCustomTestClassList();
 		@SuppressWarnings("unchecked")
-		ClassBasedFactory<List<MyCustomTestClass>> factory = new ClassBasedFactory<List<MyCustomTestClass>>(
+		final ClassBasedFactory<List<MyCustomTestClass>> factory = new ClassBasedFactory<List<MyCustomTestClass>>(
 				(Class<List<MyCustomTestClass>>) numbers.getClass());
-		List<MyCustomTestClass> ec = factory.createDummy(classBindings);
+		final List<MyCustomTestClass> ec = factory.createDummy(classBindings);
 		assertNotNull(ec);
 		assertSame(MyCustomTestClass.class, ec.get(0).getClass());
 	}
@@ -474,13 +484,13 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testMap() {
-		Map<Integer, Double> numbers = new HashMap<Integer, Double>();
+		final Map<Integer, Double> numbers = new HashMap<Integer, Double>();
 		@SuppressWarnings("unchecked")
-		ClassBasedFactory<Map<Integer, Double>> factory = new ClassBasedFactory<Map<Integer, Double>>(
+		final ClassBasedFactory<Map<Integer, Double>> factory = new ClassBasedFactory<Map<Integer, Double>>(
 				(Class<Map<Integer, Double>>) numbers.getClass());
-		Map<Integer, Double> ec = factory.createDummy(classBindings);
+		final Map<Integer, Double> ec = factory.createDummy(classBindings);
 		assertNotNull(ec);
-		Entry<Integer, Double> firstItem = ec.entrySet().iterator().next();
+		final Entry<Integer, Double> firstItem = ec.entrySet().iterator().next();
 		assertSame(String.class, ((Object) firstItem.getKey()).getClass());
 		assertSame(String.class, ((Object) firstItem.getValue()).getClass());
 	}
@@ -496,14 +506,14 @@ public class ClassBasedFactoryTest {
 		try {
 			new ClassBasedFactory<List>(List.class).createDummy(new ClassBindings()).getClass();
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			System.out.println(e);
 			// ok
 		}
 		try {
 			new ClassBasedFactory<AbstractList>(AbstractList.class).createDummy(new ClassBindings()).getClass();
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			System.out.println(e);
 			// ok
 		}

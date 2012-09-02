@@ -64,25 +64,25 @@ public class RandomCreator {
 	 * @return A float value between 00.00 and 100.00
 	 */
 	public float getRandomFloat() {
-		return r.nextInt(100) + ((float) Math.round(r.nextFloat() * 100) / 100);
+		return r.nextInt(100) + (float) Math.round(r.nextFloat() * 100) / 100;
 	}
 
 	/**
 	 * @return A double value between 00.00 and 100.00
 	 */
 	public double getRandomDouble() {
-		return r.nextInt(100) + ((double) Math.round(r.nextDouble() * 100) / 100);
+		return r.nextInt(100) + (double) Math.round(r.nextDouble() * 100) / 100;
 	}
 
 	public short getRandomShort() {
 		return (short) r.nextInt();
 	}
 
-	public int getRandomInt(int max) {
+	public int getRandomInt(final int max) {
 		return r.nextInt(max);
 	}
 
-	public static void setInstance(RandomCreator instance) {
+	public static void setInstance(final RandomCreator instance) {
 		RandomCreator.instance = instance;
 	}
 

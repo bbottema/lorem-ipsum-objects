@@ -44,7 +44,7 @@ public class RandomPrimitiveFactory<T> extends DummyFactory<T> {
 	 */
 	private final Class<T> clazz;
 
-	public RandomPrimitiveFactory(Class<T> clazz) {
+	public RandomPrimitiveFactory(final Class<T> clazz) {
 		this.clazz = clazz;
 	}
 
@@ -53,13 +53,12 @@ public class RandomPrimitiveFactory<T> extends DummyFactory<T> {
 	 * {@link #SUPPORTED_PRIMITIVE_CLASSES}.
 	 */
 	@Override
-	public boolean isValidForType(Class<? super T> clazz) {
+	public boolean isValidForType(final Class<? super T> clazz) {
 		return SUPPORTED_PRIMITIVE_CLASSES.contains(clazz);
 	}
 
 	/**
 	 * @return Depending on requested type, will call the associated <code>RandomCreator.getRandomT()</code> method.
-	 * 
 	 * @param knownInstances Not used.
 	 * @param classBindings Not used.
 	 * @param exceptions Not used.
@@ -74,7 +73,8 @@ public class RandomPrimitiveFactory<T> extends DummyFactory<T> {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public T createDummy(final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances,
+			final ClassBindings classBindings, final List<Exception> exceptions) {
 		if (clazz == int.class) {
 			return (T) (Integer) RandomCreator.getInstance().getRandomInt();
 		} else if (clazz == long.class) {

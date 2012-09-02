@@ -35,14 +35,15 @@ public class ConstructorBasedFactoryTest {
 	 * <code>new Integer(12345)</code> is invoked correctly.
 	 */
 	@Test
-	public void testCreateDummyInteger() throws SecurityException, NoSuchMethodException {
-		Constructor<Integer> constructor = Integer.class.getConstructor(int.class);
-		ConstructorBasedFactory<Integer> factory = new ConstructorBasedFactory<Integer>(constructor);
+	public void testCreateDummyInteger()
+			throws SecurityException, NoSuchMethodException {
+		final Constructor<Integer> constructor = Integer.class.getConstructor(int.class);
+		final ConstructorBasedFactory<Integer> factory = new ConstructorBasedFactory<Integer>(constructor);
 
 		EasyMock.expect(mock.getRandomInt()).andReturn(12345);
 		EasyMock.replay(mock);
 
-		Integer dummy = factory.createDummy(new ClassBindings());
+		final Integer dummy = factory.createDummy(new ClassBindings());
 
 		assertNotNull(dummy.getClass());
 		assertEquals(Integer.class, dummy.getClass());
@@ -56,14 +57,15 @@ public class ConstructorBasedFactoryTest {
 	 * <code>new Integer("98765")</code> is invoked correctly.
 	 */
 	@Test
-	public void testCreateDummyString() throws SecurityException, NoSuchMethodException {
-		Constructor<Integer> constructor = Integer.class.getConstructor(String.class);
-		ConstructorBasedFactory<Integer> factory = new ConstructorBasedFactory<Integer>(constructor);
+	public void testCreateDummyString()
+			throws SecurityException, NoSuchMethodException {
+		final Constructor<Integer> constructor = Integer.class.getConstructor(String.class);
+		final ConstructorBasedFactory<Integer> factory = new ConstructorBasedFactory<Integer>(constructor);
 
 		EasyMock.expect(mock.getRandomString()).andReturn("98765");
 		EasyMock.replay(mock);
 
-		Integer dummy = factory.createDummy(new ClassBindings());
+		final Integer dummy = factory.createDummy(new ClassBindings());
 
 		assertNotNull(dummy.getClass());
 		assertEquals(Integer.class, dummy.getClass());

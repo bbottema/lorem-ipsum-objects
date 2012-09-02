@@ -5,21 +5,21 @@ public class TestChainBinding {
 
 		public final int arg;
 
-		public A(int arg) {
+		public A(final int arg) {
 			this.arg = arg;
 		}
 	};
 
 	public static abstract class B extends A {
 
-		public B(int arg) {
+		public B(final int arg) {
 			super(arg);
 		}
 	};
 
 	public static class C extends B {
 
-		public C(int arg) {
+		public C(final int arg) {
 			super(arg);
 		}
 

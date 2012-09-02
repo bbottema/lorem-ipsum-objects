@@ -21,7 +21,7 @@ public class NormalClass {
 	 * 
 	 * @param id new value of id
 	 */
-	public void setId(int id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 
@@ -39,7 +39,7 @@ public class NormalClass {
 	 * 
 	 * @param primitiveClass new value of primitiveClass
 	 */
-	public void setPrimitiveClass(PrimitiveClass primitiveClass) {
+	public void setPrimitiveClass(final PrimitiveClass primitiveClass) {
 		this.primitiveClass = primitiveClass;
 	}
 
@@ -47,7 +47,7 @@ public class NormalClass {
 		return someBoolean;
 	}
 
-	public void setSomeBoolean(Boolean someBoolean) {
+	public void setSomeBoolean(final Boolean someBoolean) {
 		this.someBoolean = someBoolean;
 	}
 }

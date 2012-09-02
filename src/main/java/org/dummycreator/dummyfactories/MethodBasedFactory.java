@@ -20,12 +20,12 @@ public class MethodBasedFactory<T> extends DummyFactory<T> {
 
 	private final Method method;
 
-	public MethodBasedFactory(Method method) {
+	public MethodBasedFactory(final Method method) {
 		this.method = method;
 	}
 
 	@Override
-	public boolean isValidForType(Class<? super T> clazz) {
+	public boolean isValidForType(final Class<? super T> clazz) {
 		if (Modifier.isStatic(method.getModifiers()) && method.getReturnType().equals(clazz)) {
 			return true;
 		} else {
@@ -44,19 +44,23 @@ public class MethodBasedFactory<T> extends DummyFactory<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
-		Method m = method;
-		Class<?>[] parameters = m.getParameterTypes();
+	public T createDummy(final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances,
+			final ClassBindings classBindings, final List<Exception> exceptions) {
+		final Method m = method;
+		final Class<?>[] parameters = m.getParameterTypes();
 		final Object[] params = new Object[parameters.length];
 		for (int i = 0; i < params.length; i++) {
-			params[i] = new ClassBasedFactory<Object>((Class<Object>) parameters[i]).createDummy(genericMetaData, knownInstances, classBindings, exceptions);
+			params[i] = new ClassBasedFactory<Object>((Class<Object>) parameters[i]).createDummy(genericMetaData, knownInstances,
+					classBindings, exceptions);
 		}
 		try {
 			return (T) m.invoke(null, params);
-		} catch (InvocationTargetException e) {
-			logger.debug(String.format("failed to invoke Method [%s] to product an object of type [%s]", m.getName(), method.getReturnType()), e);
-		} catch (IllegalAccessException e) {
-			logger.debug(String.format("failed to invoke Method [%s] to product an object of type [%s]", m.getName(), method.getReturnType()), e);
+		} catch (final InvocationTargetException e) {
+			logger.debug(
+					String.format("failed to invoke Method [%s] to product an object of type [%s]", m.getName(), method.getReturnType()), e);
+		} catch (final IllegalAccessException e) {
+			logger.debug(
+					String.format("failed to invoke Method [%s] to product an object of type [%s]", m.getName(), method.getReturnType()), e);
 		}
 		return null;
 	}

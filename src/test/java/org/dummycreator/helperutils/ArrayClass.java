@@ -8,7 +8,7 @@ public class ArrayClass {
 		return strings;
 	}
 
-	public void setStrings(String[] strings) {
+	public void setStrings(final String[] strings) {
 		this.strings = strings;
 	}
 }

@@ -41,8 +41,9 @@ public class DummyCreatorTest {
 	 * {@link ConstructorBasedFactory}.
 	 */
 	@Before
-	public void setUp() throws SecurityException, NoSuchMethodException {
-		ClassBindings classBindings = ClassBindings.defaultBindings();
+	public void setUp()
+			throws SecurityException, NoSuchMethodException {
+		final ClassBindings classBindings = ClassBindings.defaultBindings();
 		classBindings.add(Integer.class, new ConstructorBasedFactory<Integer>(Integer.class.getConstructor(Integer.TYPE)));
 		classBindings.add(Long.class, new FixedInstanceFactory<Long>(Long.MAX_VALUE));
 		classBindings.add(Double.class, new FixedInstanceFactory<Double>(Double.MIN_VALUE));
@@ -54,7 +55,8 @@ public class DummyCreatorTest {
 	 * <code>Double</code>.
 	 */
 	@Test
-	public void testObjectBindings() throws Exception {
+	public void testObjectBindings()
+			throws Exception {
 		assertEquals(Long.MAX_VALUE, dummyCreator.create(Long.class), 0);
 		assertEquals(Double.MIN_VALUE, dummyCreator.create(Double.class), 0);
 	}
@@ -63,7 +65,8 @@ public class DummyCreatorTest {
 	 * Tests if the {@link ConstructorBasedFactory} is invoked correctly by the {@link ClassBasedFactory} for <code>Integer</code>.
 	 */
 	@Test
-	public void testConstructorBindings() throws Exception {
+	public void testConstructorBindings()
+			throws Exception {
 		assertEquals(Integer.class, dummyCreator.create(Integer.class).getClass());
 	}
 
@@ -73,13 +76,14 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testInterfaceBindings() throws Exception {
+	public void testInterfaceBindings()
+			throws Exception {
 		assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
 
-		ClassBindings classBindings = new ClassBindings();
+		final ClassBindings classBindings = new ClassBindings();
 		classBindings.add(List.class, new ClassBasedFactory<ArrayList>(ArrayList.class));
 		classBindings.add(List.class, new ClassBasedFactory<LinkedList>(LinkedList.class));
-		DummyCreator dummyCreator = new DummyCreator(classBindings);
+		final DummyCreator dummyCreator = new DummyCreator(classBindings);
 		assertEquals(LinkedList.class, dummyCreator.create(List.class).getClass());
 	}
 
@@ -88,12 +92,12 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	public void testArrayCreation() {
-		Integer[] integers = dummyCreator.create(new Integer[] {}.getClass());
+		final Integer[] integers = dummyCreator.create(new Integer[] {}.getClass());
 		assertNotNull(integers);
-		for (Integer i : integers) {
+		for (final Integer i : integers) {
 			assertSame(Integer.class, i.getClass());
 		}
-		int[] ints = dummyCreator.create(new int[] {}.getClass());
+		final int[] ints = dummyCreator.create(new int[] {}.getClass());
 		assertNotNull(ints);
 	}
 
@@ -102,7 +106,7 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	public void testStringCreation() {
-		String dummy = dummyCreator.create(String.class);
+		final String dummy = dummyCreator.create(String.class);
 		assertEquals(String.class, dummy.getClass());
 	}
 
@@ -121,11 +125,11 @@ public class DummyCreatorTest {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testObjectBinding() {
-		ClassBindings classBindings = new ClassBindings();
-		LinkedList<Object> list = new LinkedList<Object>();
+		final ClassBindings classBindings = new ClassBindings();
+		final LinkedList<Object> list = new LinkedList<Object>();
 		classBindings.add(List.class, new FixedInstanceFactory<List>(list));
-		DummyCreator dummyCreator = new DummyCreator(classBindings);
-		List<?> dummy = dummyCreator.create(List.class);
+		final DummyCreator dummyCreator = new DummyCreator(classBindings);
+		final List<?> dummy = dummyCreator.create(List.class);
 		assertEquals(LinkedList.class, dummy.getClass());
 		assertSame(list, dummy);
 	}
@@ -134,11 +138,12 @@ public class DummyCreatorTest {
 	 * Tests if <code>B</code> sub class <code>C</code> constructor is invoked correctly to produce an object assignable to <code>B</code>.
 	 */
 	@Test
-	public void testDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
-		ClassBindings classBindings = new ClassBindings();
+	public void testDeferredSubTypeConstructorBinding()
+			throws SecurityException, NoSuchMethodException {
+		final ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ConstructorBasedFactory<C>(C.class.getConstructor(int.class)));
-		DummyCreator dummyCreator = new DummyCreator(classBindings);
-		B dummy = dummyCreator.create(B.class);
+		final DummyCreator dummyCreator = new DummyCreator(classBindings);
+		final B dummy = dummyCreator.create(B.class);
 		assertEquals(C.class, dummy.getClass());
 	}
 
@@ -147,11 +152,12 @@ public class DummyCreatorTest {
 	 * assignable to <code>B</code>.
 	 */
 	@Test
-	public void testDeferredSubTypeBinding() throws SecurityException, NoSuchMethodException {
-		ClassBindings classBindings = new ClassBindings();
+	public void testDeferredSubTypeBinding()
+			throws SecurityException, NoSuchMethodException {
+		final ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ClassBasedFactory<C>(C.class));
-		DummyCreator dummyCreator = new DummyCreator(classBindings);
-		B dummy = dummyCreator.create(B.class);
+		final DummyCreator dummyCreator = new DummyCreator(classBindings);
+		final B dummy = dummyCreator.create(B.class);
 		assertEquals(C.class, dummy.getClass());
 	}
 
@@ -197,7 +203,7 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	public void testEnumClassCreation() {
-		EnumClass ec = dummyCreator.create(EnumClass.class);
+		final EnumClass ec = dummyCreator.create(EnumClass.class);
 		assertNotNull(ec.getEnumTester());
 		assertNotNull(ec.getInternalEnum());
 	}
@@ -211,11 +217,11 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	public void testGenericMap() {
-		Map<Integer, String> numberStringMap = new NumberStringMap();
+		final Map<Integer, String> numberStringMap = new NumberStringMap();
 		@SuppressWarnings("unchecked")
-		Map<Integer, String> ec = dummyCreator.create(numberStringMap.getClass());
+		final Map<Integer, String> ec = dummyCreator.create(numberStringMap.getClass());
 		assertNotNull(ec);
-		Entry<Integer, String> firstItem = ec.entrySet().iterator().next();
+		final Entry<Integer, String> firstItem = ec.entrySet().iterator().next();
 		assertSame(Integer.class, firstItem.getKey().getClass());
 		assertSame(String.class, firstItem.getValue().getClass());
 	}
@@ -229,8 +235,8 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	public void testGenericList() {
-		List<Integer> numbers = new NumberStringList();
-		List<?> ec = dummyCreator.create(numbers.getClass());
+		final List<Integer> numbers = new NumberStringList();
+		final List<?> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
 		assertSame(Integer.class, ec.get(0).getClass());
 	}
@@ -241,9 +247,9 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	public void testList() {
-		List<Integer> numbers = new ArrayList<Integer>();
+		final List<Integer> numbers = new ArrayList<Integer>();
 		@SuppressWarnings("unchecked")
-		List<Integer> ec = dummyCreator.create(numbers.getClass());
+		final List<Integer> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
 		assertSame(String.class, ((Object) ec.get(0)).getClass());
 	}
@@ -253,8 +259,8 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	public void testMyCustomTestClassList() {
-		List<MyCustomTestClass> numbers = new MyCustomTestClassList();
-		List<?> ec = dummyCreator.create(numbers.getClass());
+		final List<MyCustomTestClass> numbers = new MyCustomTestClassList();
+		final List<?> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
 		assertSame(MyCustomTestClass.class, ec.get(0).getClass());
 	}
@@ -265,11 +271,11 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	public void testMap() {
-		Map<Integer, Double> numbers = new HashMap<Integer, Double>();
+		final Map<Integer, Double> numbers = new HashMap<Integer, Double>();
 		@SuppressWarnings("unchecked")
-		Map<Integer, Double> ec = dummyCreator.create(numbers.getClass());
+		final Map<Integer, Double> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
-		Entry<Integer, Double> firstItem = ec.entrySet().iterator().next();
+		final Entry<Integer, Double> firstItem = ec.entrySet().iterator().next();
 		assertSame(String.class, ((Object) firstItem.getKey()).getClass());
 		assertSame(String.class, ((Object) firstItem.getValue()).getClass());
 	}
@@ -279,19 +285,20 @@ public class DummyCreatorTest {
 	 * to indicate the correct implementation.
 	 */
 	@Test
-	public void testInterfaceBindingErrors() throws Exception {
+	public void testInterfaceBindingErrors()
+			throws Exception {
 		dummyCreator = new DummyCreator();
 		try {
 			assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			System.out.println(e);
 			// ok
 		}
 		try {
 			assertEquals(ArrayList.class, dummyCreator.create(AbstractList.class).getClass());
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			System.out.println(e);
 			// ok
 		}

@@ -34,7 +34,7 @@ public class EnumClass {
 	 * 
 	 * @param _int new value of _int
 	 */
-	public void set_int(int _int) {
+	public void set_int(final int _int) {
 		this._int = _int;
 	}
 
@@ -52,7 +52,7 @@ public class EnumClass {
 	 * 
 	 * @param _string new value of _string
 	 */
-	public void set_string(String _string) {
+	public void set_string(final String _string) {
 		this._string = _string;
 	}
 
@@ -70,7 +70,7 @@ public class EnumClass {
 	 * 
 	 * @param _float new value of _float
 	 */
-	public void set_float(float _float) {
+	public void set_float(final float _float) {
 		this._float = _float;
 	}
 
@@ -88,7 +88,7 @@ public class EnumClass {
 	 * 
 	 * @param _short new value of _short
 	 */
-	public void set_short(short _short) {
+	public void set_short(final short _short) {
 		this._short = _short;
 	}
 
@@ -106,7 +106,7 @@ public class EnumClass {
 	 * 
 	 * @param _double new value of _double
 	 */
-	public void set_double(double _double) {
+	public void set_double(final double _double) {
 		this._double = _double;
 	}
 
@@ -124,7 +124,7 @@ public class EnumClass {
 	 * 
 	 * @param _byte new value of _byte
 	 */
-	public void set_byte(byte _byte) {
+	public void set_byte(final byte _byte) {
 		this._byte = _byte;
 	}
 
@@ -142,7 +142,7 @@ public class EnumClass {
 	 * 
 	 * @param _long new value of _long
 	 */
-	public void set_long(long _long) {
+	public void set_long(final long _long) {
 		this._long = _long;
 	}
 
@@ -160,8 +160,8 @@ public class EnumClass {
 	 * 
 	 * @param bool new value of bool
 	 */
-	public void setBool(boolean bool) {
-		this._boolean = bool;
+	public void setBool(final boolean bool) {
+		_boolean = bool;
 	}
 
 	/**
@@ -178,7 +178,7 @@ public class EnumClass {
 	 * 
 	 * @param _char new value of _char
 	 */
-	public void set_char(char _char) {
+	public void set_char(final char _char) {
 		this._char = _char;
 	}
 
@@ -189,7 +189,7 @@ public class EnumClass {
 		return _secondDouble;
 	}
 
-	public void setSecondDouble(double _secondDouble) {
+	public void setSecondDouble(final double _secondDouble) {
 		this._secondDouble = _secondDouble;
 	}
 
@@ -197,7 +197,7 @@ public class EnumClass {
 		return enumTester;
 	}
 
-	public void setEnumTester(EnumTester enumTester) {
+	public void setEnumTester(final EnumTester enumTester) {
 		this.enumTester = enumTester;
 	}
 
@@ -205,7 +205,7 @@ public class EnumClass {
 		return internalEnum;
 	}
 
-	public void setInternalEnum(internalEnum internalEnum) {
+	public void setInternalEnum(final internalEnum internalEnum) {
 		this.internalEnum = internalEnum;
 	}
 }

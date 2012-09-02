@@ -19,8 +19,8 @@ public class MultiConstructorClass {
 	private PrimitiveClass p6;
 	private PrimitiveClass p7;
 
-	public MultiConstructorClass(int c, int f, int i, PrimitiveClass p1, PrimitiveClass p2, PrimitiveClass p3, PrimitiveClass p4,
-			PrimitiveClass p5, PrimitiveClass p6, PrimitiveClass p7) {
+	public MultiConstructorClass(final int c, final int f, final int i, final PrimitiveClass p1, final PrimitiveClass p2,
+			final PrimitiveClass p3, final PrimitiveClass p4, final PrimitiveClass p5, final PrimitiveClass p6, final PrimitiveClass p7) {
 		this.c = c;
 		this.f = f;
 		this.i = i;
@@ -33,7 +33,8 @@ public class MultiConstructorClass {
 		this.p7 = p7;
 	}
 
-	public MultiConstructorClass(int a, int d, int f, int g, int i, PrimitiveClass p3, PrimitiveClass p4, PrimitiveClass p5) {
+	public MultiConstructorClass(final int a, final int d, final int f, final int g, final int i, final PrimitiveClass p3,
+			final PrimitiveClass p4, final PrimitiveClass p5) {
 		this.a = a;
 		this.d = d;
 		this.f = f;
@@ -44,7 +45,8 @@ public class MultiConstructorClass {
 		this.p5 = p5;
 	}
 
-	public MultiConstructorClass(int b, int c, int d, int h, PrimitiveClass p1, PrimitiveClass p4, PrimitiveClass p5, PrimitiveClass p7) {
+	public MultiConstructorClass(final int b, final int c, final int d, final int h, final PrimitiveClass p1, final PrimitiveClass p4,
+			final PrimitiveClass p5, final PrimitiveClass p7) {
 		this.b = b;
 		this.c = c;
 		this.d = d;
@@ -55,7 +57,8 @@ public class MultiConstructorClass {
 		this.p7 = p7;
 	}
 
-	public MultiConstructorClass(int a, int c, int d, int e, int f, int h, PrimitiveClass p1, PrimitiveClass p3, PrimitiveClass p5) {
+	public MultiConstructorClass(final int a, final int c, final int d, final int e, final int f, final int h, final PrimitiveClass p1,
+			final PrimitiveClass p3, final PrimitiveClass p5) {
 		this.a = a;
 		this.c = c;
 		this.d = d;
@@ -67,8 +70,9 @@ public class MultiConstructorClass {
 		this.p5 = p5;
 	}
 
-	public MultiConstructorClass(int a, int b, int c, int d, int e, int f, int g, int h, int i, PrimitiveClass p1, PrimitiveClass p2,
-			PrimitiveClass p3, PrimitiveClass p4, PrimitiveClass p5, PrimitiveClass p6, PrimitiveClass p7) {
+	public MultiConstructorClass(final int a, final int b, final int c, final int d, final int e, final int f, final int g, final int h,
+			final int i, final PrimitiveClass p1, final PrimitiveClass p2, final PrimitiveClass p3, final PrimitiveClass p4,
+			final PrimitiveClass p5, final PrimitiveClass p6, final PrimitiveClass p7) {
 		this.a = a;
 		this.b = b;
 		this.c = c;
@@ -91,7 +95,7 @@ public class MultiConstructorClass {
 		return a;
 	}
 
-	public void setA(int a) {
+	public void setA(final int a) {
 		this.a = a;
 	}
 
@@ -99,7 +103,7 @@ public class MultiConstructorClass {
 		return b;
 	}
 
-	public void setB(int b) {
+	public void setB(final int b) {
 		this.b = b;
 	}
 
@@ -107,7 +111,7 @@ public class MultiConstructorClass {
 		return c;
 	}
 
-	public void setC(int c) {
+	public void setC(final int c) {
 		this.c = c;
 	}
 
@@ -115,7 +119,7 @@ public class MultiConstructorClass {
 		return d;
 	}
 
-	public void setD(int d) {
+	public void setD(final int d) {
 		this.d = d;
 	}
 
@@ -123,7 +127,7 @@ public class MultiConstructorClass {
 		return e;
 	}
 
-	public void setE(int e) {
+	public void setE(final int e) {
 		this.e = e;
 	}
 
@@ -131,7 +135,7 @@ public class MultiConstructorClass {
 		return f;
 	}
 
-	public void setF(int f) {
+	public void setF(final int f) {
 		this.f = f;
 	}
 
@@ -139,7 +143,7 @@ public class MultiConstructorClass {
 		return g;
 	}
 
-	public void setG(int g) {
+	public void setG(final int g) {
 		this.g = g;
 	}
 
@@ -147,7 +151,7 @@ public class MultiConstructorClass {
 		return h;
 	}
 
-	public void setH(int h) {
+	public void setH(final int h) {
 		this.h = h;
 	}
 
@@ -155,7 +159,7 @@ public class MultiConstructorClass {
 		return i;
 	}
 
-	public void setI(int i) {
+	public void setI(final int i) {
 		this.i = i;
 	}
 
@@ -163,7 +167,7 @@ public class MultiConstructorClass {
 		return p1;
 	}
 
-	public void setP1(PrimitiveClass p1) {
+	public void setP1(final PrimitiveClass p1) {
 		this.p1 = p1;
 	}
 
@@ -171,7 +175,7 @@ public class MultiConstructorClass {
 		return p2;
 	}
 
-	public void setP2(PrimitiveClass p2) {
+	public void setP2(final PrimitiveClass p2) {
 		this.p2 = p2;
 	}
 
@@ -179,7 +183,7 @@ public class MultiConstructorClass {
 		return p3;
 	}
 
-	public void setP3(PrimitiveClass p3) {
+	public void setP3(final PrimitiveClass p3) {
 		this.p3 = p3;
 	}
 
@@ -187,7 +191,7 @@ public class MultiConstructorClass {
 		return p4;
 	}
 
-	public void setP4(PrimitiveClass p4) {
+	public void setP4(final PrimitiveClass p4) {
 		this.p4 = p4;
 	}
 
@@ -195,7 +199,7 @@ public class MultiConstructorClass {
 		return p5;
 	}
 
-	public void setP5(PrimitiveClass p5) {
+	public void setP5(final PrimitiveClass p5) {
 		this.p5 = p5;
 	}
 
@@ -203,7 +207,7 @@ public class MultiConstructorClass {
 		return p6;
 	}
 
-	public void setP6(PrimitiveClass p6) {
+	public void setP6(final PrimitiveClass p6) {
 		this.p6 = p6;
 	}
 
@@ -211,7 +215,7 @@ public class MultiConstructorClass {
 		return p7;
 	}
 
-	public void setP7(PrimitiveClass p7) {
+	public void setP7(final PrimitiveClass p7) {
 		this.p7 = p7;
 	}
 }

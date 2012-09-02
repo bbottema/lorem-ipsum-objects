@@ -9,15 +9,15 @@ public class MyCustomTestClass {
 		return someType;
 	}
 
-	public void setSomeType(String koetype) {
-		this.someType = koetype;
+	public void setSomeType(final String koetype) {
+		someType = koetype;
 	}
 
 	public StringStringMap getStringMap() {
 		return stringMap;
 	}
 
-	public void setStringMap(StringStringMap moosongs) {
-		this.stringMap = moosongs;
+	public void setStringMap(final StringStringMap moosongs) {
+		stringMap = moosongs;
 	}
 }

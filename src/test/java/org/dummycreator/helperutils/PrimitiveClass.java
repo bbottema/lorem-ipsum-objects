@@ -28,7 +28,7 @@ public class PrimitiveClass {
 	 * 
 	 * @param _int new value of _int
 	 */
-	public void set_int(int _int) {
+	public void set_int(final int _int) {
 		this._int = _int;
 	}
 
@@ -46,7 +46,7 @@ public class PrimitiveClass {
 	 * 
 	 * @param _string new value of _string
 	 */
-	public void set_string(String _string) {
+	public void set_string(final String _string) {
 		this._string = _string;
 	}
 
@@ -64,7 +64,7 @@ public class PrimitiveClass {
 	 * 
 	 * @param _float new value of _float
 	 */
-	public void set_float(float _float) {
+	public void set_float(final float _float) {
 		this._float = _float;
 	}
 
@@ -82,7 +82,7 @@ public class PrimitiveClass {
 	 * 
 	 * @param _short new value of _short
 	 */
-	public void set_short(short _short) {
+	public void set_short(final short _short) {
 		this._short = _short;
 	}
 
@@ -100,7 +100,7 @@ public class PrimitiveClass {
 	 * 
 	 * @param _double new value of _double
 	 */
-	public void set_double(double _double) {
+	public void set_double(final double _double) {
 		this._double = _double;
 	}
 
@@ -118,7 +118,7 @@ public class PrimitiveClass {
 	 * 
 	 * @param _byte new value of _byte
 	 */
-	public void set_byte(byte _byte) {
+	public void set_byte(final byte _byte) {
 		this._byte = _byte;
 	}
 
@@ -136,7 +136,7 @@ public class PrimitiveClass {
 	 * 
 	 * @param _long new value of _long
 	 */
-	public void set_long(long _long) {
+	public void set_long(final long _long) {
 		this._long = _long;
 	}
 
@@ -154,8 +154,8 @@ public class PrimitiveClass {
 	 * 
 	 * @param bool new value of bool
 	 */
-	public void set_boolean(boolean bool) {
-		this._boolean = bool;
+	public void set_boolean(final boolean bool) {
+		_boolean = bool;
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class PrimitiveClass {
 	 * 
 	 * @param _char new value of _char
 	 */
-	public void set_char(char _char) {
+	public void set_char(final char _char) {
 		this._char = _char;
 	}
 
@@ -183,7 +183,7 @@ public class PrimitiveClass {
 		return _secondDouble;
 	}
 
-	public void set_secondDouble(double _secondDouble) {
+	public void set_secondDouble(final double _secondDouble) {
 		this._secondDouble = _secondDouble;
 	}
 }

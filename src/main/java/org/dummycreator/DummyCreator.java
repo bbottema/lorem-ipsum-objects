@@ -48,7 +48,7 @@ public class DummyCreator {
 	/**
 	 * Constructor: configures the Dummy Creator with a given {@link ClassBindings} instance and new caches.
 	 */
-	public DummyCreator(ClassBindings classBindings) {
+	public DummyCreator(final ClassBindings classBindings) {
 		this.classBindings = classBindings;
 	}
 
