@@ -3,6 +3,7 @@ package org.dummycreator.dummyfactories;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -43,12 +44,12 @@ public class MethodBasedFactory<T> extends DummyFactory<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		Method m = method;
 		Class<?>[] parameters = m.getParameterTypes();
 		final Object[] params = new Object[parameters.length];
 		for (int i = 0; i < params.length; i++) {
-			params[i] = new ClassBasedFactory<Object>((Class<Object>) parameters[i]).createDummy(knownInstances, classBindings, exceptions);
+			params[i] = new ClassBasedFactory<Object>((Class<Object>) parameters[i]).createDummy(genericMetaData, knownInstances, classBindings, exceptions);
 		}
 		try {
 			return (T) m.invoke(null, params);

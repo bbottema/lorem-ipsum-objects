@@ -1,6 +1,7 @@
 package org.dummycreator.dummyfactories;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class RandomPrimitiveFactory<T> extends DummyFactory<T> {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		if (clazz == int.class) {
 			return (T) (Integer) RandomCreator.getInstance().getRandomInt();
 		} else if (clazz == long.class) {

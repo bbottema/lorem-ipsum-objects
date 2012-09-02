@@ -1,5 +1,6 @@
 package org.dummycreator.dummyfactories;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class FixedInstanceFactory<T> extends DummyFactory<T> {
 	 * @param exceptions Not used.
 	 */
 	@Override
-	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		return instance;
 	}
 }

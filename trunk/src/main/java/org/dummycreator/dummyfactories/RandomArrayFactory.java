@@ -1,6 +1,7 @@
 package org.dummycreator.dummyfactories;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +28,11 @@ public class RandomArrayFactory<T> extends DummyFactory<T> {
 	 */
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public T createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		int length = RandomCreator.getInstance().getRandomInt(2) + 2;
 		Object dummyArray = Array.newInstance(clazz.getComponentType(), length);
 		for (int i = 0; i < length; i++) {
-			Array.set(dummyArray, i, new ClassBasedFactory(clazz.getComponentType()).createDummy(knownInstances, classBindings, exceptions));
+			Array.set(dummyArray, i, new ClassBasedFactory(clazz.getComponentType()).createDummy(genericMetaData, knownInstances, classBindings, exceptions));
 		}
 		return (T) dummyArray;
 	}

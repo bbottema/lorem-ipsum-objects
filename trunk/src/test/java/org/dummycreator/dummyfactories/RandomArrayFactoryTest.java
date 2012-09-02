@@ -35,7 +35,8 @@ public class RandomArrayFactoryTest {
 		RandomArrayFactory<Integer[]> factory = new RandomArrayFactory<Integer[]>(Integer[].class);
 
 		EasyMock.expect(mock.getRandomInt(2)).andReturn(1); // random array length
-		EasyMock.expect(mock.getRandomString()).andReturn("abc"); // Integer(String), which should fail
+		// the following might not happen depending on how the list of constructors are sorted
+		EasyMock.expect(mock.getRandomString()).andReturn("abc").times(0, 1); // Integer(String), which should fail
 		EasyMock.expect(mock.getRandomInt()).andReturn(12345); // Integer(int), which should succeed
 		EasyMock.expect(mock.getRandomInt()).andReturn(54321); // Integer(int), which should succeed
 		EasyMock.expect(mock.getRandomInt()).andReturn(678768); // Integer(int), which should succeed
