@@ -4,8 +4,13 @@ http://code.google.com/p/dummycreator/
 RELEASE NOTES Dummy Creator
 
 
-v1.2 (unreleased)
+v1.3 (unreleased)
 
+
+
+v1.2
+
+- added robust support for generics in collections and maps (including nesting)
 - fixed bug where Booleans were always generated 'false'
 - fixed bug where all numbers would end up with the same values
 - improved logging in case of failure
