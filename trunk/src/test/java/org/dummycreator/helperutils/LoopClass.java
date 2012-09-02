@@ -19,7 +19,7 @@ public class LoopClass {
 	 * 
 	 * @param id new value of id
 	 */
-	public void setId(long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 
@@ -37,7 +37,7 @@ public class LoopClass {
 	 * 
 	 * @param loopObject new value of loopObject
 	 */
-	public void setLoopObject(LoopClass loopObject) {
+	public void setLoopObject(final LoopClass loopObject) {
 		this.loopObject = loopObject;
 	}
 }

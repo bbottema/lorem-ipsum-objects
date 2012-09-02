@@ -8,7 +8,7 @@ public class ArrayWithObjectsClass {
 		return primitivclasses;
 	}
 
-	public void setPrimitivclasses(PrimitiveClass[] primitivclasses) {
+	public void setPrimitivclasses(final PrimitiveClass[] primitivclasses) {
 		this.primitivclasses = primitivclasses;
 	}
 

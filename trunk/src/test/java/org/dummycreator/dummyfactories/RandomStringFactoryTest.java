@@ -16,9 +16,9 @@ public class RandomStringFactoryTest {
 	 */
 	@Test
 	public void testCreateDummy() {
-		RandomStringFactory factory = new RandomStringFactory();
+		final RandomStringFactory factory = new RandomStringFactory();
 
-		RandomCreator mock = EasyMock.createMock(RandomCreator.class);
+		final RandomCreator mock = EasyMock.createMock(RandomCreator.class);
 		RandomCreator.setInstance(mock);
 		EasyMock.expect(mock.getRandomString()).andReturn("1234");
 		EasyMock.replay(mock);

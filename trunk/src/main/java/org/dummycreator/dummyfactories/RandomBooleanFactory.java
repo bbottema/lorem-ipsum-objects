@@ -18,13 +18,13 @@ public class RandomBooleanFactory extends DummyFactory<Boolean> {
 
 	/**
 	 * @return The result of {@link RandomCreator#getRandomBoolean()}.
-	 * 
 	 * @param knownInstances Not used.
 	 * @param classBindings Not used.
 	 * @param exceptions Not used.
 	 */
 	@Override
-	public Boolean createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public Boolean createDummy(final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances,
+			final ClassBindings classBindings, final List<Exception> exceptions) {
 		return RandomCreator.getInstance().getRandomBoolean();
 	}
 }

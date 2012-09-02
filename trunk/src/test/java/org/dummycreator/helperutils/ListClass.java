@@ -10,7 +10,7 @@ public class ListClass {
 		return myList;
 	}
 
-	public void setMyList(List<String> myList) {
+	public void setMyList(final List<String> myList) {
 		this.myList = myList;
 	}
 }

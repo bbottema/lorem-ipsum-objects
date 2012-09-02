@@ -17,7 +17,7 @@ public class NestedMapClass {
 			return numbers;
 		}
 
-		public void setNumbers(Map<Double, LoopClass> numbers) {
+		public void setNumbers(final Map<Double, LoopClass> numbers) {
 			this.numbers = numbers;
 		}
 
@@ -30,7 +30,7 @@ public class NestedMapClass {
 			return MapsOfNumbers;
 		}
 
-		public void setMapsOfNumbers(Map<Map<Integer, NestedDoubleMapClass>, Map<Double, LoopClass>> mapsOfNumbers) {
+		public void setMapsOfNumbers(final Map<Map<Integer, NestedDoubleMapClass>, Map<Double, LoopClass>> mapsOfNumbers) {
 			MapsOfNumbers = mapsOfNumbers;
 		}
 	}
@@ -48,7 +48,7 @@ public class NestedMapClass {
 			return MapsOfCharacters;
 		}
 
-		public void setMapsOfCharacters(Map<Map<Integer, NestedDoubleMapClass>, Character> mapsOfCharacters) {
+		public void setMapsOfCharacters(final Map<Map<Integer, NestedDoubleMapClass>, Character> mapsOfCharacters) {
 			MapsOfCharacters = mapsOfCharacters;
 		}
 	}
@@ -61,7 +61,7 @@ public class NestedMapClass {
 		}
 
 		public void setMapsOfMapsOfNumbers(
-				Map<Map<Integer, Map<Double, LoopClass>>, Map<Double, Map<Double, LoopClass>>> mapsOfMapsOfNumbers) {
+				final Map<Map<Integer, Map<Double, LoopClass>>, Map<Double, Map<Double, LoopClass>>> mapsOfMapsOfNumbers) {
 			this.mapsOfMapsOfNumbers = mapsOfMapsOfNumbers;
 		}
 	}
@@ -73,7 +73,7 @@ public class NestedMapClass {
 			return MapsOfLists;
 		}
 
-		public void setMapsOfLists(Map<Map<List<List<String>>, NestedDoubleMapClass>, List<Byte>> mapsOfLists) {
+		public void setMapsOfLists(final Map<Map<List<List<String>>, NestedDoubleMapClass>, List<Byte>> mapsOfLists) {
 			MapsOfLists = mapsOfLists;
 		}
 	}

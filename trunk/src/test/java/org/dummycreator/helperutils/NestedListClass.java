@@ -11,7 +11,7 @@ public class NestedListClass {
 			return numbers;
 		}
 
-		public void setNumbers(List<Double> numbers) {
+		public void setNumbers(final List<Double> numbers) {
 			this.numbers = numbers;
 		}
 	}
@@ -23,7 +23,7 @@ public class NestedListClass {
 			return listsOfNumbers;
 		}
 
-		public void setListsOfNumbers(List<List<Double>> listsOfNumbers) {
+		public void setListsOfNumbers(final List<List<Double>> listsOfNumbers) {
 			this.listsOfNumbers = listsOfNumbers;
 		}
 	}
@@ -35,7 +35,7 @@ public class NestedListClass {
 			return listsOflistsOfNumbers;
 		}
 
-		public void setListsOflistsOfNumbers(List<List<List<Double>>> listsOflistsOfNumbers) {
+		public void setListsOflistsOfNumbers(final List<List<List<Double>>> listsOflistsOfNumbers) {
 			this.listsOflistsOfNumbers = listsOflistsOfNumbers;
 		}
 	}
@@ -47,7 +47,7 @@ public class NestedListClass {
 			return listsOflistsOflistsOfNumbers;
 		}
 
-		public void setListsOflistsOflistsOfNumbers(List<List<List<List<LoopClass>>>> listsOflistsOflistsOfNumbers) {
+		public void setListsOflistsOflistsOfNumbers(final List<List<List<List<LoopClass>>>> listsOflistsOflistsOfNumbers) {
 			this.listsOflistsOflistsOfNumbers = listsOflistsOflistsOfNumbers;
 		}
 	}

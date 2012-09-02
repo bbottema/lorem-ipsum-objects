@@ -32,7 +32,7 @@ public class RandomArrayFactoryTest {
 	 */
 	@Test
 	public void testCreateDummyInteger() {
-		RandomArrayFactory<Integer[]> factory = new RandomArrayFactory<Integer[]>(Integer[].class);
+		final RandomArrayFactory<Integer[]> factory = new RandomArrayFactory<Integer[]>(Integer[].class);
 
 		EasyMock.expect(mock.getRandomInt(2)).andReturn(1); // random array length
 		// the following might not happen depending on how the list of constructors are sorted
@@ -53,7 +53,7 @@ public class RandomArrayFactoryTest {
 	 */
 	@Test
 	public void testCreateDummyInt() {
-		RandomArrayFactory<int[]> factory = new RandomArrayFactory<int[]>(int[].class);
+		final RandomArrayFactory<int[]> factory = new RandomArrayFactory<int[]>(int[].class);
 
 		EasyMock.expect(mock.getRandomInt(2)).andReturn(1); // random array length
 		EasyMock.expect(mock.getRandomInt()).andReturn(12345);
@@ -72,7 +72,7 @@ public class RandomArrayFactoryTest {
 	 */
 	@Test
 	public void testCreateDummyString() {
-		RandomArrayFactory<String[]> factory = new RandomArrayFactory<String[]>(String[].class);
+		final RandomArrayFactory<String[]> factory = new RandomArrayFactory<String[]>(String[].class);
 
 		EasyMock.expect(mock.getRandomInt(2)).andReturn(1); // random array length
 		EasyMock.expect(mock.getRandomString()).andReturn("1234");
@@ -91,23 +91,23 @@ public class RandomArrayFactoryTest {
 	 */
 	@Test
 	public void testCreateDummyTestClass() {
-		RandomArrayFactory<TestClass[]> factory = new RandomArrayFactory<TestClass[]>(TestClass[].class);
+		final RandomArrayFactory<TestClass[]> factory = new RandomArrayFactory<TestClass[]>(TestClass[].class);
 
 		EasyMock.expect(mock.getRandomInt(2)).andReturn(0); // random array length
 		EasyMock.expect(mock.getRandomBoolean()).andReturn(true);
 		EasyMock.expect(mock.getRandomInt()).andReturn(9876);
 		EasyMock.replay(mock);
 
-		TestClass instance1 = new TestClass();
+		final TestClass instance1 = new TestClass();
 		instance1.setBooltje(true);
 		instance1.setIntje(9876);
 		instance1.setTestClass(instance1);
-		TestClass instance2 = new TestClass();
+		final TestClass instance2 = new TestClass();
 		instance2.setBooltje(true);
 		instance2.setIntje(9876);
 		instance2.setTestClass(instance2);
 
-		TestClass[] createDummy = factory.createDummy(new ClassBindings());
+		final TestClass[] createDummy = factory.createDummy(new ClassBindings());
 		assertArrayEquals(new TestClass[] { instance1, instance2 }, createDummy);
 
 		EasyMock.verify(mock);
@@ -119,7 +119,7 @@ public class RandomArrayFactoryTest {
 	 */
 	@Test
 	public void testCreateDummyIntegerArray() {
-		RandomArrayFactory<Integer[][]> factory = new RandomArrayFactory<Integer[][]>(Integer[][].class);
+		final RandomArrayFactory<Integer[][]> factory = new RandomArrayFactory<Integer[][]>(Integer[][].class);
 
 		EasyMock.expect(mock.getRandomInt(2)).andReturn(0); // random master array length
 
@@ -137,7 +137,7 @@ public class RandomArrayFactoryTest {
 		EasyMock.expect(mock.getRandomInt()).andReturn(1029); // Integer(int) for sub array 2 index 2, which should succeed
 		EasyMock.replay(mock);
 
-		Integer[][] dummy = factory.createDummy(new ClassBindings());
+		final Integer[][] dummy = factory.createDummy(new ClassBindings());
 		assertArrayEquals(new Integer[][] { new Integer[] { 1234, 4321 }, new Integer[] { 5678, 8765, 1029 } }, dummy);
 
 		EasyMock.verify(mock);
@@ -156,7 +156,7 @@ public class RandomArrayFactoryTest {
 			return booltje;
 		}
 
-		public void setBooltje(boolean booltje) {
+		public void setBooltje(final boolean booltje) {
 			this.booltje = booltje;
 		}
 
@@ -164,7 +164,7 @@ public class RandomArrayFactoryTest {
 			return intje;
 		}
 
-		public void setIntje(int intje) {
+		public void setIntje(final int intje) {
 			this.intje = intje;
 		}
 
@@ -172,26 +172,32 @@ public class RandomArrayFactoryTest {
 			return testClass;
 		}
 
-		public void setTestClass(TestClass testClass) {
+		public void setTestClass(final TestClass testClass) {
 			this.testClass = testClass;
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
+		public boolean equals(final Object obj) {
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+			if (obj == null) {
 				return false;
-			if (getClass() != obj.getClass())
+			}
+			if (getClass() != obj.getClass()) {
 				return false;
-			TestClass other = (TestClass) obj;
-			if (booltje != other.booltje)
+			}
+			final TestClass other = (TestClass) obj;
+			if (booltje != other.booltje) {
 				return false;
-			if (intje != other.intje)
+			}
+			if (intje != other.intje) {
 				return false;
+			}
 			if (testClass == null) {
-				if (other.testClass != null)
+				if (other.testClass != null) {
 					return false;
+				}
 			}
 			return true;
 		}

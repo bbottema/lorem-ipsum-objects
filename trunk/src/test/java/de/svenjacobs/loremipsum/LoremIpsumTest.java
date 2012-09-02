@@ -32,7 +32,7 @@ public class LoremIpsumTest {
 
 	@Before
 	public void setUp() {
-		this.loremIpsum = new LoremIpsum();
+		loremIpsum = new LoremIpsum();
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class LoremIpsumTest {
 
 	@Test
 	public void testParagraphs() {
-		String paragraphs = loremIpsum.getParagraphs(2);
+		final String paragraphs = loremIpsum.getParagraphs(2);
 		assertThat(
 				paragraphs,
 				is("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."));

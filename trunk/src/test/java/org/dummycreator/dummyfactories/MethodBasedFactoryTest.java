@@ -35,14 +35,15 @@ public class MethodBasedFactoryTest {
 	 * <code>Integer.valueOf(12345)</code> is invoked correctly.
 	 */
 	@Test
-	public void testCreateDummyInteger() throws SecurityException, NoSuchMethodException {
-		Method method = Integer.class.getMethod("valueOf", int.class);
-		MethodBasedFactory<Integer> factory = new MethodBasedFactory<Integer>(method);
+	public void testCreateDummyInteger()
+			throws SecurityException, NoSuchMethodException {
+		final Method method = Integer.class.getMethod("valueOf", int.class);
+		final MethodBasedFactory<Integer> factory = new MethodBasedFactory<Integer>(method);
 
 		EasyMock.expect(mock.getRandomInt()).andReturn(12345);
 		EasyMock.replay(mock);
 
-		Integer dummy = factory.createDummy(new ClassBindings());
+		final Integer dummy = factory.createDummy(new ClassBindings());
 
 		assertNotNull(dummy.getClass());
 		assertEquals(Integer.class, dummy.getClass());
@@ -56,14 +57,15 @@ public class MethodBasedFactoryTest {
 	 * <code>Integer.valueOf("98765")</code> is invoked correctly.
 	 */
 	@Test
-	public void testCreateDummyString() throws SecurityException, NoSuchMethodException {
-		Method method = Integer.class.getMethod("valueOf", String.class);
-		MethodBasedFactory<Integer> factory = new MethodBasedFactory<Integer>(method);
+	public void testCreateDummyString()
+			throws SecurityException, NoSuchMethodException {
+		final Method method = Integer.class.getMethod("valueOf", String.class);
+		final MethodBasedFactory<Integer> factory = new MethodBasedFactory<Integer>(method);
 
 		EasyMock.expect(mock.getRandomString()).andReturn("98765");
 		EasyMock.replay(mock);
 
-		Integer dummy = factory.createDummy(new ClassBindings());
+		final Integer dummy = factory.createDummy(new ClassBindings());
 
 		assertNotNull(dummy.getClass());
 		assertEquals(Integer.class, dummy.getClass());

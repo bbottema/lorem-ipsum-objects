@@ -10,7 +10,7 @@ public class ArrayListClass {
 		return myList;
 	}
 
-	public void setMyList(ArrayList<String> myList) {
+	public void setMyList(final ArrayList<String> myList) {
 		this.myList = myList;
 	}
 

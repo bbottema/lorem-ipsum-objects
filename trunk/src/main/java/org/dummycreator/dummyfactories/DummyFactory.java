@@ -24,7 +24,7 @@ public abstract class DummyFactory<T> {
 	 * 
 	 * @throws IllegalArgumentException
 	 */
-	public boolean isValidForType(Class<? super T> clazz) {
+	public boolean isValidForType(final Class<? super T> clazz) {
 		return true;
 	}
 
@@ -34,7 +34,7 @@ public abstract class DummyFactory<T> {
 	 * @param classBindings A list of bindings to which a factory may defer dummy creation to.
 	 * @return See {@link #createDummy(Map, ClassBindings, List)}.
 	 */
-	public final T createDummy(ClassBindings classBindings) {
+	public final T createDummy(final ClassBindings classBindings) {
 		return createDummy(null, new HashMap<String, ClassUsageInfo<?>>(), classBindings, new ArrayList<Exception>());
 	}
 
@@ -53,5 +53,6 @@ public abstract class DummyFactory<T> {
 	 *            suitable constructor can be found otherwise).
 	 * @return A new instance of the given type.
 	 */
-	public abstract T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions);
+	public abstract T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings,
+			List<Exception> exceptions);
 }

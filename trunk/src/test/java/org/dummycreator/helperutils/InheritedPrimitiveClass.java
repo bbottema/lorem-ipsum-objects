@@ -18,7 +18,7 @@ public class InheritedPrimitiveClass extends PrimitiveClass {
 	 * 
 	 * @param secondString new value of secondString
 	 */
-	public void setSecondString(String secondString) {
+	public void setSecondString(final String secondString) {
 		this.secondString = secondString;
 	}
 

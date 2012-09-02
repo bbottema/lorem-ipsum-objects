@@ -89,7 +89,7 @@ public class ClassBindings {
 				// factory didn't throw an exception, so we'll do it ourself
 				throw new IllegalArgumentException();
 			}
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			// note: exception is also thrown by DummyFactory.isValidForType
 			throw new IllegalArgumentException(String.format("dummy factory [%s] is not valid for class type [%s]", factory, clazz), e);
 		}
@@ -111,7 +111,7 @@ public class ClassBindings {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static ClassBindings defaultBindings() {
-		ClassBindings classBindings = new ClassBindings();
+		final ClassBindings classBindings = new ClassBindings();
 		classBindings.add(List.class, new ClassBasedFactory<ArrayList>(ArrayList.class));
 		classBindings.add(Map.class, new ClassBasedFactory<HashMap>(HashMap.class));
 		classBindings.add(Set.class, new ClassBasedFactory<HashSet>(HashSet.class));

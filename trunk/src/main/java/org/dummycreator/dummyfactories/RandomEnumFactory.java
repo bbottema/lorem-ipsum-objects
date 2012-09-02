@@ -15,7 +15,7 @@ public class RandomEnumFactory<T extends Enum<?>> extends DummyFactory<T> {
 
 	private final Class<T> clazz;
 
-	public RandomEnumFactory(Class<T> clazz) {
+	public RandomEnumFactory(final Class<T> clazz) {
 		this.clazz = clazz;
 	}
 
@@ -26,7 +26,8 @@ public class RandomEnumFactory<T extends Enum<?>> extends DummyFactory<T> {
 	 * @param exceptions Not used.
 	 */
 	@Override
-	public T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public T createDummy(final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances,
+			final ClassBindings classBindings, final List<Exception> exceptions) {
 		final T[] enums = clazz.getEnumConstants();
 		return enums[RandomCreator.getInstance().getRandomInt(enums.length - 1)];
 	}

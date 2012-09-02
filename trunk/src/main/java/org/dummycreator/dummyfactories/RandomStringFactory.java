@@ -15,13 +15,13 @@ public class RandomStringFactory extends DummyFactory<String> {
 
 	/**
 	 * @return The result of {@link RandomCreator#getRandomString()}.
-	 * 
 	 * @param knownInstances Not used.
 	 * @param classBindings Not used.
 	 * @param exceptions Not used.
 	 */
 	@Override
-	public String createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public String createDummy(final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances,
+			final ClassBindings classBindings, final List<Exception> exceptions) {
 		return RandomCreator.getInstance().getRandomString();
 	}
 }

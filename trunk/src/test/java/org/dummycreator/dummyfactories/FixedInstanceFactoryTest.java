@@ -33,7 +33,7 @@ public class FixedInstanceFactoryTest {
 		try {
 			assertTrue(new FixedInstanceFactory(4.3).isValidForType(Integer.class));
 			fail("4.3 is not assignable to an integer");
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			// ok
 		}
 	};

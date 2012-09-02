@@ -16,7 +16,7 @@ public class ConstructorBasedFactory<T> extends DummyFactory<T> {
 
 	private final Constructor<T> constructor;
 
-	public ConstructorBasedFactory(Constructor<T> constructor) {
+	public ConstructorBasedFactory(final Constructor<T> constructor) {
 		this.constructor = constructor;
 	}
 
@@ -30,24 +30,26 @@ public class ConstructorBasedFactory<T> extends DummyFactory<T> {
 	 *            parameters for the <code>Constructor</code>.
 	 */
 	@Override
-	public T createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classbindings, List<Exception> exceptions) {
+	public T createDummy(final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances,
+			final ClassBindings classbindings, final List<Exception> exceptions) {
 		@SuppressWarnings("unchecked")
-		Class<T>[] parameters = (Class<T>[]) constructor.getParameterTypes();
+		final Class<T>[] parameters = (Class<T>[]) constructor.getParameterTypes();
 		try {
 			if (parameters.length > 0) {
 				final Object[] params = new Object[parameters.length];
 				for (int i = 0; i < params.length; i++) {
-					params[i] = new ClassBasedFactory<T>(parameters[i]).createDummy(genericMetaData, knownInstances, classbindings, exceptions);
+					params[i] = new ClassBasedFactory<T>(parameters[i]).createDummy(genericMetaData, knownInstances, classbindings,
+							exceptions);
 				}
 				return constructor.newInstance(params);
 			} else {
 				return constructor.newInstance();
 			}
-		} catch (InvocationTargetException e) {
+		} catch (final InvocationTargetException e) {
 			exceptions.add(e);
-		} catch (InstantiationException e) {
+		} catch (final InstantiationException e) {
 			exceptions.add(e);
-		} catch (IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			exceptions.add(e);
 		}
 		return null;
