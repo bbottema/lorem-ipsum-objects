@@ -133,7 +133,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 
 			// is the class an enum?
 			if (clazz.isEnum()) {
-				return (T) new RandomEnumFactory<Enum>((Class<Enum>) clazz).createDummy(genericMetaData, knownInstances, classBindings,
+				return (T) new RandomEnumFactory((Class<Enum>) clazz).createDummy(genericMetaData, knownInstances, classBindings,
 						exceptions);
 			}
 
