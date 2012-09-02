@@ -10,6 +10,19 @@ import java.util.Map;
  */
 public class NestedMapClass {
 
+	@SuppressWarnings("rawtypes")
+	public static class NestedSingleSimpleMapClass {
+		public Map map;
+
+		public Map getMap() {
+			return map;
+		}
+
+		public void setMap(Map map) {
+			this.map = map;
+		}
+	}
+
 	public static class NestedSingleMapClass {
 		public Map<Double, LoopClass> numbers;
 

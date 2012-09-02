@@ -30,6 +30,7 @@ import org.dummycreator.helperutils.NestedMapClass.NestedDoubleAssymetricMapClas
 import org.dummycreator.helperutils.NestedMapClass.NestedDoubleMapClass;
 import org.dummycreator.helperutils.NestedMapClass.NestedEverythingClass;
 import org.dummycreator.helperutils.NestedMapClass.NestedSingleMapClass;
+import org.dummycreator.helperutils.NestedMapClass.NestedSingleSimpleMapClass;
 import org.dummycreator.helperutils.NestedMapClass.NestedTripleMapClass;
 import org.dummycreator.helperutils.NormalClass;
 import org.dummycreator.helperutils.PrimitiveClass;
@@ -308,6 +309,21 @@ public class ClassBasedFactoryTest {
 		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).getClass());
 		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).get(0).getClass());
 		assertSame(LoopClass.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).get(0).get(0).getClass());
+	}
+
+	/**
+	 * Tests whether a single nested <code>Map</code> will be produced correctly (generics should be preserved).
+	 */
+	@Test
+	public void testSingleSimpleNestedGenericMap() {
+		// single nested map
+		final ClassBasedFactory<NestedSingleSimpleMapClass> factorySingle = new ClassBasedFactory<NestedSingleSimpleMapClass>(
+				NestedSingleSimpleMapClass.class);
+		final NestedSingleSimpleMapClass dummySingle = factorySingle.createDummy(classBindings);
+		assertSame(HashMap.class, dummySingle.getMap().getClass());
+		final Entry<?, ?> firstEntrySingleMap = (Entry<?, ?>) dummySingle.getMap().entrySet().iterator().next();
+		assertSame(String.class, firstEntrySingleMap.getKey().getClass());
+		assertSame(String.class, firstEntrySingleMap.getValue().getClass());
 	}
 
 	/**

@@ -22,6 +22,16 @@ import org.dummycreator.helperutils.LoopClass;
 import org.dummycreator.helperutils.MultiConstructorClass;
 import org.dummycreator.helperutils.MyCustomTestClass;
 import org.dummycreator.helperutils.MyCustomTestClassList;
+import org.dummycreator.helperutils.NestedListClass.NestedDoubleListClass;
+import org.dummycreator.helperutils.NestedListClass.NestedQuadrupleListClass;
+import org.dummycreator.helperutils.NestedListClass.NestedSingleListClass;
+import org.dummycreator.helperutils.NestedListClass.NestedTripleListClass;
+import org.dummycreator.helperutils.NestedMapClass.NestedDoubleAssymetricMapClass;
+import org.dummycreator.helperutils.NestedMapClass.NestedDoubleMapClass;
+import org.dummycreator.helperutils.NestedMapClass.NestedEverythingClass;
+import org.dummycreator.helperutils.NestedMapClass.NestedSingleMapClass;
+import org.dummycreator.helperutils.NestedMapClass.NestedSingleSimpleMapClass;
+import org.dummycreator.helperutils.NestedMapClass.NestedTripleMapClass;
 import org.dummycreator.helperutils.NormalClass;
 import org.dummycreator.helperutils.PrimitiveClass;
 import org.dummycreator.helperutils.TestChainBinding.B;
@@ -252,6 +262,161 @@ public class DummyCreatorTest {
 		final List<Integer> ec = dummyCreator.create(numbers.getClass());
 		assertNotNull(ec);
 		assertSame(String.class, ((Object) ec.get(0)).getClass());
+	}
+
+	/**
+	 * Tests whether a nested <code>List</code> of <code>Double</code> will be produced correctly (generics should be preserved). Includes
+	 * testing nested list of lists up to 4 deep.
+	 */
+	@Test
+	public void testNestedGenericList() {
+		// single nested list
+		final NestedSingleListClass dummySingle = dummyCreator.create(NestedSingleListClass.class);
+		assertSame(ArrayList.class, dummySingle.getNumbers().getClass());
+		assertSame(Double.class, dummySingle.getNumbers().get(0).getClass());
+
+		// double nested list
+		final NestedDoubleListClass dummyDouble = dummyCreator.create(NestedDoubleListClass.class);
+		assertSame(ArrayList.class, dummyDouble.getListsOfNumbers().get(0).getClass());
+		assertSame(Double.class, dummyDouble.getListsOfNumbers().get(0).get(0).getClass());
+
+		// triple nested list
+		final NestedTripleListClass dummyTriple = dummyCreator.create(NestedTripleListClass.class);
+		assertSame(ArrayList.class, dummyTriple.getListsOflistsOfNumbers().get(0).getClass());
+		assertSame(ArrayList.class, dummyTriple.getListsOflistsOfNumbers().get(0).get(0).getClass());
+		assertSame(Double.class, dummyTriple.getListsOflistsOfNumbers().get(0).get(0).get(0).getClass());
+
+		// quadruple nested list
+		final NestedQuadrupleListClass dummyQuadruple = dummyCreator.create(NestedQuadrupleListClass.class);
+		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).getClass());
+		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).getClass());
+		assertSame(ArrayList.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).get(0).getClass());
+		assertSame(LoopClass.class, dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).get(0).get(0).getClass());
+	}
+
+	/**
+	 * Tests whether a single nested <code>Map</code> will be produced correctly (generics should be preserved).
+	 */
+	@Test
+	public void testSingleSimpleNestedGenericMap() {
+		// single nested map
+		final NestedSingleSimpleMapClass dummySingle = dummyCreator.create(NestedSingleSimpleMapClass.class);
+		assertSame(HashMap.class, dummySingle.getMap().getClass());
+		final Entry<?, ?> firstEntrySingleMap = (Entry<?, ?>) dummySingle.getMap().entrySet().iterator().next();
+		assertSame(String.class, firstEntrySingleMap.getKey().getClass());
+		assertSame(String.class, firstEntrySingleMap.getValue().getClass());
+	}
+
+	/**
+	 * Tests whether a single nested <code>Map</code> will be produced correctly (generics should be preserved).
+	 */
+	@Test
+	public void testSingleNestedGenericMap() {
+		// single nested map
+		final NestedSingleMapClass dummySingle = dummyCreator.create(NestedSingleMapClass.class);
+		assertSame(HashMap.class, dummySingle.getNumbers().getClass());
+		final Entry<Double, LoopClass> firstEntrySingleMap = dummySingle.getNumbers().entrySet().iterator().next();
+		assertSame(Double.class, firstEntrySingleMap.getKey().getClass());
+		assertSame(LoopClass.class, firstEntrySingleMap.getValue().getClass());
+	}
+
+	/**
+	 * Tests whether a double nested <code>Map</code> will be produced correctly (generics should be preserved).
+	 */
+	@Test
+	public void testDoubleNestedGenericMap() {
+		// double nested map
+		final NestedDoubleMapClass dummyDouble = dummyCreator.create(NestedDoubleMapClass.class);
+		assertSame(HashMap.class, dummyDouble.getMapsOfNumbers().getClass());
+		final Entry<Map<Integer, NestedDoubleMapClass>, Map<Double, LoopClass>> firstEntry = dummyDouble.getMapsOfNumbers().entrySet()
+				.iterator().next();
+
+		assertSame(HashMap.class, firstEntry.getKey().getClass());
+		assertSame(HashMap.class, firstEntry.getValue().getClass());
+
+		final Entry<Integer, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
+		final Entry<Double, LoopClass> nestedValueMap = firstEntry.getValue().entrySet().iterator().next();
+
+		assertSame(Integer.class, nestedKeyMap.getKey().getClass());
+		assertSame(NestedDoubleMapClass.class, nestedKeyMap.getValue().getClass());
+		assertSame(Double.class, nestedValueMap.getKey().getClass());
+		assertSame(LoopClass.class, nestedValueMap.getValue().getClass());
+	}
+
+	/**
+	 * Tests whether a double nested <code>Map</code> will be produced correctly (generics should be preserved). Here the number of generic
+	 * types on both sides (of the <code>Key</code> and <code>Value</code> side) are uneven.
+	 */
+	@Test
+	public void testDoubleNestedAsymmetricGenericMap() {
+		// double nested map
+		final NestedDoubleAssymetricMapClass dummyDouble = dummyCreator.create(NestedDoubleAssymetricMapClass.class);
+		assertSame(HashMap.class, dummyDouble.getMapsOfCharacters().getClass());
+		final Entry<Map<Integer, NestedDoubleMapClass>, Character> firstEntry = dummyDouble.getMapsOfCharacters().entrySet().iterator()
+				.next();
+
+		assertSame(HashMap.class, firstEntry.getKey().getClass());
+		assertSame(Character.class, firstEntry.getValue().getClass());
+
+		final Entry<Integer, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
+
+		assertSame(Integer.class, nestedKeyMap.getKey().getClass());
+		assertSame(NestedDoubleMapClass.class, nestedKeyMap.getValue().getClass());
+	}
+
+	/**
+	 * Tests whether a double nested <code>Map</code> will be produced correctly (generics should be preserved), including nested generic
+	 * lists.
+	 */
+	@Test
+	public void testDoubleNestedGenericMapsAndLists() {
+		// double nested map
+		final NestedEverythingClass dummyDouble = dummyCreator.create(NestedEverythingClass.class);
+		assertSame(HashMap.class, dummyDouble.getMapsOfLists().getClass());
+		final Entry<Map<List<List<String>>, NestedDoubleMapClass>, List<Byte>> firstEntry = dummyDouble.getMapsOfLists().entrySet()
+				.iterator().next();
+
+		assertSame(HashMap.class, firstEntry.getKey().getClass());
+		assertSame(ArrayList.class, firstEntry.getValue().getClass());
+
+		final Entry<List<List<String>>, NestedDoubleMapClass> nestedKeyMap = firstEntry.getKey().entrySet().iterator().next();
+
+		assertSame(NestedDoubleMapClass.class, nestedKeyMap.getValue().getClass());
+		assertSame(Byte.class, firstEntry.getValue().get(0).getClass());
+		assertSame(ArrayList.class, nestedKeyMap.getKey().getClass());
+		assertSame(ArrayList.class, nestedKeyMap.getKey().get(0).getClass());
+		assertSame(String.class, nestedKeyMap.getKey().get(0).get(0).getClass());
+	}
+
+	/**
+	 * Tests whether a triple nested <code>Map</code> will be produced correctly (generics should be preserved).
+	 */
+	@Test
+	public void testTripleNestedGenericMap() {
+		// triple nested map
+		final NestedTripleMapClass dummyTriple = dummyCreator.create(NestedTripleMapClass.class);
+		assertSame(HashMap.class, dummyTriple.getMapsOfMapsOfNumbers().getClass());
+		final Entry<Map<Integer, Map<Double, LoopClass>>, Map<Double, Map<Double, LoopClass>>> firstEntryTriple = dummyTriple
+				.getMapsOfMapsOfNumbers().entrySet().iterator().next();
+
+		assertSame(HashMap.class, firstEntryTriple.getKey().getClass());
+		assertSame(HashMap.class, firstEntryTriple.getValue().getClass());
+
+		final Entry<Integer, Map<Double, LoopClass>> nestedKeyMapTriple = firstEntryTriple.getKey().entrySet().iterator().next();
+		final Entry<Double, Map<Double, LoopClass>> nestedValueMapTriple = firstEntryTriple.getValue().entrySet().iterator().next();
+
+		assertSame(Integer.class, nestedKeyMapTriple.getKey().getClass());
+		assertSame(HashMap.class, nestedKeyMapTriple.getValue().getClass());
+		assertSame(Double.class, nestedValueMapTriple.getKey().getClass());
+		assertSame(HashMap.class, nestedValueMapTriple.getValue().getClass());
+
+		final Entry<Double, LoopClass> nestedNestedValueMapTriple = nestedKeyMapTriple.getValue().entrySet().iterator().next();
+		final Entry<Double, LoopClass> nestedNestedKeyMapTriple = nestedValueMapTriple.getValue().entrySet().iterator().next();
+
+		assertSame(Double.class, nestedNestedValueMapTriple.getKey().getClass());
+		assertSame(LoopClass.class, nestedNestedValueMapTriple.getValue().getClass());
+		assertSame(Double.class, nestedNestedKeyMapTriple.getKey().getClass());
+		assertSame(LoopClass.class, nestedNestedKeyMapTriple.getValue().getClass());
 	}
 
 	/**
