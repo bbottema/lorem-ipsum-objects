@@ -1,5 +1,6 @@
 package org.dummycreator.dummyfactories;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class RandomStringFactory extends DummyFactory<String> {
 	 * @param exceptions Not used.
 	 */
 	@Override
-	public String createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public String createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		return RandomCreator.getInstance().getRandomString();
 	}
 }

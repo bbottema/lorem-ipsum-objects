@@ -23,7 +23,7 @@ public class RandomStringFactoryTest {
 		EasyMock.expect(mock.getRandomString()).andReturn("1234");
 		EasyMock.replay(mock);
 
-		assertEquals("1234", factory.createDummy(null, null, null));
+		assertEquals("1234", factory.createDummy(null, null, null, null));
 
 		EasyMock.verify(mock);
 		RandomCreator.setInstance(new RandomCreator());

@@ -1,5 +1,6 @@
 package org.dummycreator.dummyfactories;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class RandomBooleanFactory extends DummyFactory<Boolean> {
 	 * @param exceptions Not used.
 	 */
 	@Override
-	public Boolean createDummy(Map<Class<?>, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public Boolean createDummy(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		return RandomCreator.getInstance().getRandomBoolean();
 	}
 }
