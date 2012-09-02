@@ -69,7 +69,8 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public T createDummy(Type[] nextGenericsMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	public T createDummy(Type[] nextGenericsMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings,
+			List<Exception> exceptions) {
 		// list of classes, we already used for population. by remembering, we can avoid recursive looping
 		final String typeMarker = createTypeMarker(clazz, nextGenericsMetaData);
 		if (knownInstances.get(typeMarker) == null || !knownInstances.get(typeMarker).isPopulated()) {
@@ -86,7 +87,8 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 						logger.error(e.getMessage(), e);
 					}
 				}
-				throw new IllegalArgumentException(String.format("Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
+				throw new IllegalArgumentException(String.format(
+						"Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
 			}
 		} else {
 			return (T) knownInstances.get(typeMarker).getInstance();
@@ -106,7 +108,8 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private T create(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	private T create(Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings,
+			List<Exception> exceptions) {
 		T ret = null;
 
 		// first try possibly bound dummy factory
@@ -130,7 +133,8 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 
 			// is the class an enum?
 			if (clazz.isEnum()) {
-				return (T) new RandomEnumFactory<Enum>((Class<Enum>) clazz).createDummy(genericMetaData, knownInstances, classBindings, exceptions);
+				return (T) new RandomEnumFactory<Enum>((Class<Enum>) clazz).createDummy(genericMetaData, knownInstances, classBindings,
+						exceptions);
 			}
 
 			// load the constructors
@@ -156,12 +160,14 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 			// check if we have a prefered Constructor and try it
 			Constructor<T> preferedConstructor = (Constructor<T>) constructorCache.getPreferedConstructor(clazz);
 			if (preferedConstructor != null) {
-				ret = new ConstructorBasedFactory<T>(preferedConstructor).createDummy(genericMetaData, knownInstances, classBindings, exceptions);
+				ret = new ConstructorBasedFactory<T>(preferedConstructor).createDummy(genericMetaData, knownInstances, classBindings,
+						exceptions);
 			}
 
 			if (ret == null) {
 				for (Constructor<?> co : cachedConstructors) {
-					ret = new ConstructorBasedFactory<T>((Constructor<T>) co).createDummy(genericMetaData, knownInstances, classBindings, exceptions);
+					ret = new ConstructorBasedFactory<T>((Constructor<T>) co).createDummy(genericMetaData, knownInstances, classBindings,
+							exceptions);
 					if (ret != null) {
 						constructorCache.setPreferedConstructor(clazz, co);
 						break;
@@ -188,20 +194,39 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * @param clazz The raw class, used if no generic meta data is available.
 	 * @param genericMetaData The generics meta data, if not null, used to create a unique string including all nested types.
 	 * @return A unique key based on a given <code>Class</code> or its generic meta data if available.
+	 * @see #createTypeMarker(Type[])
 	 */
 	protected static String createTypeMarker(Class<?> clazz, Type[] genericMetaData) {
-		String typeMarker = clazz.getName() + "|";
-
+		return "|" + clazz.getName() + "|" + createTypeMarker(genericMetaData);
+	}
+	
+	/**
+	 * Creates a unique key for a generics type, including nested generic types.
+	 * 
+	 * @param genericMetaData The generics meta data, if not null, used to create a unique string including all nested types.
+	 * @return A unique key based on a given <code>Class</code> or its generic meta data if available.
+	 */
+	private static String createTypeMarker(Type[] genericMetaData) {
+		String typeMarker = "";
 		if (genericMetaData != null) {
-			Type nextGenericMetaData = genericMetaData[0];
-
-			while (!(nextGenericMetaData instanceof Class)) {
-				typeMarker += ((Class<?>) ((ParameterizedType) nextGenericMetaData).getRawType()).getName() + "|";
-				nextGenericMetaData = ((ParameterizedType) nextGenericMetaData).getActualTypeArguments()[0];
+			// if only one type to process
+			if (genericMetaData.length == 1) {
+				Type nextGenericMetaData = genericMetaData[0];
+				if (nextGenericMetaData instanceof Class) {
+					// use the classname
+					typeMarker += ((Class<?>) nextGenericMetaData).getName() + "|";
+				} else {
+					// go deeper using the next generics declarations
+					typeMarker += ((Class<?>) ((ParameterizedType) nextGenericMetaData).getRawType()).getName() + "|";
+					typeMarker += createTypeMarker(((ParameterizedType) nextGenericMetaData).getActualTypeArguments());
+				}
+			} else {
+				// split up multiple types
+				for (Type type : genericMetaData) {
+					typeMarker += createTypeMarker(new Type[] { type });
+				}
 			}
-			typeMarker += ((Class<?>) nextGenericMetaData).getName();
 		}
-
 		return typeMarker;
 	}
 
@@ -261,7 +286,8 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * @see #populateMap(Object, Type, Map, ClassBindings, List)
 	 */
 	@SuppressWarnings({ "unchecked" })
-	private void populateObject(final T subject, Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	private void populateObject(final T subject, Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances,
+			ClassBindings classBindings, List<Exception> exceptions) {
 		if (subject instanceof Collection) {
 			populateCollection((Collection<Object>) subject, genericMetaData, knownInstances, classBindings, exceptions);
 		} else if (subject instanceof Map) {
@@ -269,18 +295,19 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 		} else {
 			// populate POJO using it's bean setters (which should always contain exactly one parameter)
 			// by creating a new dummy using a ClassBasedFactory for each Method's parameter and finally invoke the method itself
-			for (Method m : discoverSetters(subject.getClass())) {
+			for (Method setter : discoverSetters(subject.getClass())) {
 				// collect generics meta data if available
-				ClassBasedFactory<T> factory = new ClassBasedFactory<T>((Class<T>) m.getParameterTypes()[0]);
-				Type genericParameterType = m.getGenericParameterTypes()[0];
+				ClassBasedFactory<T> factory = new ClassBasedFactory<T>((Class<T>) setter.getParameterTypes()[0]);
+				Type genericParameterType = setter.getGenericParameterTypes()[0];
 				boolean isRawClassItself = genericParameterType instanceof Class;
-				Type[] nextGenericsMetaData = (isRawClassItself) ? null : ((ParameterizedType) genericParameterType).getActualTypeArguments();
+				Type[] nextGenericsMetaData = (isRawClassItself) ? null : ((ParameterizedType) genericParameterType)
+						.getActualTypeArguments();
 				// finally create the parameter with or without generics meta data
 				Object parameter = factory.createDummy(nextGenericsMetaData, knownInstances, classBindings, exceptions);
 				try {
-					m.invoke(subject, parameter);
+					setter.invoke(subject, parameter);
 				} catch (Exception e) {
-					logger.error("error calling setter method [" + m.getName() + "]", e);
+					logger.error("error calling setter method [" + setter.getName() + "]", e);
 				}
 			}
 		}
@@ -296,7 +323,6 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * <li>By resorting to a <code>String</code> dummy object as a last resort, when we can't determine a type.</li>
 	 * </ol>
 	 * 
-	 * 
 	 * @param subject The collection to populate with dummy objects.
 	 * @param genericMetaData If not null, contains the generics meta data for the collection type as declared in the collections field.
 	 * @param knownInstances A list of known instances to keep track of already processed classes (to avoid infinite loop).
@@ -305,13 +331,14 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 *            and maps.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void populateCollection(final Collection<Object> subject, Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	private void populateCollection(final Collection<Object> subject, Type[] genericMetaData,
+			Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
 		for (int i = 0; i < RandomCreator.getInstance().getRandomInt(2) + 2; i++) {
 			// detect generic declarations
 			Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
 
 			final ClassBasedFactory<?> factory;
-			Type[] nextGenericMetaData = genericMetaData;
+			Type[] nextGenericMetaData = null;
 
 			if (genericTypes.length > 0 && (genericTypes[0] instanceof Class)) {
 				// uses generic type if available, Integer for '<T extends List<Integer>>'
@@ -339,43 +366,59 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void populateMap(final Map<Object, Object> subject, Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classBindings, List<Exception> exceptions) {
+	private void populateMap(final Map<Object, Object> subject, Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances,
+			ClassBindings classBindings, List<Exception> exceptions) {
 		for (int i = 0; i < RandomCreator.getInstance().getRandomInt(2) + 2; i++) {
 			// detect generic declarations
 			Type[] genericTypes = ((ParameterizedType) subject.getClass().getGenericSuperclass()).getActualTypeArguments();
 
 			final ClassBasedFactory<?> factory1;
 			final ClassBasedFactory<?> factory2;
-			Type[] nextGenericMetaData = genericMetaData;
+			Type[] nextGenericMetaDataKeyClass = null;
+			Type[] nextGenericMetaDataValueClass = null;
 
-			if (genericTypes.length > 0 && (genericTypes[0] instanceof Class) && (genericTypes[1] instanceof Class)) {
+			if (genericTypes.length > 1 && genericTypes[0] instanceof Class) {
 				// uses generic type if available, String and Integer for '<T extends Map<String, Double>>'
 				factory1 = new ClassBasedFactory<T>((Class<T>) genericTypes[0]);
-				factory2 = new ClassBasedFactory<T>((Class<T>) genericTypes[1]);
 			} else if (genericMetaData != null) {
 				// use the generics meta data passed in as a field in the context of a List or Map
 				final Class<?> keyClassFromGenerics;
-				final Class<?> ValueClassFromGenerics;
-				nextGenericMetaData = null;
 
-				if (genericMetaData[0] instanceof Class && genericMetaData[1] instanceof Class) {
+				if (genericMetaData[0] instanceof Class) {
 					keyClassFromGenerics = (Class<?>) genericMetaData[0];
-					ValueClassFromGenerics = (Class<?>) genericMetaData[1];
 				} else {
 					keyClassFromGenerics = (Class<?>) ((ParameterizedType) genericMetaData[0]).getRawType();
-					ValueClassFromGenerics = (Class<?>) ((ParameterizedType) genericMetaData[1]).getRawType();
-					nextGenericMetaData = ((ParameterizedType) genericMetaData[0]).getActualTypeArguments();
+					nextGenericMetaDataKeyClass = ((ParameterizedType) genericMetaData[0]).getActualTypeArguments();
 				}
 
 				factory1 = new ClassBasedFactory(keyClassFromGenerics);
-				factory2 = new ClassBasedFactory(ValueClassFromGenerics);
 			} else {
 				// use default String and String value for raw type Collection
 				factory1 = new ClassBasedFactory<String>(String.class);
+			}
+
+			if (genericTypes.length > 1 && genericTypes[1] instanceof Class) {
+				// uses generic type if available, String and Integer for '<T extends Map<String, Double>>'
+				factory2 = new ClassBasedFactory<T>((Class<T>) genericTypes[1]);
+			} else if (genericMetaData != null) {
+				// use the generics meta data passed in as a field in the context of a List or Map
+				final Class<?> ValueClassFromGenerics;
+
+				if (genericMetaData[1] instanceof Class) {
+					ValueClassFromGenerics = (Class<?>) genericMetaData[1];
+				} else {
+					ValueClassFromGenerics = (Class<?>) ((ParameterizedType) genericMetaData[1]).getRawType();
+					nextGenericMetaDataValueClass = ((ParameterizedType) genericMetaData[1]).getActualTypeArguments();
+				}
+
+				factory2 = new ClassBasedFactory(ValueClassFromGenerics);
+			} else {
+				// use default String and String value for raw type Collection
 				factory2 = new ClassBasedFactory<String>(String.class);
 			}
-			Object dummyKey = factory1.createDummy(nextGenericMetaData, knownInstances, classBindings, exceptions);
-			Object dummyValue = factory2.createDummy(nextGenericMetaData, knownInstances, classBindings, exceptions);
+
+			Object dummyKey = factory1.createDummy(nextGenericMetaDataKeyClass, knownInstances, classBindings, exceptions);
+			Object dummyValue = factory2.createDummy(nextGenericMetaDataValueClass, knownInstances, classBindings, exceptions);
 			subject.put(dummyKey, dummyValue);
 		}
 	}
@@ -384,7 +427,8 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 		List<Method> setters = constructorCache.getMethodCache(clazz);
 		if (setters == null) {
 			setters = new ArrayList<Method>();
-			Map<Class<?>, List<FieldWrapper>> fields = FieldUtils.collectFields(clazz, Object.class, EnumSet.allOf(Visibility.class), EnumSet.of(BeanRestriction.YES_SETTER));
+			Map<Class<?>, List<FieldWrapper>> fields = FieldUtils.collectFields(clazz, Object.class, EnumSet.allOf(Visibility.class),
+					EnumSet.of(BeanRestriction.YES_SETTER));
 			for (List<FieldWrapper> fieldWrappers : fields.values()) {
 				for (FieldWrapper fieldWrapper : fieldWrappers) {
 					setters.add(fieldWrapper.getSetter());
