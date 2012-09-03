@@ -197,29 +197,9 @@ public class ClassBasedFactoryTest {
 		assertEquals(PrimitiveClass.class, primitive.getClass());
 		assertEquals(InheritedPrimitiveClass.class, inheritedPrimitive.getClass());
 
-		// primitive
-		assertEquals('[', primitive.get_char());
-		assertEquals(true, primitive.is_boolean());
-		assertEquals(33l, primitive.get_long());
-		assertEquals(55d, primitive.get_double(), 0);
-		assertEquals(55d, primitive.get_secondDouble(), 0);
-		assertEquals("not so random test string", primitive.get_string());
-		assertEquals(44, primitive.get_short());
-		assertEquals(44f, primitive.get_float(), 0);
-		assertEquals(2, primitive.get_byte());
-		assertEquals(111, primitive.get_int());
-		// inheritedPrimitive
+		testPrimitiveClass(primitive);
+		testPrimitiveClass(inheritedPrimitive);
 		assertEquals("not so random test string", inheritedPrimitive.getSecondString());
-		assertEquals('[', inheritedPrimitive.get_char());
-		assertEquals(true, inheritedPrimitive.is_boolean());
-		assertEquals(33l, inheritedPrimitive.get_long());
-		assertEquals(55d, inheritedPrimitive.get_double(), 0);
-		assertEquals(55d, inheritedPrimitive.get_secondDouble(), 0);
-		assertEquals("not so random test string", inheritedPrimitive.get_string());
-		assertEquals(44, inheritedPrimitive.get_short());
-		assertEquals(44f, inheritedPrimitive.get_float(), 0);
-		assertEquals(2, inheritedPrimitive.get_byte());
-		assertEquals(111, inheritedPrimitive.get_int());
 
 		EasyMock.verify(mock);
 	}
@@ -230,8 +210,14 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testNormalClassCreation() {
-		assertEquals(NormalClass.class, new ClassBasedFactory<NormalClass>(NormalClass.class).createDummy(classBindings).getClass());
-		// TODO Check if all parameters have been set
+		NormalClass dummy = new ClassBasedFactory<NormalClass>(NormalClass.class).createDummy(classBindings);
+		assertEquals(NormalClass.class, dummy.getClass());
+
+		testPrimitiveClass(dummy.getPrimitiveClass());
+		assertEquals(111, dummy.getId());
+		assertEquals(true, dummy.getSomeBoolean());
+
+		EasyMock.verify(mock);
 	}
 
 	/**
@@ -251,7 +237,38 @@ public class ClassBasedFactoryTest {
 	public void testMultiConstructorClassCreation() {
 		final MultiConstructorClass dummy = new ClassBasedFactory<MultiConstructorClass>(MultiConstructorClass.class).createDummy(classBindings);
 		assertEquals(MultiConstructorClass.class, dummy.getClass());
-		// TODO Check if all parameters have been set
+
+		assertEquals(111, dummy.getA());
+		assertEquals(111, dummy.getB());
+		assertEquals(111, dummy.getC());
+		assertEquals(111, dummy.getD());
+		assertEquals(111, dummy.getE());
+		assertEquals(111, dummy.getF());
+		assertEquals(111, dummy.getG());
+		assertEquals(111, dummy.getH());
+		assertEquals(111, dummy.getI());
+		testPrimitiveClass(dummy.getP1());
+		testPrimitiveClass(dummy.getP2());
+		testPrimitiveClass(dummy.getP3());
+		testPrimitiveClass(dummy.getP4());
+		testPrimitiveClass(dummy.getP5());
+		testPrimitiveClass(dummy.getP6());
+		testPrimitiveClass(dummy.getP7());
+
+		EasyMock.verify(mock);
+	}
+
+	private void testPrimitiveClass(PrimitiveClass primitive) {
+		assertEquals('[', primitive.get_char());
+		assertEquals(true, primitive.is_boolean());
+		assertEquals(33l, primitive.get_long());
+		assertEquals(55d, primitive.get_double(), 0);
+		assertEquals(55d, primitive.get_secondDouble(), 0);
+		assertEquals("not so random test string", primitive.get_string());
+		assertEquals(44, primitive.get_short());
+		assertEquals(44f, primitive.get_float(), 0);
+		assertEquals(2, primitive.get_byte());
+		assertEquals(111, primitive.get_int());
 	}
 
 	/**
