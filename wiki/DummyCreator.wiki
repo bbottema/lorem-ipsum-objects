@@ -52,5 +52,5 @@ ClassBindings classBindings = ClassBindings.defaultBindings();
 classBindings.add(Fruit.class, new ConstructorBasedFactory<Apple>(Apple.class.getConstructor(String.class, Banana.class)));
 DummyCreator dummyCreator = new DummyCreator(classBindings);
 
-Fruit dummy = dummyCreator.create(Fruit.class); // dummy will be an Apple created with a reference to a banana
+Fruit dummy = dummyCreator.create(Fruit.class); // dummy will be a named Apple created with a reference to a banana
 }}}
