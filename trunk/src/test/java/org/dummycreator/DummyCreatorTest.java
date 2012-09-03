@@ -223,25 +223,14 @@ public class DummyCreatorTest {
 		EasyMock.verify(mock);
 	}
 
-	private void testPrimitiveClass(PrimitiveClass primitive) {
-		assertEquals('[', primitive.get_char());
-		assertEquals(true, primitive.is_boolean());
-		assertEquals(33l, primitive.get_long());
-		assertEquals(55d, primitive.get_double(), 0);
-		assertEquals(55d, primitive.get_secondDouble(), 0);
-		assertEquals("not so random test string", primitive.get_string());
-		assertEquals(44, primitive.get_short());
-		assertEquals(44f, primitive.get_float(), 0);
-		assertEquals(2, primitive.get_byte());
-		assertEquals(111, primitive.get_int());
-	}
-
 	/**
 	 * Tests if an infinite recursive loop is handle correctly.
 	 */
 	@Test
 	public void testLoopClassCreation() {
-		assertEquals(LoopClass.class, dummyCreator.create(LoopClass.class).getClass());
+		LoopClass loopDummy = dummyCreator.create(LoopClass.class);
+		assertEquals(LoopClass.class, loopDummy.getClass());
+		assertSame(loopDummy, loopDummy.getLoopObject());
 	}
 
 	/**
@@ -270,6 +259,19 @@ public class DummyCreatorTest {
 		testPrimitiveClass(dummy.getP7());
 
 		EasyMock.verify(mock);
+	}
+
+	private void testPrimitiveClass(PrimitiveClass primitive) {
+		assertEquals('[', primitive.get_char());
+		assertEquals(true, primitive.is_boolean());
+		assertEquals(33l, primitive.get_long());
+		assertEquals(55d, primitive.get_double(), 0);
+		assertEquals(55d, primitive.get_secondDouble(), 0);
+		assertEquals("not so random test string", primitive.get_string());
+		assertEquals(44, primitive.get_short());
+		assertEquals(44f, primitive.get_float(), 0);
+		assertEquals(2, primitive.get_byte());
+		assertEquals(111, primitive.get_int());
 	}
 
 	/**
