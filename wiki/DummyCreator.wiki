@@ -33,3 +33,23 @@ Fruit dummy = dummyCreator.create(Fruit.class); // dummy will be an Apple
 // alternatively, you can create an object which contains a field of type Fruit 
 FruitBasket fruitBasket = dummyCreator.create(FruitBasket.class);
 }}}
+
+But this works too:
+
+{{{
+ClassBindings classBindings = ClassBindings.defaultBindings();
+classBindings.add(Fruit.class, new MethodBasedFactory<Apple>(MyFruitFactory.class.getMethod("randomApple", int.class)));
+DummyCreator dummyCreator = new DummyCreator(classBindings);
+
+Fruit dummy = dummyCreator.create(Fruit.class); // dummy will be whatever the factory returns
+}}}
+
+Or, if you want to use a specific a constructor:
+
+{{{
+ClassBindings classBindings = ClassBindings.defaultBindings();
+classBindings.add(Fruit.class, new ConstructorBasedFactory<Apple>(Apple.class.getConstructor(String.class, Banana.class)));
+DummyCreator dummyCreator = new DummyCreator(classBindings);
+
+Fruit dummy = dummyCreator.create(Fruit.class); // dummy will be an Apple created with a reference to a banana
+}}}
