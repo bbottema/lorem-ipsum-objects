@@ -36,6 +36,8 @@ import org.dummycreator.helperutils.NormalClass;
 import org.dummycreator.helperutils.PrimitiveClass;
 import org.dummycreator.helperutils.TestChainBinding.B;
 import org.dummycreator.helperutils.TestChainBinding.C;
+import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +46,8 @@ import org.junit.Test;
  */
 public class DummyCreatorTest {
 
+	private RandomCreator mock;
+
 	private DummyCreator dummyCreator;
 
 	/**
@@ -51,22 +55,40 @@ public class DummyCreatorTest {
 	 * {@link ConstructorBasedFactory}.
 	 */
 	@Before
-	public void setUp()
-			throws SecurityException, NoSuchMethodException {
+	public void setUp() throws SecurityException, NoSuchMethodException {
 		final ClassBindings classBindings = ClassBindings.defaultBindings();
 		classBindings.add(Integer.class, new ConstructorBasedFactory<Integer>(Integer.class.getConstructor(Integer.TYPE)));
 		classBindings.add(Long.class, new FixedInstanceFactory<Long>(Long.MAX_VALUE));
 		classBindings.add(Double.class, new FixedInstanceFactory<Double>(Double.MIN_VALUE));
 		dummyCreator = new DummyCreator(classBindings);
+
+		mock = EasyMock.createNiceMock(RandomCreator.class);
+		RandomCreator.setInstance(mock);
+
+		EasyMock.expect(mock.getRandomString()).andReturn("not so random test string").anyTimes();
+		EasyMock.expect(mock.getRandomBoolean()).andReturn(true).anyTimes();
+		EasyMock.expect(mock.getRandomInt()).andReturn(111).anyTimes();
+		EasyMock.expect(mock.getRandomChar()).andReturn('[').anyTimes();
+		EasyMock.expect(mock.getRandomByte()).andReturn((byte) 2).anyTimes();
+		EasyMock.expect(mock.getRandomLong()).andReturn(33l).anyTimes();
+		EasyMock.expect(mock.getRandomFloat()).andReturn(44f).anyTimes();
+		EasyMock.expect(mock.getRandomDouble()).andReturn(55d).anyTimes();
+		EasyMock.expect(mock.getRandomShort()).andReturn((short) 44).anyTimes();
+		EasyMock.expect(mock.getRandomInt(EasyMock.anyInt())).andReturn(2).anyTimes();
+		EasyMock.replay(mock);
 	}
+
+	@After
+	public void cleanup() {
+		RandomCreator.setInstance(new RandomCreator());
+	};
 
 	/**
 	 * Tests if the {@link FixedInstanceFactory} is invoked correctly by the {@link ClassBasedFactory} for <code>Long</code> and
 	 * <code>Double</code>.
 	 */
 	@Test
-	public void testObjectBindings()
-			throws Exception {
+	public void testObjectBindings() throws Exception {
 		assertEquals(Long.MAX_VALUE, dummyCreator.create(Long.class), 0);
 		assertEquals(Double.MIN_VALUE, dummyCreator.create(Double.class), 0);
 	}
@@ -75,8 +97,7 @@ public class DummyCreatorTest {
 	 * Tests if the {@link ConstructorBasedFactory} is invoked correctly by the {@link ClassBasedFactory} for <code>Integer</code>.
 	 */
 	@Test
-	public void testConstructorBindings()
-			throws Exception {
+	public void testConstructorBindings() throws Exception {
 		assertEquals(Integer.class, dummyCreator.create(Integer.class).getClass());
 	}
 
@@ -86,8 +107,7 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testInterfaceBindings()
-			throws Exception {
+	public void testInterfaceBindings() throws Exception {
 		assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
 
 		final ClassBindings classBindings = new ClassBindings();
@@ -148,8 +168,7 @@ public class DummyCreatorTest {
 	 * Tests if <code>B</code> sub class <code>C</code> constructor is invoked correctly to produce an object assignable to <code>B</code>.
 	 */
 	@Test
-	public void testDeferredSubTypeConstructorBinding()
-			throws SecurityException, NoSuchMethodException {
+	public void testDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
 		final ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ConstructorBasedFactory<C>(C.class.getConstructor(int.class)));
 		final DummyCreator dummyCreator = new DummyCreator(classBindings);
@@ -162,8 +181,7 @@ public class DummyCreatorTest {
 	 * assignable to <code>B</code>.
 	 */
 	@Test
-	public void testDeferredSubTypeBinding()
-			throws SecurityException, NoSuchMethodException {
+	public void testDeferredSubTypeBinding() throws SecurityException, NoSuchMethodException {
 		final ClassBindings classBindings = new ClassBindings();
 		classBindings.add(B.class, new ClassBasedFactory<C>(C.class));
 		final DummyCreator dummyCreator = new DummyCreator(classBindings);
@@ -177,9 +195,36 @@ public class DummyCreatorTest {
 	 */
 	@Test
 	public void testPrimitiveClassCreation() {
-		assertEquals(PrimitiveClass.class, dummyCreator.create(PrimitiveClass.class).getClass());
-		assertEquals(InheritedPrimitiveClass.class, dummyCreator.create(InheritedPrimitiveClass.class).getClass());
-		// TODO Check if all parameters have been set
+		final PrimitiveClass primitive = dummyCreator.create(PrimitiveClass.class);
+		final InheritedPrimitiveClass inheritedPrimitive = dummyCreator.create(InheritedPrimitiveClass.class);
+		assertEquals(PrimitiveClass.class, primitive.getClass());
+		assertEquals(InheritedPrimitiveClass.class, inheritedPrimitive.getClass());
+
+		// primitive
+		assertEquals('[', primitive.get_char());
+		assertEquals(true, primitive.is_boolean());
+		assertEquals(33l, primitive.get_long());
+		assertEquals(55d, primitive.get_double(), 0);
+		assertEquals(55d, primitive.get_secondDouble(), 0);
+		assertEquals("not so random test string", primitive.get_string());
+		assertEquals(44, primitive.get_short());
+		assertEquals(44f, primitive.get_float(), 0);
+		assertEquals(2, primitive.get_byte());
+		assertEquals(111, primitive.get_int());
+		// inheritedPrimitive
+		assertEquals("not so random test string", inheritedPrimitive.getSecondString());
+		assertEquals('[', inheritedPrimitive.get_char());
+		assertEquals(true, inheritedPrimitive.is_boolean());
+		assertEquals(33l, inheritedPrimitive.get_long());
+		assertEquals(55d, inheritedPrimitive.get_double(), 0);
+		assertEquals(55d, inheritedPrimitive.get_secondDouble(), 0);
+		assertEquals("not so random test string", inheritedPrimitive.get_string());
+		assertEquals(44, inheritedPrimitive.get_short());
+		assertEquals(44f, inheritedPrimitive.get_float(), 0);
+		assertEquals(2, inheritedPrimitive.get_byte());
+		assertEquals(111, inheritedPrimitive.get_int());
+
+		EasyMock.verify(mock);
 	}
 
 	/**
@@ -328,8 +373,7 @@ public class DummyCreatorTest {
 		// double nested map
 		final NestedDoubleMapClass dummyDouble = dummyCreator.create(NestedDoubleMapClass.class);
 		assertSame(HashMap.class, dummyDouble.getMapsOfNumbers().getClass());
-		final Entry<Map<Integer, NestedDoubleMapClass>, Map<Double, LoopClass>> firstEntry = dummyDouble.getMapsOfNumbers().entrySet()
-				.iterator().next();
+		final Entry<Map<Integer, NestedDoubleMapClass>, Map<Double, LoopClass>> firstEntry = dummyDouble.getMapsOfNumbers().entrySet().iterator().next();
 
 		assertSame(HashMap.class, firstEntry.getKey().getClass());
 		assertSame(HashMap.class, firstEntry.getValue().getClass());
@@ -352,8 +396,7 @@ public class DummyCreatorTest {
 		// double nested map
 		final NestedDoubleAssymetricMapClass dummyDouble = dummyCreator.create(NestedDoubleAssymetricMapClass.class);
 		assertSame(HashMap.class, dummyDouble.getMapsOfCharacters().getClass());
-		final Entry<Map<Integer, NestedDoubleMapClass>, Character> firstEntry = dummyDouble.getMapsOfCharacters().entrySet().iterator()
-				.next();
+		final Entry<Map<Integer, NestedDoubleMapClass>, Character> firstEntry = dummyDouble.getMapsOfCharacters().entrySet().iterator().next();
 
 		assertSame(HashMap.class, firstEntry.getKey().getClass());
 		assertSame(Character.class, firstEntry.getValue().getClass());
@@ -373,8 +416,7 @@ public class DummyCreatorTest {
 		// double nested map
 		final NestedEverythingClass dummyDouble = dummyCreator.create(NestedEverythingClass.class);
 		assertSame(HashMap.class, dummyDouble.getMapsOfLists().getClass());
-		final Entry<Map<List<List<String>>, NestedDoubleMapClass>, List<Byte>> firstEntry = dummyDouble.getMapsOfLists().entrySet()
-				.iterator().next();
+		final Entry<Map<List<List<String>>, NestedDoubleMapClass>, List<Byte>> firstEntry = dummyDouble.getMapsOfLists().entrySet().iterator().next();
 
 		assertSame(HashMap.class, firstEntry.getKey().getClass());
 		assertSame(ArrayList.class, firstEntry.getValue().getClass());
@@ -396,8 +438,7 @@ public class DummyCreatorTest {
 		// triple nested map
 		final NestedTripleMapClass dummyTriple = dummyCreator.create(NestedTripleMapClass.class);
 		assertSame(HashMap.class, dummyTriple.getMapsOfMapsOfNumbers().getClass());
-		final Entry<Map<Integer, Map<Double, LoopClass>>, Map<Double, Map<Double, LoopClass>>> firstEntryTriple = dummyTriple
-				.getMapsOfMapsOfNumbers().entrySet().iterator().next();
+		final Entry<Map<Integer, Map<Double, LoopClass>>, Map<Double, Map<Double, LoopClass>>> firstEntryTriple = dummyTriple.getMapsOfMapsOfNumbers().entrySet().iterator().next();
 
 		assertSame(HashMap.class, firstEntryTriple.getKey().getClass());
 		assertSame(HashMap.class, firstEntryTriple.getValue().getClass());
@@ -450,8 +491,7 @@ public class DummyCreatorTest {
 	 * to indicate the correct implementation.
 	 */
 	@Test
-	public void testInterfaceBindingErrors()
-			throws Exception {
+	public void testInterfaceBindingErrors() throws Exception {
 		dummyCreator = new DummyCreator();
 		try {
 			assertEquals(ArrayList.class, dummyCreator.create(List.class).getClass());
