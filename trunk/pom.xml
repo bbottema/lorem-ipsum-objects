@@ -11,7 +11,7 @@
   <artifactId>dummy-creator</artifactId>
   <packaging>jar</packaging>
   <name>Dummy Creator</name>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.3-SNAPSHOT</version>
   <description>A small tool for generating populated dummy objects</description>
   <url>http://code.google.com/p/dummycreator/</url>
   
