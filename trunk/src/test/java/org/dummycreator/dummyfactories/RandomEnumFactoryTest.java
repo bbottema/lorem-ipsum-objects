@@ -1,13 +1,14 @@
 package org.dummycreator.dummyfactories;
 
-import static org.junit.Assert.assertSame;
-
 import org.codemonkey.javareflection.FieldUtils.Visibility;
 import org.dummycreator.RandomCreator;
+import org.dummycreator.helperutils.SingleTypeEnum;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertSame;
 
 /**
  * Tests for {@link RandomPrimitiveFactory}
@@ -45,4 +46,10 @@ public class RandomEnumFactoryTest {
 
 		EasyMock.verify(mock);
 	}
+	
+	@Test
+    public void testCreateRandomDummy() {
+        SingleTypeEnum singleTypeEnum = new RandomEnumFactory<SingleTypeEnum>(SingleTypeEnum.class).createDummy(null);
+        assertSame(SingleTypeEnum.FOO, singleTypeEnum);
+    }
 }
