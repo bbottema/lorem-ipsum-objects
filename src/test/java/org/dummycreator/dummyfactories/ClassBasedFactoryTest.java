@@ -72,7 +72,7 @@ public class ClassBasedFactoryTest {
 		EasyMock.expect(mock.getRandomByte()).andReturn((byte) 2).anyTimes();
 		EasyMock.expect(mock.getRandomLong()).andReturn(33l).anyTimes();
 		EasyMock.expect(mock.getRandomFloat()).andReturn(44f).anyTimes();
-		EasyMock.expect(mock.getRandomDouble()).andReturn(55d).anyTimes();
+		EasyMock.expect(mock.getRandomDouble()).andReturn(55.5d).anyTimes();
 		EasyMock.expect(mock.getRandomShort()).andReturn((short) 44).anyTimes();
 		EasyMock.expect(mock.getRandomInt(EasyMock.anyInt())).andReturn(2).anyTimes();
 		EasyMock.replay(mock);
@@ -262,8 +262,8 @@ public class ClassBasedFactoryTest {
 		assertEquals('[', primitive.get_char());
 		assertEquals(true, primitive.is_boolean());
 		assertEquals(33l, primitive.get_long());
-		assertEquals(55d, primitive.get_double(), 0);
-		assertEquals(55d, primitive.get_secondDouble(), 0);
+		assertEquals(55.5d, primitive.get_double(), 0);
+		assertEquals(55.5d, primitive.get_secondDouble(), 0);
 		assertEquals("not so random test string", primitive.get_string());
 		assertEquals(44, primitive.get_short());
 		assertEquals(44f, primitive.get_float(), 0);
