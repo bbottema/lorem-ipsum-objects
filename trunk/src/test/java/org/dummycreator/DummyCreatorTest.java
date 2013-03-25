@@ -1,10 +1,6 @@
 package org.dummycreator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-
+import java.math.BigDecimal;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +37,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 /**
  * Tests for DummyCreator.
  */
@@ -71,8 +72,8 @@ public class DummyCreatorTest {
 		EasyMock.expect(mock.getRandomChar()).andReturn('[').anyTimes();
 		EasyMock.expect(mock.getRandomByte()).andReturn((byte) 2).anyTimes();
 		EasyMock.expect(mock.getRandomLong()).andReturn(33l).anyTimes();
-		EasyMock.expect(mock.getRandomFloat()).andReturn(44f).anyTimes();
-		EasyMock.expect(mock.getRandomDouble()).andReturn(55d).anyTimes();
+		EasyMock.expect(mock.getRandomFloat()).andReturn(44.4f).anyTimes();
+		EasyMock.expect(mock.getRandomDouble()).andReturn(55.5d).anyTimes();
 		EasyMock.expect(mock.getRandomShort()).andReturn((short) 44).anyTimes();
 		EasyMock.expect(mock.getRandomInt(EasyMock.anyInt())).andReturn(2).anyTimes();
 		EasyMock.replay(mock);
@@ -265,11 +266,11 @@ public class DummyCreatorTest {
 		assertEquals('[', primitive.get_char());
 		assertEquals(true, primitive.is_boolean());
 		assertEquals(33l, primitive.get_long());
-		assertEquals(55d, primitive.get_double(), 0);
-		assertEquals(55d, primitive.get_secondDouble(), 0);
+		assertEquals(55.5d, primitive.get_double(), 0);
+		assertEquals(55.5d, primitive.get_secondDouble(), 0);
 		assertEquals("not so random test string", primitive.get_string());
 		assertEquals(44, primitive.get_short());
-		assertEquals(44f, primitive.get_float(), 0);
+		assertEquals(44.4f, primitive.get_float(), 0);
 		assertEquals(2, primitive.get_byte());
 		assertEquals(111, primitive.get_int());
 	}
@@ -506,6 +507,18 @@ public class DummyCreatorTest {
 		assertSame(String.class, ((Object) firstItem.getKey()).getClass());
 		assertSame(String.class, ((Object) firstItem.getValue()).getClass());
 	}
+    
+    @Test
+    public void testDummyCreatorBigDecimal() {
+        BigDecimal bigDecimal = dummyCreator.create(BigDecimal.class);
+        assertNotNull(bigDecimal);
+        assertEquals(new BigDecimal(55.5), bigDecimal);
+        System.out.println(bigDecimal);
+        dummyCreator = new DummyCreator(ClassBindings.defaultBindings());
+        bigDecimal = dummyCreator.create(BigDecimal.class);
+        assertNotNull(bigDecimal);
+        assertEquals(new BigDecimal(55.5), bigDecimal);
+    }
 
 	/**
 	 * Tests whether the right error will be produced in case an abstract or interface type should be created where no binding is available
