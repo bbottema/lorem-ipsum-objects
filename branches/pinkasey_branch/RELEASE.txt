@@ -1,0 +1,30 @@
+http://code.google.com/p/dummycreator/
+
+
+RELEASE NOTES Dummy Creator
+
+
+v1.3 (unreleased)
+
+
+
+v1.2
+
+- added robust support for generics in collections and maps (including nesting)
+- fixed bug where Booleans were always generated 'false'
+- fixed bug where all numbers would end up with the same values
+- improved logging in case of failure
+- improved array generation
+- Overhauled dummy generation apporach by using the Factory pattern
+- added lots of javadoc
+
+
+v1.1
+
+- Improved logging in case of failure
+- Improve random value generation parameters
+
+
+v1.0
+
+Initial formal release.
