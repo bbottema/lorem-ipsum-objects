@@ -1,18 +1,5 @@
 package org.dummycreator.dummyfactories;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.codemonkey.javareflection.FieldUtils;
 import org.codemonkey.javareflection.FieldUtils.BeanRestriction;
@@ -23,8 +10,11 @@ import org.dummycreator.ClassUsageInfo;
 import org.dummycreator.RandomCreator;
 import org.dummycreator.ReflectionCache;
 
+import java.lang.reflect.*;
+import java.util.*;
+
 /**
- * Creates a populated dummy object of a given class <code>T</code>. First tries to defer creation using {@link #classBindings}, if no class
+ * Creates a populated dummy object of a given class <code>T</code>. First tries to defer creation using {@link ClassBindings}, if no class
  * bindings can be found for the given type, it will try to determine if a specific factory is needed (for primitives, strings, arrays and
  * other common types). If no specific factory is applicable, this factory will try to find constructors to create an instance with. Then
  * any fields are being created the same way.
@@ -48,8 +38,10 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * invoked constructors.
 	 */
 	private static final ReflectionCache constructorCache = new ReflectionCache();
+    private Boolean isFillNonPropertyFields;
+    private final Map<String, DummyFactory> fieldFactories = new HashMap<String, DummyFactory>();
 
-	public ClassBasedFactory(final Class<T> clazz) {
+    public ClassBasedFactory(final Class<T> clazz) {
 		this.clazz = clazz;
 	}
 
@@ -58,12 +50,11 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * avoid recursive loops.
 	 * <p>
 	 * Will first try to defer dummy object creation to a bound {@link DummyFactory} and if found will defer dummy object creation to
-	 * {@link DummyFactory#createDummy(List, ClassBindings)}.
+	 * {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
 	 * 
-	 * @param knownInstances See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
-	 * @param classBindings See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
-	 * @param exceptions See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
-	 * @param clazz See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param knownInstances See {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
+	 * @param classBindings See {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
+	 * @param exceptions See {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
 	 * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
 	 * @throws IllegalArgumentException Thrown if class could not be instantiated. Constructor invocation exceptions are logged separately.
 	 */
@@ -98,11 +89,11 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * avoid recursive loops.
 	 * <p>
 	 * Will first try to defer dummy object creation to a bound {@link DummyFactory} and if found will defer dummy object creation to
-	 * {@link DummyFactory#createDummy(Map, ClassBindings, List).
+	 * {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List).
 	 * 
-	 * @param knownInstances See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
-	 * @param classBindings See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
-	 * @param exceptions See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param knownInstances See {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
+	 * @param classBindings See {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
+	 * @param exceptions See {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
 	 * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -111,7 +102,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 
 		// first try possibly bound dummy factory
 		final DummyFactory<T> factory = classBindings.find(clazz);
-		if (factory != null) {
+		if (factory != null && factory != this) {
 			ret = factory.createDummy(genericMetaData, knownInstances, classBindings, exceptions);
 		}
 
@@ -130,7 +121,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 
 			// is the class an enum?
 			if (clazz.isEnum()) {
-				return (T) new RandomEnumFactory((Class<Enum>) clazz).createDummy(genericMetaData, knownInstances, classBindings, exceptions);
+				return (T) new RandomEnumFactory(clazz).createDummy(genericMetaData, knownInstances, classBindings, exceptions);
 			}
 
 			// load the constructors
@@ -232,7 +223,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * mechanism, an <code>Integer</code> would be cached and reused for all fields Dummy Creator would encounter. By marking
 	 * <code>Integer.class</code> as loop-safe, a new Integer will be created each time a dummy should be created.
 	 * 
-	 * @param The type to check for loop-safety.
+	 * @param clazz The type to check for loop-safety.
 	 * @return Whether the given type is known not to cause an infinite recursive loop.
 	 */
 	private boolean isKnownLoopSafeType(final Class<T> clazz) {
@@ -253,9 +244,9 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * Populates given object with dummy value. The behavior can vary depending on the type of object, as follows:
 	 * <ul>
 	 * <li><strong>Collection</strong>: if the type is a subtype of {@link Collection}, a random number (2 or 3) of items will be added.
-	 * Will be deferred {@link #populateCollection(Collection, Type, Map, ClassBindings, List)}.</li>
+	 * Will be deferred {@link #populateCollection(Collection, Type[], Map, ClassBindings, List)}.</li>
 	 * <li><strong>Map</strong>: if the type is a subtype of {@link Map}, a random number (2 or 3) of key/value entries will be added. Will
-	 * be deferred {@link #populateMap(Map, Type, Map, ClassBindings, List)}.</li>
+	 * be deferred {@link #populateMap(Map, Type[], Map, ClassBindings, List)}.</li>
 	 * <li><strong>Other types</strong>: The bean-style <em>setter</em> methods will be retrieved from the object and will be invoked with a
 	 * new dummy value.</li>
 	 * </ul>
@@ -273,11 +264,11 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * 
 	 * @param subject The object to populate with dummy values.
 	 * @param knownInstances A list of known instances to keep track of already processed classes (to avoid infinite loop).
-	 * @param classBindings See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param classBindings See {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
 	 * @param exceptions Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for arrays, collections
 	 *            and maps.
-	 * @see #populateCollection(Object, Type, Map, ClassBindings, List)
-	 * @see #populateMap(Object, Type, Map, ClassBindings, List)
+	 * @see #populateCollection(Collection, Type[], Map, ClassBindings, List)
+	 * @see #populateMap(Map, Type[], Map, ClassBindings, List)
 	 */
 	@SuppressWarnings({ "unchecked" })
 	private void populateObject(final T subject, final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances, final ClassBindings classBindings, final List<Exception> exceptions) {
@@ -289,9 +280,18 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 			// populate POJO using it's bean setters (which should always contain exactly one parameter)
 			// by creating a new dummy using a ClassBasedFactory for each Method's parameter and finally invoke the method itself
 			for (final Method setter : discoverSetters(subject.getClass())) {
-				// collect generics meta data if available
-				final ClassBasedFactory<T> factory = new ClassBasedFactory<T>((Class<T>) setter.getParameterTypes()[0]);
-				final Type genericParameterType = setter.getGenericParameterTypes()[0];
+                //first look for a field-based factory
+                final String setterName = setter.getName();
+                final String fieldName = Character.toLowerCase(setterName.charAt(3) ) + setterName.substring(4);
+                DummyFactory factory = fieldFactories.get(fieldName);
+                if(factory == null){
+                    if(logger.isTraceEnabled()){
+                        logger.trace("No field-based factory found for field '" + fieldName + "' of class '" + subject.getClass() + "'. Creating a ClassBasedFactory based on first argument of setter '" + setter + "'");
+                    }
+				    factory = new ClassBasedFactory<T>((Class<T>) setter.getParameterTypes()[0]);
+                }
+                // collect generics meta data if available
+                final Type genericParameterType = setter.getGenericParameterTypes()[0];
 				final boolean isRawClassItself = genericParameterType instanceof Class;
 				final Type[] nextGenericsMetaData = isRawClassItself ? null : ((ParameterizedType) genericParameterType).getActualTypeArguments();
 				// finally create the parameter with or without generics meta data
@@ -302,10 +302,87 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 					logger.error("error calling setter method [" + setter.getName() + "]", e);
 				}
 			}
+
+            if( isFillNonPropertyFields(classBindings) ){
+                if(logger.isTraceEnabled()){
+                    logger.trace("filling also non-property fields for class "+subject.getClass());
+                }
+                for(Field field : discoverUnsettedFields(subject)){
+                    Type fClass = field.getGenericType();
+                    DummyFactory factory = fieldFactories.get(field.getName());
+                    if(factory == null){
+                        factory = new ClassBasedFactory((Class) fClass);
+                    }
+                    final Type genericParameterType = field.getGenericType();
+                    final boolean isRawClassItself = genericParameterType instanceof Class;
+                    final Type[] nextGenericsMetaData = isRawClassItself ? null : ((ParameterizedType) genericParameterType).getActualTypeArguments();
+                    // finally create the parameter with or without generics meta data
+                    //TODO: knownFieldInstances
+                    Map<String, ClassUsageInfo<?>> knownFieldInstances = new HashMap<String, ClassUsageInfo<?>>();
+                    final Object fieldValue = factory.createDummy(nextGenericsMetaData, knownFieldInstances, classBindings, exceptions);
+                    setField(field, subject, fieldValue);
+                }
+            }
 		}
 	}
 
-	/**
+    private boolean isFillNonPropertyFields(ClassBindings classBindings) {
+        if (isFillNonPropertyFields == null){
+            return classBindings.isFillNonPropertyFields();
+        }
+        return isFillNonPropertyFields;
+    }
+
+    private Collection<Field> discoverUnsettedFields(T subject) {
+        Collection<Field> fields = new ArrayList<Field>(10);
+        for( Field field : subject.getClass().getDeclaredFields()){
+            try {
+                if( getField(field, subject) == null){
+                    fields.add(field);
+                }
+            } catch (IllegalAccessException e) {
+                logger.error("error calling getter method of field [" + field.getName() + "]", e);
+            }
+        }
+        return fields;
+    }
+
+    private void setField(Field field, T subject, Object fieldValue) {
+        try {
+            if(field.isAccessible()){
+                field.set(subject, fieldValue);
+            } else {
+                field.setAccessible(true);
+                field.set(subject, fieldValue);
+                field.setAccessible(false);
+            }
+        } catch (IllegalAccessException e) {
+            logger.error("error setting field " + field.getName() + " with value " + fieldValue, e);
+        }
+    }
+
+    private Object getField(Field field, T subject) throws IllegalAccessException {
+        Object ret;
+        if(field.isAccessible()){
+            ret = field.get(subject);
+        } else {
+            field.setAccessible(true);
+            ret = field.get(subject);
+            field.setAccessible(false);
+        }
+        return ret;
+    }
+
+    /**
+     * override for ClassBindings.isFillNonPropertyFields
+     * @return this, for chaining
+     */
+    public ClassBasedFactory<T> setIsFillNonPropertyFields(Boolean isFillNonPropertyFields) {
+        this.isFillNonPropertyFields = isFillNonPropertyFields;
+        return this;
+    }
+
+    /**
 	 * A random number (2 or 3) of items will be added. The type will be determined as follows:
 	 * <ol>
 	 * <li>Using generics meta data straight from the subject: this is possible when the subject is the <em>root class</em> passed into
@@ -318,7 +395,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * @param subject The collection to populate with dummy objects.
 	 * @param genericMetaData If not null, contains the generics meta data for the collection type as declared in the collections field.
 	 * @param knownInstances A list of known instances to keep track of already processed classes (to avoid infinite loop).
-	 * @param classBindings See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param classBindings See {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
 	 * @param exceptions Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for arrays, collections
 	 *            and maps.
 	 */
@@ -348,7 +425,7 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 	 * @param subject The map to populate with dummy entries.
 	 * @param genericMetaData If not null, contains the generics meta data for the map type as declared in the collections field.
 	 * @param knownInstances A list of known instances to keep track of already processed classes (to avoid infinite loop).
-	 * @param classBindings See {@link DummyFactory#createDummy(Map, ClassBindings, List)}.
+	 * @param classBindings See {@link DummyFactory#createDummy(Type[], Map, ClassBindings, List)}.
 	 * @param exceptions Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for the map
 	 *            <em>keys</em> or <em>values</em>.
 	 */
@@ -433,7 +510,30 @@ public class ClassBasedFactory<T> extends DummyFactory<T> {
 		return setters;
 	}
 
-	/**
+    public ClassBasedFactory<T> setField(String fieldName, DummyFactory factory) {
+        validateFieldBinding(fieldName, factory);
+        fieldFactories.put(fieldName, factory);
+        return this;
+    }
+
+    private void validateFieldBinding(String fieldName, DummyFactory factory) {
+        for(Field field : clazz.getDeclaredFields()){
+            if (field.getName().equals(fieldName)){
+                if (!factory.isValidForType(field.getType())){
+                    throw new IllegalArgumentException("factory " + factory + " is invalid for field " +field);
+                }
+                return;
+            }
+        }
+        throw new IllegalArgumentException("There is no field called " + fieldName + " in class " + clazz.getName());
+    }
+
+    @Override
+    public boolean isValidForType(Class<? super T> clazz) {
+        return clazz.isAssignableFrom(this.clazz);
+    }
+
+    /**
 	 * Helper class to hold together a {@link Class} and its generics meta data. Used as a return type.
 	 * 
 	 * @see ClassBasedFactory#extractClassInfo(Class, Type[], int)

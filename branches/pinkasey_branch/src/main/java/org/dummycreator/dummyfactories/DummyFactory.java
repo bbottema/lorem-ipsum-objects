@@ -1,14 +1,14 @@
 package org.dummycreator.dummyfactories;
 
+import org.dummycreator.ClassBindings;
+import org.dummycreator.ClassUsageInfo;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.dummycreator.ClassBindings;
-import org.dummycreator.ClassUsageInfo;
 
 /**
  * Defines the interface for creating a dummy instance. A default implementation is provided for validation purposes (always returns true by
@@ -32,7 +32,7 @@ public abstract class DummyFactory<T> {
 	 * Starts a new chain for the creation of a dummy with an empty list of known class instances and empty list of exceptions.
 	 * 
 	 * @param classBindings A list of bindings to which a factory may defer dummy creation to.
-	 * @return See {@link #createDummy(Map, ClassBindings, List)}.
+	 * @return See {@link #createDummy(Type[], Map, ClassBindings, List)}.
 	 */
 	public final T createDummy(final ClassBindings classBindings) {
 		return createDummy(null, new HashMap<String, ClassUsageInfo<?>>(), classBindings, new ArrayList<Exception>());
@@ -45,7 +45,7 @@ public abstract class DummyFactory<T> {
 	 * If there are known exceptions (reflection exceptions when invoking a {@link Constructor} for example), don't throw them, but record
 	 * them in the given <code>exceptions</code> list. Not all failures are counted towards complete failures.
 	 * 
-	 * @param Can be <code>null</code>. Should be non-null when requested type is a {@link List} or {@link Map}.
+	 * @param genericMetaData Can be <code>null</code>. Should be non-null when requested type is a {@link List} or {@link Map}.
 	 * @param knownInstances A list of previously created and populated objects for a specific type.
 	 * @param classBindings A list of bindings to which a factory may defer dummy creation to.
 	 * @param exceptions A list in which to store exceptions so they can be logged at some later point. This is done so, because not all

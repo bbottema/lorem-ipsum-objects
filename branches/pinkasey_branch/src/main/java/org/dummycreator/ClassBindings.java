@@ -14,22 +14,11 @@
  */
 package org.dummycreator;
 
+import org.dummycreator.dummyfactories.*;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.dummycreator.dummyfactories.ClassBasedFactory;
-import org.dummycreator.dummyfactories.ConstructorBasedFactory;
-import org.dummycreator.dummyfactories.DummyFactory;
-import org.dummycreator.dummyfactories.MethodBasedFactory;
-import org.dummycreator.dummyfactories.RandomBooleanFactory;
-import org.dummycreator.dummyfactories.RandomPrimitiveFactory;
-import org.dummycreator.dummyfactories.RandomStringFactory;
+import java.util.*;
 
 /**
  * Stores a list of classes / interfaces and their associated deferred types. This list is used to tell {@link DummyCreator} which specific
@@ -55,8 +44,9 @@ import org.dummycreator.dummyfactories.RandomStringFactory;
 public class ClassBindings {
 
 	private final HashMap<Class<?>, DummyFactory<?>> bindings = new HashMap<Class<?>, DummyFactory<?>>();
+    private boolean fillNonPropertyFields;
 
-	/**
+    /**
 	 * Initializes with basic bindings for primitives, arrays and strings.
 	 */
 	public ClassBindings() {
@@ -81,7 +71,7 @@ public class ClassBindings {
 	 *             <code>IllegalArgumentException</code> itself.
 	 * @see DummyFactory#isValidForType(Class)
 	 */
-	public <T> void add(final Class<T> clazz, final DummyFactory<? extends T> factory) {
+	public <T> ClassBindings add(final Class<T> clazz, final DummyFactory<? extends T> factory) {
 		try {
 			if (factory.isValidForType(clazz)) {
 				bindings.put(clazz, factory);
@@ -93,6 +83,7 @@ public class ClassBindings {
 			// note: exception is also thrown by DummyFactory.isValidForType
 			throw new IllegalArgumentException(String.format("dummy factory [%s] is not valid for class type [%s]", factory, clazz), e);
 		}
+        return this;
 	}
 
 	/**
@@ -117,4 +108,18 @@ public class ClassBindings {
 		classBindings.add(Set.class, new ClassBasedFactory<HashSet>(HashSet.class));
 		return classBindings;
 	}
+
+    public boolean isFillNonPropertyFields() {
+        return fillNonPropertyFields;
+    }
+
+    /**
+     * should non-property-fields be set as well? default is false, which means only fields with setters get set.
+     * if true, first all setters are called, then all un-setted fields are set.
+     * @return this ClassBindings, to allow builder-like usage.
+     */
+    public ClassBindings setFillNonPropertyFields(boolean fillNonPropertyFields) {
+        this.fillNonPropertyFields = fillNonPropertyFields;
+        return this;
+    }
 }
