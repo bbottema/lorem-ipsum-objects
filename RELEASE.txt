@@ -1,11 +1,12 @@
-http://code.google.com/p/dummycreator/
+https://github.com/deveth0/dummycreator
 
 
 RELEASE NOTES Dummy Creator
 
 
-v1.3 (unreleased)
+v1.3
 
+- fixed misc bugs
 
 
 v1.2
