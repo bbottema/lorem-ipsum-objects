@@ -11,7 +11,7 @@
   <artifactId>dummy-creator</artifactId>
   <packaging>jar</packaging>
   <name>Dummy Creator</name>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3</version>
   <description>A small tool for generating populated dummy objects</description>
   <url>http://code.google.com/p/dummycreator/</url>
   
@@ -27,6 +27,7 @@
     <connection>scm:git:https://github.com/deveth0/dummycreator/</connection>
     <developerConnection>scm:git:https://github.com/deveth0/dummycreator/</developerConnection>
     <url>https://github.com/deveth0/dummycreator/</url>
+    <tag>dummy-creator-1.3</tag>
   </scm>
 
    
@@ -90,6 +91,23 @@
         <configuration>
           <mavenExecutorId>forked-path</mavenExecutorId>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.3</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <additionalparam>-Xdoclint:none</additionalparam>
+              <failOnError>false</failOnError>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
