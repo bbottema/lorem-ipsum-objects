@@ -16,7 +16,7 @@
    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-   THE SOFTWARE. 
+   THE SOFTWARE.
  */
 /*
  * Open Source Lorem Ipsum generator, by Sven Jacobs, obtained from: http://loremipsum.sourceforge.net/
@@ -27,11 +27,11 @@ package de.svenjacobs.loremipsum;
  * Simple lorem ipsum text generator.
  * <p>
  * Suitable for creating sample data for test cases and performance tests.
- * </p>
- * 
+ *
  * @author Sven Jacobs
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class LoremIpsum {
 	public static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 	private final String[] loremIpsumWords;

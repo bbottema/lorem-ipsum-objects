@@ -1,31 +1,9 @@
-https://github.com/deveth0/dummycreator
+https://github.com/bbottema/lorem-ipsum-objects
 
 
-RELEASE NOTES Dummy Creator
+RELEASE NOTES lorem-ipsum-objects
 
 
-v1.3
+v1.0.0
 
-- fixed misc bugs
-
-
-v1.2
-
-- added robust support for generics in collections and maps (including nesting)
-- fixed bug where Booleans were always generated 'false'
-- fixed bug where all numbers would end up with the same values
-- improved logging in case of failure
-- improved array generation
-- Overhauled dummy generation apporach by using the Factory pattern
-- added lots of javadoc
-
-
-v1.1
-
-- Improved logging in case of failure
-- Improve random value generation parameters
-
-
-v1.0
-
-Initial formal release.
+Initial release of the dummy-creator project overhaul: lorem-ipsum-objects. Enjoy!
