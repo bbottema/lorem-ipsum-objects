@@ -33,13 +33,19 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	                                final List<Exception> exceptions) {
 		@SuppressWarnings("unchecked") final Class<T>[] parameters = (Class<T>[]) constructor.getParameterTypes();
 		try {
+			try {
+				constructor.setAccessible(true); // might fail due to security policy
+			} catch (NumberFormatException e) {
+				// ignore, try without making it explicitly accessibly
+			}
+
 			if (parameters.length > 0) {
-				final Object[] params = new Object[parameters.length];
-				for (int i = 0; i < params.length; i++) {
-					params[i] = new ClassBasedFactory<>(parameters[i]).createLoremIpsumObject(genericMetaData, knownInstances, classbindings,
+				final Object[] args = new Object[parameters.length];
+				for (int i = 0; i < args.length; i++) {
+					args[i] = new ClassBasedFactory<>(parameters[i]).createLoremIpsumObject(genericMetaData, knownInstances, classbindings,
 							exceptions);
 				}
-				return constructor.newInstance(params);
+				return constructor.newInstance(args);
 			} else {
 				return constructor.newInstance();
 			}

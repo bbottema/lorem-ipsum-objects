@@ -28,6 +28,8 @@ import java.util.Map;
 
 import static java.util.Arrays.sort;
 import static java.util.EnumSet.allOf;
+import static java.util.Arrays.asList;
+import static java.util.Collections.sort;
 import static java.util.EnumSet.of;
 
 /**
@@ -145,12 +147,16 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			}
 
 			// load the constructors
-			List<Constructor<?>> cachedConstructors = constructorCache.getConstructorCache(clazz);
-			if (cachedConstructors == null) {
-				final Constructor<?>[] foundConstructors = clazz.getConstructors();
-				sort(foundConstructors, new ConstructorComparator());
-				cachedConstructors = new ArrayList<>(Arrays.asList(foundConstructors));
-				constructorCache.add(clazz, cachedConstructors.toArray(new Constructor<?>[]{}));
+			List<Constructor<?>> constructorsForClass = constructorCache.getConstructorCache(clazz);
+			if (constructorsForClass == null) {
+				final Constructor<?>[] foundPublicConstructors = clazz.getConstructors();
+				final Constructor<?>[] foundPrivateConstructors = clazz.getDeclaredConstructors();
+				Set<Constructor<?>> distinctConstructors = new HashSet<>();
+				distinctConstructors.addAll(asList(foundPublicConstructors));
+				distinctConstructors.addAll(asList(foundPrivateConstructors));
+				constructorsForClass = new ArrayList<>(distinctConstructors);
+				sort(constructorsForClass, new ConstructorComparator());
+				constructorCache.add(clazz, constructorsForClass.toArray(new Constructor<?>[]{}));
 			}
 
 			// check if we have a prefered Constructor and try it
@@ -160,7 +166,7 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			}
 
 			if (ret == null) {
-				for (final Constructor<?> co : cachedConstructors) {
+				for (final Constructor<?> co : constructorsForClass) {
 					ret = new ConstructorBasedFactory<>((Constructor<T>) co).createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
 					if (ret != null) {
 						constructorCache.setPreferedConstructor(clazz, co);
