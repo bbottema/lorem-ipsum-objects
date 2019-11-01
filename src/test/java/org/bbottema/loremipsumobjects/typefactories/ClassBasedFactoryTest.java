@@ -621,14 +621,25 @@ public class ClassBasedFactoryTest {
 	}
 	
 	@Test
-	public void testSimpleGenericsListMyClass() {
-		@Nullable ListMyClassHoldingClass result = new ClassBasedFactory<>(ListMyClassHoldingClass.class)
+	public void testSimpleGenericsListMyDataClass() {
+		@Nullable ListMyDataClassHoldingClass result = new ClassBasedFactory<>(ListMyDataClassHoldingClass.class)
 				.createLoremIpsumObject(ClassBindings.defaultBindings());
 		
 		assertThat(result).isNotNull();
 		assertThat(result.getMyClasses()).isNotEmpty();
-		assertThat(result.getMyClasses().get(0)).isInstanceOf(MyClass.class);
+		assertThat(result.getMyClasses().get(0)).isInstanceOf(MyDataClass.class);
 		assertThat(result.getMyClasses().get(0).getIntegers()).isNotEmpty();
 		assertThat(result.getMyClasses().get(0).getIntegers().iterator().next()).isInstanceOf(Double.class);
+	}
+	
+	@Test
+	public void testSimpleGenericsListMyValueClass() {
+		@Nullable ListMyValueClassHoldingClass result = new ClassBasedFactory<>(ListMyValueClassHoldingClass.class)
+				.createLoremIpsumObject(ClassBindings.defaultBindings());
+		
+		assertThat(result).isNotNull();
+		assertThat(result.getMyClasses()).isNotEmpty();
+		assertThat(result.getMyClasses().get(0)).isInstanceOf(MyValueClass.class);
+		assertThat(result.getMyClasses().get(0).getValue()).isInstanceOf(Double.class);
 	}
 }

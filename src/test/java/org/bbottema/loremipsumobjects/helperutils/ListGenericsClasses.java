@@ -1,6 +1,7 @@
 package org.bbottema.loremipsumobjects.helperutils;
 
 import lombok.Data;
+import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +20,21 @@ public class ListGenericsClasses {
 	}
 	
 	@Data
-	public static class ListMyClassHoldingClass {
-		private List<MyClass> myClasses;
+	public static class ListMyDataClassHoldingClass {
+		private List<MyDataClass> myClasses;
 	}
 	
 	@Data
-	public static class MyClass {
+	public static class MyDataClass {
 		private Set<Double> integers;
+	}
+	
+	@Value
+	public static class ListMyValueClassHoldingClass {
+		private List<MyValueClass> myClasses;
+	}
+	@Value
+	public static class MyValueClass {
+		private double value;
 	}
 }
