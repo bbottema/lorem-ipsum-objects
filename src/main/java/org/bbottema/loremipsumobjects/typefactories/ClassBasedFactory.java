@@ -310,7 +310,7 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 						}
 					});
 				} catch (final Exception e) {
-					log.error(format("error calling setter method [%s] with value [%s]", setter.getName(), argument), e);
+					exceptions.add(new IllegalArgumentException(format("error calling setter method [%s] with value [%s]", setter.getName(), argument), e));
 				}
 			}
 		}

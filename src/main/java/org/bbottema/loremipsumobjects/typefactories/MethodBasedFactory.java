@@ -1,6 +1,5 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
-import lombok.extern.slf4j.Slf4j;
 import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
 import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock;
@@ -16,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 
-@Slf4j
 public class MethodBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 
 	private final Method method;
@@ -62,7 +60,7 @@ public class MethodBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 				}
 			});
 		} catch (final Exception e) {
-			log.debug(format("failed to invoke Method [%s] to product an object of type [%s]", m.getName(), method.getReturnType()), e);
+			exceptions.add(new IllegalArgumentException(format("failed to invoke Method [%s] to product an object of type [%s]", m.getName(), method.getReturnType()), e));
 		}
 		return null;
 	}
