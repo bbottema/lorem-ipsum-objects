@@ -1,5 +1,7 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
+import org.assertj.core.api.Condition;
+import org.bbottema.loremipsumobjects.helperutils.TimeoutSimulator;
 import org.bbottema.loremipsumobjects.typefactories.util.LoremIpsumGenerator;
 import org.bbottema.loremipsumobjects.helperutils.EnumClass;
 import org.bbottema.loremipsumobjects.helperutils.InheritedPrimitiveClass;
@@ -559,7 +561,7 @@ public class ClassBasedFactoryTest {
 	 * to indicate the correct implementation.
 	 */
 	@Test
-	@SuppressWarnings({"rawtypes", "ThrowablePrintedToSystemOut"})
+	@SuppressWarnings({"ThrowablePrintedToSystemOut", "ConstantConditions"})
 	public void testInterfaceBindingErrors() {
 		try {
 			//noinspection ResultOfMethodCallIgnored
@@ -577,5 +579,27 @@ public class ClassBasedFactoryTest {
 			System.out.println(e);
 			// ok
 		}
+	}
+	
+	@Test
+	public void testTimeouts() {
+		final TimeoutSimulator result = new ClassBasedFactory<>(TimeoutSimulator.class).createLoremIpsumObject(new ClassBindings());
+		
+		assertThat(result).isNotNull();
+		assertThat(TimeoutSimulator.contructorTimeoutTriggered).isTrue();
+		assertThat(TimeoutSimulator.methodTimeoutTriggered).isTrue();
+		assertThat(result.getConstructorValue()).isEqualTo(111);
+		assertThat(result.getMethod1Value()).is(nullOrEqual(111));
+		assertThat(result.getMethod2Value()).is(nullOrEqual(55.5f));
+		assertThat(result.getMethod1Value()).isNotEqualTo(result.getMethod2Value());
+	}
+	
+	private <T extends Number> Condition<T> nullOrEqual(final T number) {
+		return new Condition<T>() {
+			@Override
+			public boolean matches(T value) {
+				return value == null || value.equals(number);
+			}
+		};
 	}
 }

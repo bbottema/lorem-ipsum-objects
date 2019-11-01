@@ -3,14 +3,16 @@ package org.bbottema.loremipsumobjects.typefactories;
 import lombok.extern.slf4j.Slf4j;
 import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 
@@ -53,8 +55,13 @@ public class MethodBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 					.createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
 		}
 		try {
-			return (T) m.invoke(null, params);
-		} catch (final InvocationTargetException | IllegalAccessException e) {
+			return TimeLimitedCodeBlock.runWithTimeout(250, TimeUnit.MILLISECONDS, new Callable<T>() {
+				@Override @Nullable
+				public T call() throws Exception {
+					return (T) m.invoke(null, params);
+				}
+			});
+		} catch (final Exception e) {
 			log.debug(format("failed to invoke Method [%s] to product an object of type [%s]", m.getName(), method.getReturnType()), e);
 		}
 		return null;

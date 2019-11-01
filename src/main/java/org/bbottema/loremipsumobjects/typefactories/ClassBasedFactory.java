@@ -11,6 +11,8 @@ import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
 import org.bbottema.loremipsumobjects.typefactories.util.LoremIpsumGenerator;
 import org.bbottema.loremipsumobjects.typefactories.util.ReflectionCache;
+import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock;
+import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock.RunnableWithException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,16 +22,18 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-import static java.util.Arrays.sort;
-import static java.util.EnumSet.allOf;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
+import static java.util.EnumSet.allOf;
 import static java.util.EnumSet.of;
 
 /**
@@ -95,7 +99,7 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 						log.error(e.getMessage(), e);
 					}
 				}
-				throw new IllegalArgumentException(String.format("Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
+				throw new IllegalArgumentException(format("Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
 			}
 		} else {
 			return (T) knownInstances.get(typeMarker).getInstance();
@@ -297,11 +301,16 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 				final boolean isRawClassItself = genericParameterType instanceof Class;
 				final Type[] nextGenericsMetaData = isRawClassItself ? null : ((ParameterizedType) genericParameterType).getActualTypeArguments();
 				// finally create the parameter with or without generics meta data
-				final Object parameter = factory.createLoremIpsumObject(nextGenericsMetaData, knownInstances, classBindings, exceptions);
+				final Object argument = factory.createLoremIpsumObject(nextGenericsMetaData, knownInstances, classBindings, exceptions);
 				try {
-					setter.invoke(subject, parameter);
+					TimeLimitedCodeBlock.runWithTimeout(250, TimeUnit.MILLISECONDS, new RunnableWithException() {
+						@Override
+						public void run() throws Exception {
+							setter.invoke(subject, argument);
+						}
+					});
 				} catch (final Exception e) {
-					log.error("error calling setter method [" + setter.getName() + "]", e);
+					log.error(format("error calling setter method [%s] with value [%s]", setter.getName(), argument), e);
 				}
 			}
 		}
