@@ -5,8 +5,6 @@ import java.util.Map;
 
 /**
  * Master class containing many lists and maps nested in several ways.
- * 
- * @author Benny Bottema
  */
 public class NestedMapClass {
 
@@ -51,8 +49,6 @@ public class NestedMapClass {
 	/**
 	 * Tests whether uneven sized lists of generic types are treated correctly two. This is to make sure that the code doesn't just assume
 	 * the same number of generic nesting-depth on both sides of the {@link Map}.
-	 * 
-	 * @author Benny Bottema
 	 */
 	public static class NestedDoubleAssymetricMapClass {
 		public Map<Map<Integer, NestedDoubleMapClass>, Character> MapsOfCharacters;
