@@ -594,7 +594,7 @@ public class ClassBasedFactoryTest {
 	private <T extends Number> Condition<T> nullOrEqual(final T number) {
 		return new Condition<T>() {
 			@Override
-			public boolean matches(T value) {
+			public boolean matches(@Nullable T value) {
 				return value == null || value.equals(number);
 			}
 		};

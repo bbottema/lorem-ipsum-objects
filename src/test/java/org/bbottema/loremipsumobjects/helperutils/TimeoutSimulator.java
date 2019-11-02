@@ -1,12 +1,13 @@
 package org.bbottema.loremipsumobjects.helperutils;
 
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 public class TimeoutSimulator {
 	private final int constructorValue;
-	private Integer method1Value = null;
-	private Float method2Value = null;
+	@Nullable private Integer method1Value = null;
+	@Nullable private Float method2Value = null;
 	
 	public static boolean contructorTimeoutTriggered;
 	public static boolean methodTimeoutTriggered;
