@@ -2,9 +2,9 @@ package org.bbottema.loremipsumobjects.typefactories;
 
 import org.assertj.core.api.Condition;
 import org.bbottema.loremipsumobjects.ClassBindings;
+import org.bbottema.loremipsumobjects.LoremIpsumObjectCreator;
 import org.bbottema.loremipsumobjects.helperutils.EnumClass;
 import org.bbottema.loremipsumobjects.helperutils.InheritedPrimitiveClass;
-import org.bbottema.loremipsumobjects.helperutils.ListGenericsClasses;
 import org.bbottema.loremipsumobjects.helperutils.LoopClass;
 import org.bbottema.loremipsumobjects.helperutils.MultiConstructorClass;
 import org.bbottema.loremipsumobjects.helperutils.MyCustomTestClass;
@@ -43,8 +43,13 @@ import java.util.Map.Entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.data.Offset.offset;
-import static org.bbottema.loremipsumobjects.helperutils.ListGenericsClasses.*;
 import static org.bbottema.loremipsumobjects.helperutils.ListGenericsClasses.ArrayListIntegerHoldingClass;
+import static org.bbottema.loremipsumobjects.helperutils.ListGenericsClasses.ListIntegerHoldingClass;
+import static org.bbottema.loremipsumobjects.helperutils.ListGenericsClasses.ListMyDataClassHoldingClass;
+import static org.bbottema.loremipsumobjects.helperutils.ListGenericsClasses.ListMyValueClassHoldingClass;
+import static org.bbottema.loremipsumobjects.helperutils.ListGenericsClasses.ListMyValueClassesHoldingClass;
+import static org.bbottema.loremipsumobjects.helperutils.ListGenericsClasses.MyDataClass;
+import static org.bbottema.loremipsumobjects.helperutils.ListGenericsClasses.MyValueClass;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -81,6 +86,14 @@ public class ClassBasedFactoryTest {
 	@After
 	public void cleanup() {
 		LoremIpsumGenerator.setInstance(new LoremIpsumGenerator());
+	}
+	
+	@Test
+	public void testPrimitives() {
+		LoremIpsumObjectCreator creator = new LoremIpsumObjectCreator();
+		
+		assertThat(creator.createLoremIpsumObject(int.class)).isEqualTo(111);
+		assertThat(creator.createLoremIpsumObject(String.class)).isEqualTo("not so random test string");
 	}
 	
 	/**
