@@ -4,6 +4,13 @@ https://github.com/bbottema/lorem-ipsum-objects
 RELEASE NOTES lorem-ipsum-objects
 
 
+v2.0.0
+
+- #1: enhancement: Try private constructors when all public constructors have been exhausted
+- #2: enhancement: Apply timeout to invoked methods and constructors, preventing unexpected hang-ups
+- #3: bugfix: fix generics support for constructors
+
+
 v1.0.0
 
 Initial release of the dummy-creator project overhaul: lorem-ipsum-objects. Enjoy!
