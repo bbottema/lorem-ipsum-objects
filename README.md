@@ -39,20 +39,21 @@ Basic usage:
 
 ```java
 LoremIpsumObjectCreator creator = new LoremIpsumObjectCreator();
-
-create.createLoremIpsumObject(clazz);
+creator.createLoremIpsumObject(clazz);
 ```
 
 Usage with custom factories:
 
 ```java
+// first configure class bindings, tying classes to specific factories
 ClassBindings classBindings = new ClassBindings(); // or:
 ClassBindings classBindings = ClassBindings.defaultBindings(); // defaults for collections
 
 classBindings.add(List.class, new ClassBasedFactory<>(ArrayList.class));
 
+// then start creating objects...
 LoremIpsumObjectCreator creator = new LoremIpsumObjectCreator(classBindings);
-create.createLoremIpsumObject(clazz);
+creator.createLoremIpsumObject(clazz);
 ```
 
 lorem-ipsum-objects is very flexible and allows you to control how objects are created or reused. 
