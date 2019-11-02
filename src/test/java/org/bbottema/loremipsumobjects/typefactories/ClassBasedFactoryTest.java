@@ -642,4 +642,17 @@ public class ClassBasedFactoryTest {
 		assertThat(result.getMyClasses().get(0)).isInstanceOf(MyValueClass.class);
 		assertThat(result.getMyClasses().get(0).getValue()).isInstanceOf(Double.class);
 	}
+	
+	@Test
+	public void testSimpleGenericsListMyValueClasses() {
+		@Nullable ListMyValueClassesHoldingClass result = new ClassBasedFactory<>(ListMyValueClassesHoldingClass.class)
+				.createLoremIpsumObject(ClassBindings.defaultBindings());
+		
+		assertThat(result).isNotNull();
+		assertThat(result.getMyClasses()).isNotEmpty();
+		assertThat(result.getMyClasses().get(0)).isInstanceOf(MyValueClass.class);
+		assertThat(result.getMyClasses().get(0).getValue()).isInstanceOf(Double.class);
+		assertThat(result.getInts().get(0)).isInstanceOf(Integer.class);
+		assertThat(result.getStrings().get(0)).isInstanceOf(String.class);
+	}
 }

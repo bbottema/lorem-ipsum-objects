@@ -33,6 +33,14 @@ public class ListGenericsClasses {
 	public static class ListMyValueClassHoldingClass {
 		private List<MyValueClass> myClasses;
 	}
+	
+	@Value
+	public static class ListMyValueClassesHoldingClass {
+		private List<MyValueClass> myClasses;
+		private List<Integer> ints;
+		private List<String> strings;
+	}
+	
 	@Value
 	public static class MyValueClass {
 		private double value;

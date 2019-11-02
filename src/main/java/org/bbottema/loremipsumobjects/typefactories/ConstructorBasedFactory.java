@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -16,27 +17,31 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
-
+	
 	private final Constructor<T> constructor;
-
+	
 	public ConstructorBasedFactory(final Constructor<T> constructor) {
 		this.constructor = constructor;
 	}
-
+	
 	/**
-	 * @param genericMetaData Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the <code>Constructor</code>.
-	 * @param knownInstances  Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the <code>Constructor</code>.
-	 * @param classbindings   Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the <code>Constructor</code>.
-	 * @param exceptions      Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the <code>Constructor</code>.
+	 * @param genericMetaData Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the
+	 *                        <code>Constructor</code>.
+	 * @param knownInstances  Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the
+	 *                        <code>Constructor</code>.
+	 * @param classbindings   Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the
+	 *                        <code>Constructor</code>.
+	 * @param exceptions      Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the
+	 *                        <code>Constructor</code>.
+	 *
 	 * @return The result of a successful invocation of the given constructor or <code>null</code> in case of an error.
 	 */
 	@Nullable
 	@Override
 	public T createLoremIpsumObject(@Nullable final Type[] genericMetaData,
-	                                final Map<String, ClassUsageInfo<?>> knownInstances,
-	                                final ClassBindings classbindings,
-	                                final List<Exception> exceptions) {
-		@SuppressWarnings("unchecked") final Class<T>[] parameters = (Class<T>[]) constructor.getParameterTypes();
+									final Map<String, ClassUsageInfo<?>> knownInstances,
+									final ClassBindings classbindings,
+									final List<Exception> exceptions) {
 		try {
 			try {
 				constructor.setAccessible(true); // might fail due to security policy
@@ -45,13 +50,10 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			}
 			
 			return TimeLimitedCodeBlock.runWithTimeout(250, TimeUnit.MILLISECONDS, new Callable<T>() {
-				@Override @NotNull
 				public T call() throws Exception {
-					if (parameters.length > 0) {
-						return constructor.newInstance(determineArguments(parameters, genericMetaData, knownInstances, classbindings, exceptions));
-					} else {
-						return constructor.newInstance();
-					}
+					return (constructor.getParameterTypes().length > 0)
+						   ? constructor.newInstance(determineArguments(constructor, knownInstances, classbindings, exceptions))
+						   : constructor.newInstance();
 				}
 			});
 		} catch (final Exception e) {
@@ -61,10 +63,16 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	}
 	
 	@NotNull
-	private Object[] determineArguments(Class<T>[] parameters, Type[] genericMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classbindings, List<Exception> exceptions) {
+	private Object[] determineArguments(Constructor<T> constructor, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classbindings, List<Exception> exceptions) {
+		@SuppressWarnings("unchecked") final Class<T>[] parameters = (Class<T>[]) constructor.getParameterTypes();
+		
 		final Object[] args = new Object[parameters.length];
 		for (int i = 0; i < args.length; i++) {
-			args[i] = new ClassBasedFactory<>(parameters[i]).createLoremIpsumObject(genericMetaData, knownInstances, classbindings,
+			final Type genericParameterType = constructor.getGenericParameterTypes()[i];
+			final boolean isRawClassItself = genericParameterType instanceof Class;
+			final Type[] nextGenericsMetaData = isRawClassItself ? null : ((ParameterizedType) genericParameterType).getActualTypeArguments();
+			
+			args[i] = new ClassBasedFactory<>(parameters[i]).createLoremIpsumObject(nextGenericsMetaData, knownInstances, classbindings,
 					exceptions);
 		}
 		return args;
