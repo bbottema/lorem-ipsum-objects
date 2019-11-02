@@ -20,6 +20,11 @@ application.
 
 See [RELEASE.txt](RELEASE.txt) for the release notes.
 
+---
+Note: this library is a reincarnation of [dummycreator](deveth0/dummycreator) (auto-migrated 
+by Google Code), which was started by Alex Muthmann and further developed by myself but was 
+mostly abandoned in late 2012.
+
 # How to use
 
 Basic usage: 
