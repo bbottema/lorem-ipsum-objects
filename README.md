@@ -10,6 +10,14 @@ populated dummy objects of a given type. Those dummy objects are created with
 all of their attributes set. So you can use them as a helper while testing your 
 application.
 
+Some use-cases are:
+
+ 1. Generate lorem ipsum data for documentating API examples. For example, documentation in Swagger
+ 2. Generate test data to test an object pool
+ 3. Generate many random objects to profile method performance
+ 4. Generate data samples to test your serialization library of choice (Jackson, Kryo, etc.)
+ 5. Populate a database with randomized data, like fake person details (although nothing remotely plausible)
+
 ```
 <dependency>
   <groupId>com.github.bbottema</groupId>
