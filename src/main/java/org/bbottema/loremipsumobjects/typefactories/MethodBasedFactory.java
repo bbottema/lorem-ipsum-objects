@@ -41,10 +41,10 @@ public class MethodBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	@Nullable
 	@SuppressWarnings("unchecked")
 	@Override
-	public T createLoremIpsumObject(@Nullable final Type[] genericMetaData,
-	                                final Map<String, ClassUsageInfo<?>> knownInstances,
-	                                final ClassBindings classBindings,
-	                                final List<Exception> exceptions) {
+	public T _createLoremIpsumObject(@Nullable final Type[] genericMetaData,
+	                                 final Map<String, ClassUsageInfo<?>> knownInstances,
+	                                 final ClassBindings classBindings,
+	                                 final List<Exception> exceptions) {
 		final Method m = method;
 		final Class<?>[] parameters = m.getParameterTypes();
 		final Object[] params = new Object[parameters.length];

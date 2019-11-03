@@ -34,7 +34,7 @@ public class FixedInstanceFactory<T> extends LoremIpsumObjectFactory<T> {
 	 */
 	@Override
 	@Nullable
-	public T createLoremIpsumObject(
+	public T _createLoremIpsumObject(
 			@Nullable final Type[] genericMetaData,
 			@Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
 			@Nullable final ClassBindings classBindings,

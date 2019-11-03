@@ -26,6 +26,14 @@ public abstract class LoremIpsumObjectFactory<T> {
 	}
 
 	/**
+	 * Delegates to {@link #createLoremIpsumObject(ClassBindings)} with the default bindings.
+	 */
+	@Nullable
+	public final T createLoremIpsumObject() {
+		return createLoremIpsumObject(new ClassBindings());
+	}
+
+	/**
 	 * Starts a new chain for the creation of a dummy with an empty list of known class instances and empty list of exceptions.
 	 *
 	 * @param classBindings A list of bindings to which a factory may defer dummy creation to.
@@ -33,12 +41,14 @@ public abstract class LoremIpsumObjectFactory<T> {
 	 */
 	@Nullable
 	public final T createLoremIpsumObject(@Nullable final ClassBindings classBindings) {
-		return createLoremIpsumObject(null, new HashMap<String, ClassUsageInfo<?>>(), classBindings, new ArrayList<Exception>());
+		return createLoremIpsumObject(null, new HashMap<>(), classBindings, new ArrayList<Exception>());
 	}
 
 	/**
 	 * Creates a new instance of one of the following: the requested type, a sub type of the requested type or, if the requested type is an
-	 * interface definition, a suitable implementation. Should return <code>null</code> if nothing can be found.
+	 * interface definition, a suitable implementation. Should return <code>null</code> if nothing can be found. In case of method/constructor
+	 * errors due to generated test data falling out of a range or causing a timeout, the process is retried a few times for each step (for example
+	 * when a method really wants a small numbers, but a large number is generated the first time).
 	 * <p>
 	 * If there are known exceptions (reflection exceptions when invoking a {@link Constructor} for example), don't throw them, but record
 	 * them in the given <code>exceptions</code> list. Not all failures are counted towards complete failures.
@@ -52,7 +62,21 @@ public abstract class LoremIpsumObjectFactory<T> {
 	 * @return A new instance of the given type.
 	 */
 	@Nullable
-	public abstract T createLoremIpsumObject(
+	public T createLoremIpsumObject(
+			@Nullable Type[] genericMetaData,
+			@Nullable Map<String, ClassUsageInfo<?>> knownInstances,
+			@Nullable ClassBindings classBindings,
+			@Nullable List<Exception> exceptions) {
+		T result;
+		int tries = 3;
+		do {
+			result = _createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
+		} while(result == null && --tries > 0);
+		return result;
+	}
+
+	@Nullable
+	abstract T _createLoremIpsumObject(
 			@Nullable Type[] genericMetaData,
 			@Nullable Map<String, ClassUsageInfo<?>> knownInstances,
 			@Nullable ClassBindings classBindings,

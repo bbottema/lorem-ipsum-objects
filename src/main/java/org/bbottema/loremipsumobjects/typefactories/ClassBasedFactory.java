@@ -80,10 +80,10 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	@Override
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public T createLoremIpsumObject(@Nullable final Type[] nextGenericsMetaData,
-	                                final Map<String, ClassUsageInfo<?>> knownInstances,
-	                                final ClassBindings classBindings,
-	                                final List<Exception> exceptions) {
+	public T _createLoremIpsumObject(@Nullable final Type[] nextGenericsMetaData,
+	                                 final Map<String, ClassUsageInfo<?>> knownInstances,
+	                                 final ClassBindings classBindings,
+	                                 final List<Exception> exceptions) {
 		// list of classes, we already used for population. by remembering, we can avoid recursive looping
 		final String typeMarker = createTypeMarker(clazz, nextGenericsMetaData);
 		if (knownInstances.get(typeMarker) == null || !knownInstances.get(typeMarker).isPopulated()) {

@@ -73,10 +73,10 @@ public class RandomPrimitiveFactory<T> extends LoremIpsumObjectFactory<T> {
 	@Nullable
 	@Override
 	@SuppressWarnings("unchecked")
-	public T createLoremIpsumObject(@Nullable final Type[] genericMetaData,
-	                                @Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
-	                                @Nullable final ClassBindings classBindings,
-	                                @Nullable final List<Exception> exceptions) {
+	public T _createLoremIpsumObject(@Nullable final Type[] genericMetaData,
+	                                 @Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
+	                                 @Nullable final ClassBindings classBindings,
+	                                 @Nullable final List<Exception> exceptions) {
 		if (clazz == int.class) {
 			return (T) (Integer) LoremIpsumGenerator.getInstance().getRandomInt();
 		} else if (clazz == long.class) {

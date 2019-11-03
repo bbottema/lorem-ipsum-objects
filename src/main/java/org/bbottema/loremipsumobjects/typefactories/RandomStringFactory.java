@@ -18,7 +18,7 @@ public class RandomStringFactory extends LoremIpsumObjectFactory<String> {
 	 * @return The result of {@link LoremIpsumGenerator#getRandomString()}.
 	 */
 	@Override
-	public String createLoremIpsumObject(
+	public String _createLoremIpsumObject(
 			@Nullable final Type[] genericMetaData,
 			@Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
 			@Nullable final ClassBindings classBindings,

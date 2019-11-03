@@ -38,10 +38,10 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	 */
 	@Nullable
 	@Override
-	public T createLoremIpsumObject(@Nullable final Type[] genericMetaData,
-									final Map<String, ClassUsageInfo<?>> knownInstances,
-									final ClassBindings classbindings,
-									final List<Exception> exceptions) {
+	public T _createLoremIpsumObject(@Nullable final Type[] genericMetaData,
+	                                 final Map<String, ClassUsageInfo<?>> knownInstances,
+	                                 final ClassBindings classbindings,
+	                                 final List<Exception> exceptions) {
 		try {
 			try {
 				constructor.setAccessible(true); // might fail due to security policy

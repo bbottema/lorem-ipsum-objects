@@ -22,7 +22,7 @@ public class RandomBooleanFactory extends LoremIpsumObjectFactory<Boolean> {
 	 * @return The result of {@link LoremIpsumGenerator#getRandomBoolean()}.
 	 */
 	@Override
-	public Boolean createLoremIpsumObject(
+	public Boolean _createLoremIpsumObject(
 			@Nullable final Type[] genericMetaData,
 			@Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
 			@Nullable final ClassBindings classBindings,

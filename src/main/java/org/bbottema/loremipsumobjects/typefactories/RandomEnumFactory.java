@@ -24,7 +24,7 @@ public class RandomEnumFactory<T extends Enum<?>> extends LoremIpsumObjectFactor
 	 * @return A random enum from the list acquired by invoking {@link Class#getEnumConstants()} on the requested type.
 	 */
 	@Override
-	public T createLoremIpsumObject(
+	public T _createLoremIpsumObject(
 			@Nullable final Type[] genericMetaData,
 			@Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
 			@Nullable final ClassBindings classBindings,
