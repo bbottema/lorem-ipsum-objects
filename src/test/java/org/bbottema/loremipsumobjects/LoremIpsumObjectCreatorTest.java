@@ -504,12 +504,12 @@ public class LoremIpsumObjectCreatorTest {
 	public void testLorumIpsumBigDecimal() {
 		BigDecimal bigDecimal = loremIpsumObjectCreator.createLoremIpsumObject(BigDecimal.class);
 		assertThat(bigDecimal).isNotNull();
-		assertThat(bigDecimal).isEqualTo(new BigDecimal(33686018));
+		assertThat(bigDecimal).isEqualTo(new BigDecimal("1.11"));
 		System.out.println(bigDecimal);
 		loremIpsumObjectCreator = new LoremIpsumObjectCreator();
 		bigDecimal = loremIpsumObjectCreator.createLoremIpsumObject(BigDecimal.class);
 		assertThat(bigDecimal).isNotNull();
-		assertThat(bigDecimal).isEqualTo(new BigDecimal(33686018));
+		assertThat(bigDecimal).isEqualTo(new BigDecimal("1.11"));
 	}
 
 	/**
