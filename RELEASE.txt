@@ -4,6 +4,15 @@ https://github.com/bbottema/lorem-ipsum-objects
 RELEASE NOTES lorem-ipsum-objects
 
 
+v3.0.0
+
+- #4: enhancement: always include the default bindings and provide convenience .create methods that use default bindings enhancement
+- #8: enhancement: `ClassBindings.add` should be `ClassBindings.bind` enhancement
+- #5: enhancement: when creation fails, retry a few times in case the generated data simply was beyond some acceptable range enhancement
+- #6: bugfix: provide a specific factory for BigDecimal, so it doesn't wreck the system bug enhancement
+- #7: enhancement: improve error feedback enhancement
+
+
 v2.0.0
 
 - #1: enhancement: Try private constructors when all public constructors have been exhausted
