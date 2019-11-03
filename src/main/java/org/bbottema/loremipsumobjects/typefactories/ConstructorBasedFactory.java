@@ -45,7 +45,7 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 		try {
 			try {
 				constructor.setAccessible(true); // might fail due to security policy
-			} catch (NumberFormatException e) {
+			} catch (Exception e) {
 				// ignore, try without making it explicitly accessibly
 			}
 			
