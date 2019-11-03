@@ -57,7 +57,7 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 				}
 			});
 		} catch (final Exception e) {
-			exceptions.add(e);
+			exceptions.add(new IllegalArgumentException("failed to invoke constructor", e));
 		}
 		return null;
 	}

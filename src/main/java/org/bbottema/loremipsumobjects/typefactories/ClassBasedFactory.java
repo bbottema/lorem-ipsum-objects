@@ -95,7 +95,7 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 				log.error("tried but failed to produce dummy object...");
 				if (!exceptions.isEmpty()) {
 					for (final Exception e : exceptions) {
-						log.error("error logged: " + e.getMessage(), e);
+						log.error("error logged:", e);
 					}
 				}
 				throw new IllegalArgumentException(format("Could not instantiate object for type [%s], is it abstract and missing a binding? Logged any exception encountered above...", clazz));
