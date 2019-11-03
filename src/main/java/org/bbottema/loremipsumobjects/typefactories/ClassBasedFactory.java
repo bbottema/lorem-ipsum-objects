@@ -94,12 +94,11 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			} else {
 				log.error("tried but failed to produce dummy object...");
 				if (!exceptions.isEmpty()) {
-					log.error("errors logged:");
 					for (final Exception e : exceptions) {
-						log.error(e.getMessage(), e);
+						log.error("error logged: " + e.getMessage(), e);
 					}
 				}
-				throw new IllegalArgumentException(format("Could not instantiate object for type [%s], is it abstract and missing a binding?", clazz));
+				throw new IllegalArgumentException(format("Could not instantiate object for type [%s], is it abstract and missing a binding? Logged any exception encountered above...", clazz));
 			}
 		} else {
 			return (T) knownInstances.get(typeMarker).getInstance();
