@@ -41,7 +41,7 @@ public abstract class LoremIpsumObjectFactory<T> {
 	 */
 	@Nullable
 	public final T createLoremIpsumObject(@Nullable final ClassBindings classBindings) {
-		return createLoremIpsumObject(null, new HashMap<>(), classBindings, new ArrayList<Exception>());
+		return createLoremIpsumObject(null, new HashMap<String, ClassUsageInfo<?>>(), classBindings, new ArrayList<Exception>());
 	}
 
 	/**
