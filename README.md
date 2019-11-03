@@ -46,10 +46,9 @@ Usage with custom factories:
 
 ```java
 // first configure class bindings, tying classes to specific factories
-ClassBindings classBindings = new ClassBindings(); // or:
-ClassBindings classBindings = ClassBindings.defaultBindings(); // defaults for collections
+ClassBindings classBindings = new ClassBindings();
 
-classBindings.add(List.class, new ClassBasedFactory<>(ArrayList.class));
+classBindings.bind(List.class, new ClassBasedFactory<>(LinkedList.class));
 
 // then start creating objects...
 LoremIpsumObjectCreator creator = new LoremIpsumObjectCreator(classBindings);
@@ -73,17 +72,30 @@ Below examples demonstrate their usage...
 Tie concrete classes to interfaces:
 
 ```java
-classBindings.add(List.class, new ClassBasedFactory<>(ArrayList.class));
+classBindings.bind(List.class, new ClassBasedFactory<>(ArrayList.class));
 
 LoremIpsumObjectCreator.createLoremIpsumObject(List.class); // returns an ArrayList
 ```
 
-Default settings:
+Built in defaults:
 
 ```java
-classBindings.add(List.class, new ClassBasedFactory<>(ArrayList.class));
-classBindings.add(Map.class, new ClassBasedFactory<>(HashMap.class));
-classBindings.add(Set.class, new ClassBasedFactory<>(HashSet.class));
+classBindings.bind(Long.TYPE, new RandomPrimitiveFactory<>(Long.TYPE));
+classBindings.bind(Integer.TYPE, new RandomPrimitiveFactory<>(Integer.TYPE));
+classBindings.bind(Float.TYPE, new RandomPrimitiveFactory<>(Float.TYPE));
+classBindings.bind(Boolean.TYPE, new RandomPrimitiveFactory<>(Boolean.TYPE));
+classBindings.bind(Character.TYPE, new RandomPrimitiveFactory<>(Character.TYPE));
+classBindings.bind(Byte.TYPE, new RandomPrimitiveFactory<>(Byte.TYPE));
+classBindings.bind(Short.TYPE, new RandomPrimitiveFactory<>(Short.TYPE));
+classBindings.bind(Double.TYPE, new RandomPrimitiveFactory<>(Double.TYPE));
+classBindings.bind(String.class, new RandomStringFactory());
+classBindings.bind(Boolean.class, new RandomBooleanFactory());
+
+classBindings.bind(List.class, new ClassBasedFactory<>(ArrayList.class));
+classBindings.bind(Map.class, new ClassBasedFactory<>(HashMap.class));
+classBindings.bind(Set.class, new ClassBasedFactory<>(HashSet.class));
+
+classBindings.bind(BigDecimal.class, new RandomBigDecimalFactory());
 ```
 
 ## Preselect which object to use
@@ -92,8 +104,8 @@ If you want to use a specific object for a certain class, you can register it
 with a Class binding:
 
 ```java
-classBindings.add(Foo.class, new FixedInstanceFactory<>(new Foo()));
-classBindings.add(Bar.class, new FixedInstanceFactory<>(new SubclassOfBar()));
+classBindings.bind(Foo.class, new FixedInstanceFactory<>(new Foo()));
+classBindings.bind(Bar.class, new FixedInstanceFactory<>(new SubclassOfBar()));
 ```
 
 Every time the LoremIpsumObjectCreator is called with these class, it will return 
@@ -106,7 +118,7 @@ constructor until one worked. If you want to preselect the
 constructor that should be used, you can bind it with a class binding:
 
 ```java
-classBindings.add(clazz, new ConstructorBasedFactory<>(yourConstructor));
+classBindings.bind(clazz, new ConstructorBasedFactory<>(yourConstructor));
 ```
 
 If you don't already have your own constructor then [java-reflection](https://github.com/bbottema/java-reflection), 
@@ -128,7 +140,7 @@ to create an object of this class with the LoremIpsumObjectCreator, it uses the 
 class:
 
 ```java
-classBindings.add(clazz, new MethodBasedFactory<>(yourMethod));
+classBindings.bind(clazz, new MethodBasedFactory<>(yourMethod));
 ```
 
 For methods, [java-reflection](https://github.com/bbottema/java-reflection) has even more helper functions:
@@ -145,5 +157,5 @@ Method m = MethodUtils.findCompatibleMethod(clazz, lookupMode, double.class, Str
 Finally, for maximum freedom, you can also use your own factory:
 
 ```java
-classBindings.add(Class clazz, LoremIpsumObjectFactory yourCustomObjectFactory);
+classBindings.bind(Class clazz, LoremIpsumObjectFactory yourCustomObjectFactory);
 ```

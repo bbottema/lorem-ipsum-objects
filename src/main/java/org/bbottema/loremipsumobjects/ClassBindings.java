@@ -4,6 +4,7 @@ import org.bbottema.loremipsumobjects.typefactories.ClassBasedFactory;
 import org.bbottema.loremipsumobjects.typefactories.ConstructorBasedFactory;
 import org.bbottema.loremipsumobjects.typefactories.LoremIpsumObjectFactory;
 import org.bbottema.loremipsumobjects.typefactories.MethodBasedFactory;
+import org.bbottema.loremipsumobjects.typefactories.RandomBigDecimalFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomBooleanFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomPrimitiveFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomStringFactory;
@@ -11,6 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,16 +47,20 @@ public class ClassBindings {
 	 * Initializes with basic bindings for primitives, arrays and strings.
 	 */
 	public ClassBindings() {
-		add(Long.TYPE, new RandomPrimitiveFactory<>(Long.TYPE));
-		add(Integer.TYPE, new RandomPrimitiveFactory<>(Integer.TYPE));
-		add(Float.TYPE, new RandomPrimitiveFactory<>(Float.TYPE));
-		add(Boolean.TYPE, new RandomPrimitiveFactory<>(Boolean.TYPE));
-		add(Character.TYPE, new RandomPrimitiveFactory<>(Character.TYPE));
-		add(Byte.TYPE, new RandomPrimitiveFactory<>(Byte.TYPE));
-		add(Short.TYPE, new RandomPrimitiveFactory<>(Short.TYPE));
-		add(Double.TYPE, new RandomPrimitiveFactory<>(Double.TYPE));
-		add(String.class, new RandomStringFactory());
-		add(Boolean.class, new RandomBooleanFactory());
+		bind(Long.TYPE, new RandomPrimitiveFactory<>(Long.TYPE));
+		bind(Integer.TYPE, new RandomPrimitiveFactory<>(Integer.TYPE));
+		bind(Float.TYPE, new RandomPrimitiveFactory<>(Float.TYPE));
+		bind(Boolean.TYPE, new RandomPrimitiveFactory<>(Boolean.TYPE));
+		bind(Character.TYPE, new RandomPrimitiveFactory<>(Character.TYPE));
+		bind(Byte.TYPE, new RandomPrimitiveFactory<>(Byte.TYPE));
+		bind(Short.TYPE, new RandomPrimitiveFactory<>(Short.TYPE));
+		bind(Double.TYPE, new RandomPrimitiveFactory<>(Double.TYPE));
+		bind(String.class, new RandomStringFactory());
+		bind(Boolean.class, new RandomBooleanFactory());
+		bind(List.class, new ClassBasedFactory<>(ArrayList.class));
+		bind(Map.class, new ClassBasedFactory<>(HashMap.class));
+		bind(Set.class, new ClassBasedFactory<>(HashSet.class));
+		bind(BigDecimal.class, new RandomBigDecimalFactory());
 	}
 
 	/**
@@ -65,13 +72,13 @@ public class ClassBindings {
 	 *                                  <code>IllegalArgumentException</code> itself.
 	 * @see LoremIpsumObjectFactory#isValidForType(Class)
 	 */
-	public <T> void add(final Class<T> clazz, final LoremIpsumObjectFactory<? extends T> factory) {
+	public <T> void bind(final Class<T> clazz, final LoremIpsumObjectFactory<? extends T> factory) {
 		try {
 			if (factory.isValidForType(clazz)) {
 				bindings.put(clazz, factory);
 			} else {
 				// factory didn't throw an exception, so we'll do it ourself
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("given factory not valid for given type");
 			}
 		} catch (final IllegalArgumentException e) {
 			// note: exception is also thrown by LoremIpsumObjectFactory.isValidForType
@@ -87,18 +94,5 @@ public class ClassBindings {
 	@Nullable
 	public <T> LoremIpsumObjectFactory<T> find(final Class<T> _class) {
 		return (LoremIpsumObjectFactory<T>) bindings.get(_class);
-	}
-
-	/**
-	 * You can call this method to build some default bindings for common classes. This includes List.class, Map.class, Set.class.
-	 * <p>
-	 * These are in addition to the basic bindings added in {@link #ClassBindings()}.
-	 */
-	public static ClassBindings defaultBindings() {
-		final ClassBindings classBindings = new ClassBindings();
-		classBindings.add(List.class, new ClassBasedFactory<>(ArrayList.class));
-		classBindings.add(Map.class, new ClassBasedFactory<>(HashMap.class));
-		classBindings.add(Set.class, new ClassBasedFactory<>(HashSet.class));
-		return classBindings;
 	}
 }

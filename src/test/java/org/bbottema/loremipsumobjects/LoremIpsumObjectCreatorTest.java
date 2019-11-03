@@ -1,7 +1,5 @@
-package org.bbottema.loremipsumobjects.typefactories.util;
+package org.bbottema.loremipsumobjects;
 
-import org.bbottema.loremipsumobjects.ClassBindings;
-import org.bbottema.loremipsumobjects.LoremIpsumObjectCreator;
 import org.bbottema.loremipsumobjects.helperutils.EnumClass;
 import org.bbottema.loremipsumobjects.helperutils.InheritedPrimitiveClass;
 import org.bbottema.loremipsumobjects.helperutils.LoopClass;
@@ -25,18 +23,21 @@ import org.bbottema.loremipsumobjects.helperutils.TestChainBinding.C;
 import org.bbottema.loremipsumobjects.typefactories.ClassBasedFactory;
 import org.bbottema.loremipsumobjects.typefactories.ConstructorBasedFactory;
 import org.bbottema.loremipsumobjects.typefactories.FixedInstanceFactory;
+import org.bbottema.loremipsumobjects.typefactories.util.LoremIpsumGenerator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.AbstractList;
+import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -54,10 +55,10 @@ public class LoremIpsumObjectCreatorTest {
 	 */
 	@Before
 	public void setUp() throws SecurityException, NoSuchMethodException {
-		final ClassBindings classBindings = ClassBindings.defaultBindings();
-		classBindings.add(Integer.class, new ConstructorBasedFactory<>(Integer.class.getConstructor(Integer.TYPE)));
-		classBindings.add(Long.class, new FixedInstanceFactory<>(Long.MAX_VALUE));
-		classBindings.add(Double.class, new FixedInstanceFactory<>(Double.MIN_VALUE));
+		final ClassBindings classBindings = new ClassBindings();
+		classBindings.bind(Integer.class, new ConstructorBasedFactory<>(Integer.class.getConstructor(Integer.TYPE)));
+		classBindings.bind(Long.class, new FixedInstanceFactory<>(Long.MAX_VALUE));
+		classBindings.bind(Double.class, new FixedInstanceFactory<>(Double.MIN_VALUE));
 		loremIpsumObjectCreator = new LoremIpsumObjectCreator(classBindings);
 
 		LoremIpsumGenerator mock = mock(LoremIpsumGenerator.class);
@@ -107,8 +108,8 @@ public class LoremIpsumObjectCreatorTest {
 		assertThat(this.loremIpsumObjectCreator.createLoremIpsumObject(List.class).getClass()).isEqualTo(ArrayList.class);
 
 		final ClassBindings classBindings = new ClassBindings();
-		classBindings.add(List.class, new ClassBasedFactory<>(ArrayList.class));
-		classBindings.add(List.class, new ClassBasedFactory<>(LinkedList.class));
+		classBindings.bind(List.class, new ClassBasedFactory<>(ArrayList.class));
+		classBindings.bind(List.class, new ClassBasedFactory<>(LinkedList.class));
 		final LoremIpsumObjectCreator loremIpsumObjectCreator = new LoremIpsumObjectCreator(classBindings);
 		assertThat(loremIpsumObjectCreator.createLoremIpsumObject(List.class).getClass()).isEqualTo(LinkedList.class);
 	}
@@ -154,7 +155,7 @@ public class LoremIpsumObjectCreatorTest {
 	public void testObjectBinding() {
 		final ClassBindings classBindings = new ClassBindings();
 		final LinkedList<Object> list = new LinkedList<>();
-		classBindings.add(List.class, new FixedInstanceFactory<List>(list));
+		classBindings.bind(List.class, new FixedInstanceFactory<List>(list));
 		final LoremIpsumObjectCreator loremIpsumObjectCreator = new LoremIpsumObjectCreator(classBindings);
 		final List<?> dummy = loremIpsumObjectCreator.createLoremIpsumObject(List.class);
 		assertThat(dummy.getClass()).isEqualTo(LinkedList.class);
@@ -167,7 +168,7 @@ public class LoremIpsumObjectCreatorTest {
 	@Test
 	public void testDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
 		final ClassBindings classBindings = new ClassBindings();
-		classBindings.add(B.class, new ConstructorBasedFactory<>(C.class.getConstructor(int.class)));
+		classBindings.bind(B.class, new ConstructorBasedFactory<>(C.class.getConstructor(int.class)));
 		final LoremIpsumObjectCreator loremIpsumObjectCreator = new LoremIpsumObjectCreator(classBindings);
 		final B dummy = loremIpsumObjectCreator.createLoremIpsumObject(B.class);
 		assertThat(dummy.getClass()).isEqualTo(C.class);
@@ -180,7 +181,7 @@ public class LoremIpsumObjectCreatorTest {
 	@Test
 	public void testDeferredSubTypeBinding() throws SecurityException {
 		final ClassBindings classBindings = new ClassBindings();
-		classBindings.add(B.class, new ClassBasedFactory<>(C.class));
+		classBindings.bind(B.class, new ClassBasedFactory<>(C.class));
 		final LoremIpsumObjectCreator loremIpsumObjectCreator = new LoremIpsumObjectCreator(classBindings);
 		final B dummy = loremIpsumObjectCreator.createLoremIpsumObject(B.class);
 		assertThat(dummy.getClass()).isEqualTo(C.class);
@@ -505,7 +506,7 @@ public class LoremIpsumObjectCreatorTest {
 		assertThat(bigDecimal).isNotNull();
 		assertThat(bigDecimal).isEqualTo(new BigDecimal(33686018));
 		System.out.println(bigDecimal);
-		loremIpsumObjectCreator = new LoremIpsumObjectCreator(ClassBindings.defaultBindings());
+		loremIpsumObjectCreator = new LoremIpsumObjectCreator();
 		bigDecimal = loremIpsumObjectCreator.createLoremIpsumObject(BigDecimal.class);
 		assertThat(bigDecimal).isNotNull();
 		assertThat(bigDecimal).isEqualTo(new BigDecimal(33686018));
@@ -520,14 +521,14 @@ public class LoremIpsumObjectCreatorTest {
 	public void testInterfaceBindingErrors() {
 		loremIpsumObjectCreator = new LoremIpsumObjectCreator();
 		try {
-			assertThat(loremIpsumObjectCreator.createLoremIpsumObject(List.class).getClass()).isEqualTo(ArrayList.class);
+			assertThat(loremIpsumObjectCreator.createLoremIpsumObject(Queue.class).getClass()).isEqualTo(ArrayList.class);
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
 		} catch (final IllegalArgumentException e) {
 			System.out.println(e);
 			// ok
 		}
 		try {
-			assertThat(loremIpsumObjectCreator.createLoremIpsumObject(AbstractList.class).getClass()).isEqualTo(ArrayList.class);
+			assertThat(loremIpsumObjectCreator.createLoremIpsumObject(AbstractQueue.class).getClass()).isEqualTo(ArrayList.class);
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
 		} catch (final IllegalArgumentException e) {
 			System.out.println(e);

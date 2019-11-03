@@ -33,12 +33,14 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.AbstractList;
+import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -63,10 +65,10 @@ public class ClassBasedFactoryTest {
 	 */
 	@Before
 	public void setUp() throws SecurityException, NoSuchMethodException {
-		classBindings = ClassBindings.defaultBindings();
-		classBindings.add(Integer.class, new ConstructorBasedFactory<>(Integer.class.getConstructor(Integer.TYPE)));
-		classBindings.add(Long.class, new FixedInstanceFactory<>(Long.MAX_VALUE));
-		classBindings.add(Double.class, new FixedInstanceFactory<>(Double.MIN_VALUE));
+		classBindings = new ClassBindings();
+		classBindings.bind(Integer.class, new ConstructorBasedFactory<>(Integer.class.getConstructor(Integer.TYPE)));
+		classBindings.bind(Long.class, new FixedInstanceFactory<>(Long.MAX_VALUE));
+		classBindings.bind(Double.class, new FixedInstanceFactory<>(Double.MIN_VALUE));
 		
 		LoremIpsumGenerator mock = mock(LoremIpsumGenerator.class);
 		LoremIpsumGenerator.setInstance(mock);
@@ -122,8 +124,8 @@ public class ClassBasedFactoryTest {
 	public void testInterfaceBindings() {
 		assertThat(new ClassBasedFactory<>(List.class).createLoremIpsumObject(classBindings).getClass()).isEqualTo(ArrayList.class);
 		final ClassBindings classBindings = new ClassBindings();
-		classBindings.add(List.class, new ClassBasedFactory<>(ArrayList.class));
-		classBindings.add(List.class, new ClassBasedFactory<>(LinkedList.class));
+		classBindings.bind(List.class, new ClassBasedFactory<>(ArrayList.class));
+		classBindings.bind(List.class, new ClassBasedFactory<>(LinkedList.class));
 		assertThat(new ClassBasedFactory<>(List.class).createLoremIpsumObject(classBindings).getClass()).isEqualTo(LinkedList.class);
 	}
 	
@@ -168,7 +170,7 @@ public class ClassBasedFactoryTest {
 	public void testObjectBinding() {
 		final ClassBindings classBindings = new ClassBindings();
 		final LinkedList<Object> list = new LinkedList<>();
-		classBindings.add(List.class, new FixedInstanceFactory<List>(list));
+		classBindings.bind(List.class, new FixedInstanceFactory<List>(list));
 		final List<?> dummy = new ClassBasedFactory<>(List.class).createLoremIpsumObject(classBindings);
 		assertThat(dummy.getClass()).isEqualTo(LinkedList.class);
 		assertThat(dummy).isSameAs(list);
@@ -180,7 +182,7 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
 		final ClassBindings classBindings = new ClassBindings();
-		classBindings.add(B.class, new ConstructorBasedFactory<>(C.class.getConstructor(int.class)));
+		classBindings.bind(B.class, new ConstructorBasedFactory<>(C.class.getConstructor(int.class)));
 		final B dummy = new ClassBasedFactory<>(B.class).createLoremIpsumObject(classBindings);
 		assertThat(dummy.getClass()).isEqualTo(C.class);
 	}
@@ -191,7 +193,7 @@ public class ClassBasedFactoryTest {
 	@Test
 	public void testDeferredSubTypeBinding() throws SecurityException {
 		final ClassBindings classBindings = new ClassBindings();
-		classBindings.add(B.class, new ClassBasedFactory<>(C.class));
+		classBindings.bind(B.class, new ClassBasedFactory<>(C.class));
 		final B dummy = new ClassBasedFactory<>(B.class).createLoremIpsumObject(classBindings);
 		assertThat(dummy.getClass()).isEqualTo(C.class);
 	}
@@ -574,15 +576,15 @@ public class ClassBasedFactoryTest {
 	public void testInterfaceBindingErrors() {
 		try {
 			//noinspection ResultOfMethodCallIgnored
-			new ClassBasedFactory<>(List.class).createLoremIpsumObject(new ClassBindings()).getClass();
-			fail("illegal argument exception expected (can't instantiate abstract type or interface");
+			new ClassBasedFactory<>(Queue.class).createLoremIpsumObject().getClass();
+			fail("illegal argument exception expected (can't instantiate abstract type or interface)");
 		} catch (final IllegalArgumentException e) {
 			System.out.println(e);
 			// ok
 		}
 		try {
 			//noinspection ResultOfMethodCallIgnored
-			new ClassBasedFactory<>(AbstractList.class).createLoremIpsumObject(new ClassBindings()).getClass();
+			new ClassBasedFactory<>(AbstractQueue.class).createLoremIpsumObject().getClass();
 			fail("illegal argument exception expected (can't instantiate abstract type or interface");
 		} catch (final IllegalArgumentException e) {
 			System.out.println(e);
@@ -592,8 +594,7 @@ public class ClassBasedFactoryTest {
 	
 	@Test
 	public void testTimeouts() {
-		final TimeoutSimulator result = new ClassBasedFactory<>(TimeoutSimulator.class)
-				.createLoremIpsumObject(new ClassBindings());
+		final TimeoutSimulator result = new ClassBasedFactory<>(TimeoutSimulator.class).createLoremIpsumObject();
 		
 		assertThat(result).isNotNull();
 		assertThat(TimeoutSimulator.contructorTimeoutTriggered).isTrue();
@@ -615,8 +616,7 @@ public class ClassBasedFactoryTest {
 	
 	@Test
 	public void testSimpleGenericsArrayList() {
-		ArrayListIntegerHoldingClass result = new ClassBasedFactory<>(ArrayListIntegerHoldingClass.class)
-				.createLoremIpsumObject(ClassBindings.defaultBindings());
+		ArrayListIntegerHoldingClass result = new ClassBasedFactory<>(ArrayListIntegerHoldingClass.class).createLoremIpsumObject();
 		
 		assertThat(result).isNotNull();
 		assertThat(result.getIntegers()).isNotEmpty();
@@ -625,8 +625,7 @@ public class ClassBasedFactoryTest {
 	
 	@Test
 	public void testSimpleGenericsList() {
-		ListIntegerHoldingClass result = new ClassBasedFactory<>(ListIntegerHoldingClass.class)
-				.createLoremIpsumObject(ClassBindings.defaultBindings());
+		ListIntegerHoldingClass result = new ClassBasedFactory<>(ListIntegerHoldingClass.class).createLoremIpsumObject();
 		
 		assertThat(result).isNotNull();
 		assertThat(result.getIntegers()).isNotEmpty();
@@ -635,8 +634,7 @@ public class ClassBasedFactoryTest {
 	
 	@Test
 	public void testSimpleGenericsListMyDataClass() {
-		@Nullable ListMyDataClassHoldingClass result = new ClassBasedFactory<>(ListMyDataClassHoldingClass.class)
-				.createLoremIpsumObject(ClassBindings.defaultBindings());
+		@Nullable ListMyDataClassHoldingClass result = new ClassBasedFactory<>(ListMyDataClassHoldingClass.class).createLoremIpsumObject();
 		
 		assertThat(result).isNotNull();
 		assertThat(result.getMyClasses()).isNotEmpty();
@@ -647,8 +645,7 @@ public class ClassBasedFactoryTest {
 	
 	@Test
 	public void testSimpleGenericsListMyValueClass() {
-		@Nullable ListMyValueClassHoldingClass result = new ClassBasedFactory<>(ListMyValueClassHoldingClass.class)
-				.createLoremIpsumObject(ClassBindings.defaultBindings());
+		@Nullable ListMyValueClassHoldingClass result = new ClassBasedFactory<>(ListMyValueClassHoldingClass.class).createLoremIpsumObject();
 		
 		assertThat(result).isNotNull();
 		assertThat(result.getMyClasses()).isNotEmpty();
@@ -658,8 +655,7 @@ public class ClassBasedFactoryTest {
 	
 	@Test
 	public void testSimpleGenericsListMyValueClasses() {
-		@Nullable ListMyValueClassesHoldingClass result = new ClassBasedFactory<>(ListMyValueClassesHoldingClass.class)
-				.createLoremIpsumObject(ClassBindings.defaultBindings());
+		@Nullable ListMyValueClassesHoldingClass result = new ClassBasedFactory<>(ListMyValueClassesHoldingClass.class).createLoremIpsumObject();
 		
 		assertThat(result).isNotNull();
 		assertThat(result.getMyClasses()).isNotEmpty();

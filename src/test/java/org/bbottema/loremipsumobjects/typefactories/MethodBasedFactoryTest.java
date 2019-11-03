@@ -38,7 +38,7 @@ public class MethodBasedFactoryTest {
 
 		when(mock.getRandomInt()).thenReturn(12345);
 
-		final Integer dummy = factory.createLoremIpsumObject(new ClassBindings());
+		final Integer dummy = factory.createLoremIpsumObject();
 
 		assertThat(dummy.getClass()).isNotNull();
 		assertThat(dummy.getClass()).isEqualTo(Integer.class);
@@ -56,7 +56,7 @@ public class MethodBasedFactoryTest {
 
 		when(mock.getRandomString()).thenReturn("98765");
 
-		final Integer dummy = factory.createLoremIpsumObject(new ClassBindings());
+		final Integer dummy = factory.createLoremIpsumObject();
 
 		assertThat(dummy.getClass()).isNotNull();
 		assertThat(dummy.getClass()).isEqualTo(Integer.class);

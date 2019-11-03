@@ -40,7 +40,7 @@ public class RandomArrayFactoryTest {
 		when(mock.getRandomString()).thenReturn("abc").thenReturn("abc"); // Integer(String), which should fail
 		when(mock.getRandomInt()).thenReturn(12345).thenReturn(54321).thenReturn(678768); // Integer(int), which should succeed
 
-		AbstractObjectArrayAssert<?, Integer> integerAbstractObjectArrayAssert = assertThat(factory.createLoremIpsumObject(new ClassBindings()));
+		AbstractObjectArrayAssert<?, Integer> integerAbstractObjectArrayAssert = assertThat(factory.createLoremIpsumObject());
 		integerAbstractObjectArrayAssert.containsExactlyElementsOf(newArrayList(12345, 54321, 678768));
 	}
 
@@ -54,7 +54,7 @@ public class RandomArrayFactoryTest {
 		when(mock.getRandomInt(2)).thenReturn(1); // random array length
 		when(mock.getRandomInt()).thenReturn(12345).thenReturn(54321).thenReturn(678768);
 
-		assertThat(factory.createLoremIpsumObject(new ClassBindings())).containsExactly(12345, 54321, 678768);
+		assertThat(factory.createLoremIpsumObject()).containsExactly(12345, 54321, 678768);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class RandomArrayFactoryTest {
 		when(mock.getRandomInt(2)).thenReturn(1); // random array length
 		when(mock.getRandomString()).thenReturn("1234").thenReturn("aasdf").thenReturn("test");
 
-		assertThat(factory.createLoremIpsumObject(new ClassBindings())).containsExactlyElementsOf(newArrayList("1234", "aasdf", "test"));
+		assertThat(factory.createLoremIpsumObject()).containsExactlyElementsOf(newArrayList("1234", "aasdf", "test"));
 	}
 
 	/**
@@ -90,8 +90,7 @@ public class RandomArrayFactoryTest {
 		instance2.setIntje(9876);
 		instance2.setTestClass(instance2);
 
-		assertThat(factory.createLoremIpsumObject(new ClassBindings()))
-				.containsExactlyElementsOf(newArrayList(instance1, instance2));
+		assertThat(factory.createLoremIpsumObject()).containsExactlyElementsOf(newArrayList(instance1, instance2));
 	}
 
 	/**
@@ -114,7 +113,7 @@ public class RandomArrayFactoryTest {
 				.thenReturn(8765) // 2nd array: Integer(int) for sub array 2 index 1, which should succeed
 				.thenReturn(1029); // 2nd array: Integer(int) for sub array 2 index 2, which should succeed
 
-		final Integer[][] dummy = factory.createLoremIpsumObject(new ClassBindings());
+		final Integer[][] dummy = factory.createLoremIpsumObject();
 
 		assertThat(dummy).containsExactlyElementsOf(newArrayList(new Integer[]{1234, 4321}, new Integer[]{5678, 8765, 1029}));
 	}
