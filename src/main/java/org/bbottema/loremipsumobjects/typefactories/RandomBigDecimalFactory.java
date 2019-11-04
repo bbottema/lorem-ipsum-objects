@@ -15,12 +15,6 @@ import java.util.Map;
  */
 public class RandomBigDecimalFactory extends LoremIpsumObjectFactory<BigDecimal> {
 
-	/**
-	 * @param knownInstances Not used.
-	 * @param classBindings  Not used.
-	 * @param exceptions     Not used.
-	 * @return The result of {@link LoremIpsumGenerator#getRandomBoolean()}.
-	 */
 	@Override
 	public BigDecimal _createLoremIpsumObject(
 			@Nullable final Type[] genericMetaData,
