@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -182,7 +183,12 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			if (ret != null) {
 				usedInfo.setInstance(ret);
 				usedInfo.setPopulated(true);
-				populateObject(ret, genericMetaData, knownInstances, classBindings, exceptions);
+				try {
+					populateObject(ret, genericMetaData, knownInstances, classBindings, exceptions);
+				} catch (IllegalArgumentException e) {
+					exceptions.add(e);
+					return null;
+				}
 			}
 		}
 
@@ -313,8 +319,10 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 							setter.invoke(subject, argument);
 						}
 					});
+				} catch (final TimeoutException e) {
+					exceptions.add(e);
 				} catch (final Exception e) {
-					exceptions.add(new IllegalArgumentException(format("error calling setter method [%s] with value [%s]", setter.getName(), argument), e));
+					throw new IllegalArgumentException(format("error calling setter method [%s] with value [%s]", setter.getName(), argument), e);
 				}
 			}
 		}
