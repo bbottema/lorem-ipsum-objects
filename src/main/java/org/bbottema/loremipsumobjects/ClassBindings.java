@@ -7,13 +7,13 @@ import org.bbottema.loremipsumobjects.typefactories.MethodBasedFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomBigDecimalFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomBooleanFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomFactoryFactory;
+import org.bbottema.loremipsumobjects.typefactories.RandomOptionalFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomPrimitiveFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomStringFactory;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +74,7 @@ public class ClassBindings {
 		bind(Map.class, new ClassBasedFactory<>(HashMap.class));
 		bind(Set.class, new ClassBasedFactory<>(HashSet.class));
 		bind(BigDecimal.class, new RandomBigDecimalFactory());
+		bind(requireNonNull(locateClass("Optional", "java.util", null)), new RandomOptionalFactory());
 	}
 
 	/**
