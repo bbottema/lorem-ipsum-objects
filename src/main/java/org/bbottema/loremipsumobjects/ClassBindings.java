@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Objects.requireNonNull;
+import static org.bbottema.javareflection.ClassUtils.locateClass;
+
 /**
  * Stores a list of classes / interfaces and their associated deferred types. This list is used to tell {@link LoremIpsumObjectCreator} which specific
  * implementation it should use to produce new dummy instances for a certain type. This is most useful to make sure Dummy Creator can create
@@ -55,6 +58,14 @@ public class ClassBindings {
 		bind(Byte.TYPE, new RandomPrimitiveFactory<>(Byte.TYPE));
 		bind(Short.TYPE, new RandomPrimitiveFactory<>(Short.TYPE));
 		bind(Double.TYPE, new RandomPrimitiveFactory<>(Double.TYPE));
+		bind(Long.class, new RandomPrimitiveFactory<>(Long.TYPE));
+		bind(Integer.class, new RandomPrimitiveFactory<>(Integer.TYPE));
+		bind(Float.class, new RandomPrimitiveFactory<>(Float.TYPE));
+		bind(Boolean.class, new RandomPrimitiveFactory<>(Boolean.TYPE));
+		bind(Character.class, new RandomPrimitiveFactory<>(Character.TYPE));
+		bind(Byte.class, new RandomPrimitiveFactory<>(Byte.TYPE));
+		bind(Short.class, new RandomPrimitiveFactory<>(Short.TYPE));
+		bind(Double.class, new RandomPrimitiveFactory<>(Double.TYPE));
 		bind(String.class, new RandomStringFactory());
 		bind(Boolean.class, new RandomBooleanFactory());
 		bind(List.class, new ClassBasedFactory<>(ArrayList.class));

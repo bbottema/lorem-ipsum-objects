@@ -36,6 +36,14 @@ public class RandomPrimitiveFactory<T> extends LoremIpsumObjectFactory<T> {
 		SUPPORTED_PRIMITIVE_CLASSES.add(byte.class);
 		SUPPORTED_PRIMITIVE_CLASSES.add(short.class);
 		SUPPORTED_PRIMITIVE_CLASSES.add(double.class);
+		SUPPORTED_PRIMITIVE_CLASSES.add(Integer.class);
+		SUPPORTED_PRIMITIVE_CLASSES.add(Long.class);
+		SUPPORTED_PRIMITIVE_CLASSES.add(Float.class);
+		SUPPORTED_PRIMITIVE_CLASSES.add(Boolean.class);
+		SUPPORTED_PRIMITIVE_CLASSES.add(Character.class);
+		SUPPORTED_PRIMITIVE_CLASSES.add(Byte.class);
+		SUPPORTED_PRIMITIVE_CLASSES.add(Short.class);
+		SUPPORTED_PRIMITIVE_CLASSES.add(Double.class);
 	}
 
 	/**
