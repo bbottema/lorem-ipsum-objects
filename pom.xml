@@ -7,7 +7,7 @@
     <artifactId>lorem-ipsum-objects</artifactId>
     <packaging>jar</packaging>
     <name>lorem-ipsum-objects</name>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <description>Generate random test-data</description>
     <url>https://github.com/bbottema/lorem-ipsum-objects</url>
     <inceptionYear>2019</inceptionYear>
