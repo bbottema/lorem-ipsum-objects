@@ -601,7 +601,7 @@ public class ClassBasedFactoryTest {
 		assertThat(TimeoutSimulator.methodTimeoutTriggered).isTrue();
 		assertThat(result.getConstructorValue()).isEqualTo(111);
 		assertThat(result.getMethod1Value()).is(nullOrEqual(111));
-		assertThat(result.getMethod2Value()).is(nullOrEqual(55.5f));
+		assertThat(result.getMethod2Value()).is(nullOrEqual(44.0f));
 		assertThat(result.getMethod1Value()).isNotEqualTo(result.getMethod2Value());
 	}
 	

@@ -1,5 +1,7 @@
 package org.bbottema.loremipsumobjects;
 
+import lombok.Data;
+import org.bbottema.javareflection.MethodUtils;
 import org.bbottema.loremipsumobjects.helperutils.EnumClass;
 import org.bbottema.loremipsumobjects.helperutils.InheritedPrimitiveClass;
 import org.bbottema.loremipsumobjects.helperutils.LoopClass;
@@ -18,6 +20,7 @@ import org.bbottema.loremipsumobjects.helperutils.NestedMapClass.NestedSingleSim
 import org.bbottema.loremipsumobjects.helperutils.NestedMapClass.NestedTripleMapClass;
 import org.bbottema.loremipsumobjects.helperutils.NormalClass;
 import org.bbottema.loremipsumobjects.helperutils.PrimitiveClass;
+import org.bbottema.loremipsumobjects.helperutils.ProcessStatus;
 import org.bbottema.loremipsumobjects.helperutils.TestChainBinding.B;
 import org.bbottema.loremipsumobjects.helperutils.TestChainBinding.C;
 import org.bbottema.loremipsumobjects.typefactories.ClassBasedFactory;
@@ -25,11 +28,12 @@ import org.bbottema.loremipsumobjects.typefactories.ConstructorBasedFactory;
 import org.bbottema.loremipsumobjects.typefactories.FixedInstanceFactory;
 import org.bbottema.loremipsumobjects.typefactories.util.LoremIpsumGenerator;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.AbstractList;
 import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,11 +41,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Queue;
 
+import static java.util.EnumSet.of;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.data.Offset.offset;
+import static org.bbottema.javareflection.ClassUtils.findFirstMethodByName;
+import static org.bbottema.javareflection.ClassUtils.locateClass;
+import static org.bbottema.javareflection.model.MethodModifier.PUBLIC;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,7 +68,6 @@ public class LoremIpsumObjectCreatorTest {
 		final ClassBindings classBindings = new ClassBindings();
 		classBindings.bind(Integer.class, new ConstructorBasedFactory<>(Integer.class.getConstructor(Integer.TYPE)));
 		classBindings.bind(Long.class, new FixedInstanceFactory<>(Long.MAX_VALUE));
-		classBindings.bind(Double.class, new FixedInstanceFactory<>(Double.MIN_VALUE));
 		loremIpsumObjectCreator = new LoremIpsumObjectCreator(classBindings);
 
 		LoremIpsumGenerator mock = mock(LoremIpsumGenerator.class);
@@ -88,7 +97,7 @@ public class LoremIpsumObjectCreatorTest {
 	@Test
 	public void testObjectBindings() {
 		assertThat(loremIpsumObjectCreator.createLoremIpsumObject(Long.class)).isCloseTo(Long.MAX_VALUE, offset(0L));
-		assertThat(loremIpsumObjectCreator.createLoremIpsumObject(Double.class)).isCloseTo(Double.MIN_VALUE, offset(0D));
+		assertThat(loremIpsumObjectCreator.createLoremIpsumObject(Double.class)).isCloseTo(55.5D, offset(0D));
 	}
 
 	/**
@@ -512,6 +521,18 @@ public class LoremIpsumObjectCreatorTest {
 		assertThat(bigDecimal).isEqualTo(new BigDecimal("1.11"));
 	}
 
+	@Test
+	public void testLombokHeavyProcessStatus() {
+		ProcessStatus processStatus = loremIpsumObjectCreator.createLoremIpsumObject(ProcessStatus.class);
+		assertThat(processStatus).isNotNull();
+		assertThat(processStatus).isEqualTo(ProcessStatus.builder()
+				.success(true)
+				.code("not so random test string")
+				.message("not so random test string")
+				.build());
+		System.out.println(processStatus);
+	}
+
 	/**
 	 * Tests whether the right error will be produced in case an abstract or interface type should be created where no binding is available to indicate the
 	 * correct implementation.
@@ -534,5 +555,59 @@ public class LoremIpsumObjectCreatorTest {
 			System.out.println(e);
 			// ok
 		}
+	}
+
+	@Test
+	public void testOptionalDirect() {
+		final boolean JAVA_8_OR_LATER = System.getProperty("java.specification.version").compareTo("1.8") >= 0;
+		Assume.assumeTrue(JAVA_8_OR_LATER);
+
+		final Class<?> classOptional = requireNonNull(locateClass("Optional", false, null));
+
+		Object optional = loremIpsumObjectCreator.createLoremIpsumObject(classOptional);
+		assertThat(optional).isNotNull();
+		assertThat(optional).isInstanceOf(classOptional);
+
+		Method optionalGet = requireNonNull(findFirstMethodByName(classOptional, Object.class, of(PUBLIC), "get"));
+		Object value = MethodUtils.invokeMethodSimple(optionalGet, optional);
+
+		assertThat(value).isEqualTo("not so random test string");
+	}
+
+	@Test
+	public void testOptionalIndirect() {
+		OptionalTestClass value = loremIpsumObjectCreator.createLoremIpsumObject(OptionalTestClass.class);
+
+		assertThat(value).isNotNull();
+		assertThat(value.getNumbersFromConstructor()).isNotNull();
+		assertThat(value.getNumbersFromConstructor().isPresent()).isTrue();
+		assertThat(value.getSimpleOptionalFromMethod()).isNotNull();
+		assertThat(value.getSimpleOptionalFromMethod().isPresent()).isTrue();
+		assertThat(value.getComplexOptionalFromMethod()).isNotNull();
+		assertThat(value.getComplexOptionalFromMethod().isPresent()).isTrue();
+
+		assertThat(value.getNumbersFromConstructor().get()).isInstanceOf(List.class);
+		assertThat(value.getNumbersFromConstructor().get()).isNotEmpty();
+		assertThat(value.getNumbersFromConstructor().get().get(0)).isInstanceOf(Integer.class);
+		assertThat(value.getNumbersFromConstructor().get().get(0)).isEqualTo(111);
+
+		assertThat(value.getSimpleOptionalFromMethod().get()).isInstanceOf(Double.class);
+		assertThat(value.getSimpleOptionalFromMethod().get()).isEqualTo(55.5d);
+
+		assertThat(value.getComplexOptionalFromMethod().get()).isInstanceOf(List.class);
+		assertThat(value.getComplexOptionalFromMethod().get()).isNotEmpty();
+		assertThat(value.getComplexOptionalFromMethod().get().get(0)).isInstanceOf(Number.class);
+	}
+
+	@Data
+	static class OptionalTestClass {
+		private final Optional<List<Integer>> numbersFromConstructor;
+		private Optional<Double> simpleOptionalFromMethod;
+		private Optional<List<Number>> complexOptionalFromMethod;
+	}
+
+	@Data
+	static class SimpleOptionalTestClass {
+		private Optional<Double> simpleOptionalFromMethod;
 	}
 }
