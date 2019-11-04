@@ -305,6 +305,11 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 					TimeLimitedCodeBlock.runWithTimeout(250, TimeUnit.MILLISECONDS, new RunnableWithException() {
 						@Override
 						public void run() throws Exception {
+							try {
+								setter.setAccessible(true); // might fail due to security policy
+							} catch (Exception e) {
+								// ignore, try without making it explicitly accessibly
+							}
 							setter.invoke(subject, argument);
 						}
 					});
