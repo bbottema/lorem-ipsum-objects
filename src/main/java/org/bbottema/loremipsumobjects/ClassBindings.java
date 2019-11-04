@@ -6,6 +6,7 @@ import org.bbottema.loremipsumobjects.typefactories.LoremIpsumObjectFactory;
 import org.bbottema.loremipsumobjects.typefactories.MethodBasedFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomBigDecimalFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomBooleanFactory;
+import org.bbottema.loremipsumobjects.typefactories.RandomFactoryFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomPrimitiveFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomStringFactory;
 import org.jetbrains.annotations.Nullable;
@@ -66,6 +67,7 @@ public class ClassBindings {
 		bind(Byte.class, new RandomPrimitiveFactory<>(Byte.TYPE));
 		bind(Short.class, new RandomPrimitiveFactory<>(Short.TYPE));
 		bind(Double.class, new RandomPrimitiveFactory<>(Double.TYPE));
+		bind(Number.class, new RandomFactoryFactory<>(Number.class, find(Long.TYPE), find(Integer.TYPE), find(Byte.TYPE), find(Short.TYPE), find(Double.TYPE), find(Float.TYPE)));
 		bind(String.class, new RandomStringFactory());
 		bind(Boolean.class, new RandomBooleanFactory());
 		bind(List.class, new ClassBasedFactory<>(ArrayList.class));
