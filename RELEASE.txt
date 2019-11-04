@@ -4,6 +4,14 @@ https://github.com/bbottema/lorem-ipsum-objects
 RELEASE NOTES lorem-ipsum-objects
 
 
+v3.1.0
+
+- #9: enhancement: add support for JDK8's Optional
+- #10: enhancement: add support for accessing public setters on non-public classes
+- #11: enhancement: generation of boxed versions of primitive types should be done with the existing primitive factories
+- #12: enhancement: add built-in support for Number.class
+
+
 v3.0.0
 
 - #4: enhancement: always include the default bindings and provide convenience .create methods that use default bindings enhancement
