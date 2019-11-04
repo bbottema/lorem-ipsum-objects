@@ -32,7 +32,6 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.AbstractList;
 import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.HashMap;

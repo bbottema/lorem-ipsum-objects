@@ -1,5 +1,6 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bbottema.javareflection.MethodUtils;
 import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
@@ -19,10 +20,11 @@ import static org.bbottema.javareflection.model.MethodModifier.PUBLIC;
 
 public class RandomOptionalFactory extends LoremIpsumObjectFactory<Object> {
 
-	private static final Class<?> CLASS_OPTIONAL = requireNonNull(locateClass("Optional", "java.util", null));
+	private static final Class<?> CLASS_OPTIONAL = locateClass("Optional", "java.util", null);
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("ConstantConditions")
+	@SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "false positive")
 	public Object _createLoremIpsumObject(
 			@Nullable final Type[] genericMetaData,
 			@Nullable final Map<String, ClassUsageInfo<?>> knownInstances,

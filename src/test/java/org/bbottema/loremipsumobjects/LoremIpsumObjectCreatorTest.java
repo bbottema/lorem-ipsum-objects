@@ -574,7 +574,8 @@ public class LoremIpsumObjectCreatorTest {
 		assertThat(value).isEqualTo("not so random test string");
 	}
 
-	@Test
+	// uncomment when testing with JDK8+
+	/*@Test
 	public void testOptionalIndirect() {
 		OptionalTestClass value = loremIpsumObjectCreator.createLoremIpsumObject(OptionalTestClass.class);
 
@@ -604,7 +605,7 @@ public class LoremIpsumObjectCreatorTest {
 		private final Optional<List<Integer>> numbersFromConstructor;
 		private Optional<Double> simpleOptionalFromMethod;
 		private Optional<List<Number>> complexOptionalFromMethod;
-	}
+	}*/
 
 	@Data
 	static class SimpleOptionalTestClass {

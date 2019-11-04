@@ -1,5 +1,6 @@
 package org.bbottema.loremipsumobjects;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bbottema.loremipsumobjects.typefactories.ClassBasedFactory;
 import org.bbottema.loremipsumobjects.typefactories.ConstructorBasedFactory;
 import org.bbottema.loremipsumobjects.typefactories.LoremIpsumObjectFactory;
@@ -50,6 +51,7 @@ public class ClassBindings {
 	/**
 	 * Initializes with basic bindings for primitives, arrays and strings.
 	 */
+	@SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "false positive")
 	public ClassBindings() {
 		bind(Long.TYPE, new RandomPrimitiveFactory<>(Long.TYPE));
 		bind(Integer.TYPE, new RandomPrimitiveFactory<>(Integer.TYPE));
@@ -67,7 +69,7 @@ public class ClassBindings {
 		bind(Byte.class, new RandomPrimitiveFactory<>(Byte.TYPE));
 		bind(Short.class, new RandomPrimitiveFactory<>(Short.TYPE));
 		bind(Double.class, new RandomPrimitiveFactory<>(Double.TYPE));
-		bind(Number.class, new RandomFactoryFactory<>(Number.class, find(Long.TYPE), find(Integer.TYPE), find(Byte.TYPE), find(Short.TYPE), find(Double.TYPE), find(Float.TYPE)));
+		bind(Number.class, new RandomFactoryFactory<Number>(Number.class, find(Long.TYPE), find(Integer.TYPE), find(Byte.TYPE), find(Short.TYPE), find(Double.TYPE), find(Float.TYPE)));
 		bind(String.class, new RandomStringFactory());
 		bind(Boolean.class, new RandomBooleanFactory());
 		bind(List.class, new ClassBasedFactory<>(ArrayList.class));
