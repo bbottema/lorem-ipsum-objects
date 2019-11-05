@@ -22,7 +22,7 @@ Some use-cases are:
 <dependency>
   <groupId>com.github.bbottema</groupId>
   <artifactId>lorem-ipsum-objects</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
 </dependency>
 ```
 
