@@ -1,6 +1,7 @@
 package org.bbottema.loremipsumobjects;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.bbottema.javareflection.MethodUtils;
 import org.bbottema.loremipsumobjects.helperutils.EnumClass;
 import org.bbottema.loremipsumobjects.helperutils.InheritedPrimitiveClass;
@@ -43,6 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.EnumSet.of;
 import static java.util.Objects.requireNonNull;
@@ -574,41 +576,66 @@ public class LoremIpsumObjectCreatorTest {
 		assertThat(value).isEqualTo("not so random test string");
 	}
 
-	// uncomment when testing with JDK8+
-	/*@Test
-	public void testOptionalIndirect() {
-		OptionalTestClass value = loremIpsumObjectCreator.createLoremIpsumObject(OptionalTestClass.class);
+	// uncomment all below code when testing with JDK8+
 
-		assertThat(value).isNotNull();
-		assertThat(value.getNumbersFromConstructor()).isNotNull();
-		assertThat(value.getNumbersFromConstructor().isPresent()).isTrue();
-		assertThat(value.getSimpleOptionalFromMethod()).isNotNull();
-		assertThat(value.getSimpleOptionalFromMethod().isPresent()).isTrue();
-		assertThat(value.getComplexOptionalFromMethod()).isNotNull();
-		assertThat(value.getComplexOptionalFromMethod().isPresent()).isTrue();
-
-		assertThat(value.getNumbersFromConstructor().get()).isInstanceOf(List.class);
-		assertThat(value.getNumbersFromConstructor().get()).isNotEmpty();
-		assertThat(value.getNumbersFromConstructor().get().get(0)).isInstanceOf(Integer.class);
-		assertThat(value.getNumbersFromConstructor().get().get(0)).isEqualTo(111);
-
-		assertThat(value.getSimpleOptionalFromMethod().get()).isInstanceOf(Double.class);
-		assertThat(value.getSimpleOptionalFromMethod().get()).isEqualTo(55.5d);
-
-		assertThat(value.getComplexOptionalFromMethod().get()).isInstanceOf(List.class);
-		assertThat(value.getComplexOptionalFromMethod().get()).isNotEmpty();
-		assertThat(value.getComplexOptionalFromMethod().get().get(0)).isInstanceOf(Number.class);
-	}
-
-	@Data
-	static class OptionalTestClass {
-		private final Optional<List<Integer>> numbersFromConstructor;
-		private Optional<Double> simpleOptionalFromMethod;
-		private Optional<List<Number>> complexOptionalFromMethod;
-	}*/
-
-	@Data
-	static class SimpleOptionalTestClass {
-		private Optional<Double> simpleOptionalFromMethod;
-	}
+//	@Test
+//	public void testHiddenOptionalWithTypeT() {
+//		HiddenClassWithOptional value = loremIpsumObjectCreator.createLoremIpsumObject(HiddenClassWithOptional.class);
+//		assertThat(value).isNotNull();
+//		assertThat(value.getOCharByConstructor().get()).isInstanceOf(AtomicReferenceOfTypeT.class);
+//		assertThat(value.getOCharByConstructor().get().get()).isInstanceOf(Character.class);
+//		assertThat(value.getOIntByConstructor().get()).isInstanceOf(AtomicReferenceOfTypeT.class);
+//		assertThat(value.getOIntByConstructor().get().get()).isInstanceOf(Integer.class);
+//		assertThat(value.getOStringRefBySetter().get()).isInstanceOf(AtomicReferenceOfTypeT.class);
+//		assertThat(value.getOStringRefBySetter().get().get()).isInstanceOf(String.class);
+//		assertThat(value.getODoubleRefBySetter().get()).isInstanceOf(AtomicReferenceOfTypeT.class);
+//		assertThat(value.getODoubleRefBySetter().get().get()).isInstanceOf(Double.class);
+//	}
+//
+//	@Test
+//	public void testOptionalIndirect() {
+//		OptionalTestClass value = loremIpsumObjectCreator.createLoremIpsumObject(OptionalTestClass.class);
+//
+//		assertThat(value).isNotNull();
+//		assertThat(value.getNumbersFromConstructor()).isNotNull();
+//		assertThat(value.getNumbersFromConstructor().isPresent()).isTrue();
+//		assertThat(value.getSimpleOptionalFromMethod()).isNotNull();
+//		assertThat(value.getSimpleOptionalFromMethod().isPresent()).isTrue();
+//		assertThat(value.getComplexOptionalFromMethod()).isNotNull();
+//		assertThat(value.getComplexOptionalFromMethod().isPresent()).isTrue();
+//
+//		assertThat(value.getNumbersFromConstructor().get()).isInstanceOf(List.class);
+//		assertThat(value.getNumbersFromConstructor().get()).isNotEmpty();
+//		assertThat(value.getNumbersFromConstructor().get().get(0)).isInstanceOf(Integer.class);
+//		assertThat(value.getNumbersFromConstructor().get().get(0)).isEqualTo(111);
+//
+//		assertThat(value.getSimpleOptionalFromMethod().get()).isInstanceOf(Double.class);
+//		assertThat(value.getSimpleOptionalFromMethod().get()).isEqualTo(55.5d);
+//
+//		assertThat(value.getComplexOptionalFromMethod().get()).isInstanceOf(List.class);
+//		assertThat(value.getComplexOptionalFromMethod().get()).isNotEmpty();
+//		assertThat(value.getComplexOptionalFromMethod().get().get(0)).isInstanceOf(Number.class);
+//	}
+//
+//	@Data
+//	static class OptionalTestClass {
+//		private final Optional<List<Integer>> numbersFromConstructor;
+//		private Optional<Double> simpleOptionalFromMethod;
+//		private Optional<List<Number>> complexOptionalFromMethod;
+//	}
+//
+//	@Data
+//	@RequiredArgsConstructor
+//	private static class HiddenClassWithOptional {
+//		private final Optional<AtomicReferenceOfTypeT<Character>> oCharByConstructor;
+//		private final Optional<AtomicReferenceOfTypeT<Integer>> oIntByConstructor;
+//		private Optional<AtomicReferenceOfTypeT<String>> oStringRefBySetter;
+//		private Optional<AtomicReferenceOfTypeT<Double>> oDoubleRefBySetter;
+//	}
+//
+//	private static class AtomicReferenceOfTypeT<T> extends AtomicReference<T> {
+//		AtomicReferenceOfTypeT(T value) {
+//			super(value);
+//		}
+//	}
 }

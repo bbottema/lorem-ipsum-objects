@@ -11,6 +11,7 @@ import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
 import org.bbottema.loremipsumobjects.typefactories.util.LoremIpsumGenerator;
 import org.bbottema.loremipsumobjects.typefactories.util.ReflectionCache;
+import org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper;
 import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock;
 import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock.RunnableWithException;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
 import static java.util.EnumSet.allOf;
 import static java.util.EnumSet.of;
+import static org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper.*;
 
 /**
  * Creates a populated dummy object of a given class <code>T</code>. First tries to defer creation using <em>classBindings</em>, if no class
@@ -302,9 +304,8 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			for (final Method setter : discoverSetters(subject.getClass())) {
 				// collect generics meta data if available
 				final ClassBasedFactory<T> factory = new ClassBasedFactory<>((Class<T>) setter.getParameterTypes()[0]);
-				final Type genericParameterType = setter.getGenericParameterTypes()[0];
-				final boolean isRawClassItself = genericParameterType instanceof Class;
-				final Type[] nextGenericsMetaData = isRawClassItself ? null : ((ParameterizedType) genericParameterType).getActualTypeArguments();
+				final Type[] nextGenericsMetaData = determineGenericsMetaData(genericMetaData, setter.getGenericParameterTypes()[0]);
+
 				// finally create the parameter with or without generics meta data
 				final Object argument = factory.createLoremIpsumObject(nextGenericsMetaData, knownInstances, classBindings, exceptions);
 				try {

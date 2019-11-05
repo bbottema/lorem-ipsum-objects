@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bbottema.javareflection.MethodUtils;
 import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
@@ -17,6 +18,7 @@ import static java.util.Objects.requireNonNull;
 import static org.bbottema.javareflection.ClassUtils.findFirstMethodByName;
 import static org.bbottema.javareflection.ClassUtils.locateClass;
 import static org.bbottema.javareflection.model.MethodModifier.PUBLIC;
+import static org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper.*;
 
 public class RandomOptionalFactory extends LoremIpsumObjectFactory<Object> {
 
@@ -37,27 +39,16 @@ public class RandomOptionalFactory extends LoremIpsumObjectFactory<Object> {
 	}
 
 	private Object createLoremIpsumObjectForOptional(@Nullable Type[] genericMetaData, @Nullable Map<String, ClassUsageInfo<?>> knownInstances, @Nullable ClassBindings classBindings, @Nullable List<Exception> exceptions) {
-		final Class clazz;
-		final Type[] nextGenericsMetaData;
+		Class clazz = String.class;
+		Type[] nextGenericsMetaData = null;
 
 		if (genericMetaData != null) {
-			Type genericParameterType = genericMetaData[0];
-			final boolean isRawClassItself = genericParameterType instanceof Class;
-			nextGenericsMetaData = isRawClassItself ? null : ((ParameterizedType) genericParameterType).getActualTypeArguments();
-			clazz = extractConcreteType(genericParameterType);
-		} else {
-			nextGenericsMetaData = null;
-			clazz = String.class;
+			nextGenericsMetaData = determineGenericsMetaData(genericMetaData, genericMetaData[0]);
+			clazz = extractConcreteType(null, genericMetaData[0]);
 		}
 
 		//noinspection unchecked
 		return new ClassBasedFactory<Object>(clazz)
 				.createLoremIpsumObject(nextGenericsMetaData, knownInstances, classBindings, exceptions);
-	}
-
-	private Class extractConcreteType(@Nullable Type genericMetaData) {
-		return (genericMetaData instanceof ParameterizedType)
-				? (Class) ((ParameterizedType) genericMetaData).getRawType()
-				: (Class) genericMetaData;
 	}
 }
