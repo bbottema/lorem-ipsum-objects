@@ -314,7 +314,7 @@
                         <java>SLASHSTAR_STYLE</java>
                     </mapping>
                     <includes>
-                        <include>**/*.java</include>
+                        <include>src/main/java/**/*.java</include>
                     </includes>
                     <excludes>
                         <exclude>**/de/svenjacobs/loremipsum/*</exclude>
