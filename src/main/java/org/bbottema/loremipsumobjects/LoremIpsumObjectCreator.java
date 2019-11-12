@@ -18,26 +18,27 @@ import java.util.Map;
  */
 public class LoremIpsumObjectCreator {
 
-	/**
-	 * A map that contains deferred class types for a given type. With this you can defer the creation of a dummy instance to another type.
-	 * This is useful if you need to instance dummy objects for an interface or abstract class.
-	 *
-	 * @see ClassBindings
-	 */
-	private final ClassBindings classBindings;
+	private final LoremIpsumConfig loremIpsumConfig;
 
 	/**
 	 * Default constructor: configures the Dummy Creator with vanilla new bindings and caches.
 	 */
 	public LoremIpsumObjectCreator() {
-		this(new ClassBindings());
+		this(LoremIpsumConfig.builder().build());
 	}
 
 	/**
 	 * Constructor: configures the Dummy Creator with a given {@link ClassBindings} instance and new caches.
 	 */
 	public LoremIpsumObjectCreator(final ClassBindings classBindings) {
-		this.classBindings = classBindings;
+		this(LoremIpsumConfig.builder().classBindings(classBindings).build());
+	}
+
+	/**
+	 * Default constructor: configures the Dummy Creator with vanilla new bindings and caches.
+	 */
+	public LoremIpsumObjectCreator(LoremIpsumConfig loremIpsumConfig) {
+		this.loremIpsumConfig = loremIpsumConfig;
 	}
 
 	/**
@@ -54,6 +55,6 @@ public class LoremIpsumObjectCreator {
 	 *                                  provided {@link ClassBindings}.
 	 */
 	public <T> T createLoremIpsumObject(final Class<T> clazz) {
-		return new ClassBasedFactory<>(clazz).createLoremIpsumObject(classBindings);
+		return new ClassBasedFactory<>(clazz).createLoremIpsumObject(loremIpsumConfig);
 	}
 }

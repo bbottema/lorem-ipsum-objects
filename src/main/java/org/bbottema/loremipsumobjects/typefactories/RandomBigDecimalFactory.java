@@ -1,7 +1,7 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
-import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.bbottema.loremipsumobjects.typefactories.util.LoremIpsumGenerator;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ public class RandomBigDecimalFactory extends LoremIpsumObjectFactory<BigDecimal>
 	public BigDecimal _createLoremIpsumObject(
 			@Nullable final Type[] genericMetaData,
 			@Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
-			@Nullable final ClassBindings classBindings,
+			final LoremIpsumConfig loremIpsumConfig,
 			@Nullable final List<Exception> exceptions) {
 		LoremIpsumGenerator instance = LoremIpsumGenerator.getInstance();
 		return BigDecimal.valueOf(instance.getRandomInt(), instance.getRandomInt(6));

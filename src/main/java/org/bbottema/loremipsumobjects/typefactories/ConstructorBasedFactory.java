@@ -1,15 +1,13 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
 import lombok.extern.slf4j.Slf4j;
-import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.List;
@@ -30,22 +28,13 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	}
 	
 	/**
-	 * @param genericMetaData Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the
-	 *                        <code>Constructor</code>.
-	 * @param knownInstances  Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the
-	 *                        <code>Constructor</code>.
-	 * @param classbindings   Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the
-	 *                        <code>Constructor</code>.
-	 * @param exceptions      Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the
-	 *                        <code>Constructor</code>.
-	 *
 	 * @return The result of a successful invocation of the given constructor or <code>null</code> in case of an error.
 	 */
 	@Nullable
 	@Override
 	public T _createLoremIpsumObject(@Nullable final Type[] genericMetaData,
 	                                 final Map<String, ClassUsageInfo<?>> knownInstances,
-	                                 final ClassBindings classbindings,
+	                                 final LoremIpsumConfig loremIpsumConfig,
 	                                 final List<Exception> exceptions) {
 		try {
 			try {
@@ -54,10 +43,10 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 				// ignore, try without making it explicitly accessibly
 			}
 			
-			return TimeLimitedCodeBlock.runWithTimeout(250, TimeUnit.MILLISECONDS, new Callable<T>() {
+			return TimeLimitedCodeBlock.runWithTimeout(loremIpsumConfig.getTimeoutMillis(), TimeUnit.MILLISECONDS, new Callable<T>() {
 				public T call() throws Exception {
 					return (constructor.getParameterTypes().length > 0)
-						   ? constructor.newInstance(determineArguments(constructor, genericMetaData, knownInstances, classbindings, exceptions))
+						   ? constructor.newInstance(determineArguments(constructor, genericMetaData, knownInstances, loremIpsumConfig, exceptions))
 						   : constructor.newInstance();
 				}
 			});
@@ -69,7 +58,7 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	
 	@SuppressWarnings("unchecked")
 	@NotNull
-	private Object[] determineArguments(Constructor<T> constructor, @Nullable Type[] currentGenericsMetaData, Map<String, ClassUsageInfo<?>> knownInstances, ClassBindings classbindings, List<Exception> exceptions) {
+	private Object[] determineArguments(Constructor<T> constructor, @Nullable Type[] currentGenericsMetaData, Map<String, ClassUsageInfo<?>> knownInstances, LoremIpsumConfig loremIpsumConfig, List<Exception> exceptions) {
 		@SuppressWarnings("unchecked") final Class<T>[] parameters = (Class<T>[]) constructor.getParameterTypes();
 		
 		final Object[] args = new Object[parameters.length];
@@ -80,7 +69,7 @@ public class ConstructorBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			if (clazz == Object.class && constructor.getGenericParameterTypes()[i] instanceof TypeVariable) {
 				clazz = extractConcreteType(null, nextGenericsMetaData[0]);
 			}
-			args[i] = new ClassBasedFactory<>(clazz).createLoremIpsumObject(nextGenericsMetaData, knownInstances, classbindings, exceptions);
+			args[i] = new ClassBasedFactory<>(clazz).createLoremIpsumObject(nextGenericsMetaData, knownInstances, loremIpsumConfig, exceptions);
 		}
 		return args;
 	}

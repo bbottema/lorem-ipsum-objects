@@ -1,7 +1,7 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
-import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,8 +29,8 @@ public class RandomFactoryFactory<T> extends LoremIpsumObjectFactory<T> {
 	@Nullable
 	@Override
 	@SuppressWarnings("unchecked")
-	T _createLoremIpsumObject(@Nullable Type[] genericMetaData, @Nullable Map<String, ClassUsageInfo<?>> knownInstances, @Nullable ClassBindings classBindings, @Nullable List<Exception> exceptions) {
+	T _createLoremIpsumObject(@Nullable Type[] genericMetaData, @Nullable Map<String, ClassUsageInfo<?>> knownInstances, LoremIpsumConfig loremIpsumConfig, @Nullable List<Exception> exceptions) {
 		return (T) factories.get(RANDOM.nextInt(factories.size()))
-				.createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
+				.createLoremIpsumObject(genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 	}
 }

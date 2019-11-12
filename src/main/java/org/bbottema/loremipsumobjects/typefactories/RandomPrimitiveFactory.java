@@ -1,7 +1,7 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
-import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.bbottema.loremipsumobjects.typefactories.util.LoremIpsumGenerator;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,9 +65,9 @@ public class RandomPrimitiveFactory<T> extends LoremIpsumObjectFactory<T> {
 	}
 
 	/**
-	 * @param knownInstances Not used.
-	 * @param classBindings  Not used.
-	 * @param exceptions     Not used.
+	 * @param knownInstances   Not used.
+	 * @param loremIpsumConfig Not used.
+	 * @param exceptions       Not used.
 	 * @return Depending on requested type, will call the associated <code>RandomCreator.getRandomT()</code> method.
 	 * @see LoremIpsumGenerator#getRandomInt()
 	 * @see LoremIpsumGenerator#getRandomLong()
@@ -83,7 +83,7 @@ public class RandomPrimitiveFactory<T> extends LoremIpsumObjectFactory<T> {
 	@SuppressWarnings("unchecked")
 	public T _createLoremIpsumObject(@Nullable final Type[] genericMetaData,
 	                                 @Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
-	                                 @Nullable final ClassBindings classBindings,
+	                                 LoremIpsumConfig loremIpsumConfig,
 	                                 @Nullable final List<Exception> exceptions) {
 		if (clazz == int.class) {
 			return (T) (Integer) LoremIpsumGenerator.getInstance().getRandomInt();

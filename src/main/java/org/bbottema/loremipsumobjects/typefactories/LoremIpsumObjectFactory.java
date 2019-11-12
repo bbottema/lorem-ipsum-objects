@@ -1,7 +1,7 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
-import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -26,22 +26,22 @@ public abstract class LoremIpsumObjectFactory<T> {
 	}
 
 	/**
-	 * Delegates to {@link #createLoremIpsumObject(ClassBindings)} with the default bindings.
+	 * Delegates to {@link #createLoremIpsumObject(LoremIpsumConfig)} with the default bindings.
 	 */
 	@Nullable
 	public final T createLoremIpsumObject() {
-		return createLoremIpsumObject(new ClassBindings());
+		return createLoremIpsumObject(LoremIpsumConfig.builder().build());
 	}
 
 	/**
 	 * Starts a new chain for the creation of a dummy with an empty list of known class instances and empty list of exceptions.
 	 *
-	 * @param classBindings A list of bindings to which a factory may defer dummy creation to.
-	 * @return See {@link #createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
+	 * @param loremIpsumConfig A list of bindings to which a factory may defer dummy creation to.
+	 * @return See {@link #createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
 	 */
 	@Nullable
-	public final T createLoremIpsumObject(@Nullable final ClassBindings classBindings) {
-		return createLoremIpsumObject(null, new HashMap<String, ClassUsageInfo<?>>(), classBindings, new ArrayList<Exception>());
+	public final T createLoremIpsumObject(@Nullable final LoremIpsumConfig loremIpsumConfig) {
+		return createLoremIpsumObject(null, new HashMap<String, ClassUsageInfo<?>>(), loremIpsumConfig, new ArrayList<Exception>());
 	}
 
 	/**
@@ -55,7 +55,7 @@ public abstract class LoremIpsumObjectFactory<T> {
 	 *
 	 * @param genericMetaData Can be <code>null</code>. Should be non-null when requested type is a {@link List} or {@link Map}.
 	 * @param knownInstances  A list of previously created and populated objects for a specific type.
-	 * @param classBindings   A list of bindings to which a factory may defer dummy creation to.
+	 * @param loremIpsumConfig   A list of bindings to which a factory may defer dummy creation to.
 	 * @param exceptions      A list in which to store exceptions so they can be logged at some later point. This is done so, because not all
 	 *                        exceptions are bad (in case a factory is trying to find a useful constructor, invocations are allowed to fail if a
 	 *                        suitable constructor can be found otherwise).
@@ -65,12 +65,12 @@ public abstract class LoremIpsumObjectFactory<T> {
 	public T createLoremIpsumObject(
 			@Nullable Type[] genericMetaData,
 			@Nullable Map<String, ClassUsageInfo<?>> knownInstances,
-			@Nullable ClassBindings classBindings,
+			LoremIpsumConfig loremIpsumConfig,
 			@Nullable List<Exception> exceptions) {
 		T result;
-		int tries = 3;
+		int tries = loremIpsumConfig.getRetries();
 		do {
-			result = _createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
+			result = _createLoremIpsumObject(genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 		} while(result == null && --tries > 0);
 		return result;
 	}
@@ -79,6 +79,6 @@ public abstract class LoremIpsumObjectFactory<T> {
 	abstract T _createLoremIpsumObject(
 			@Nullable Type[] genericMetaData,
 			@Nullable Map<String, ClassUsageInfo<?>> knownInstances,
-			@Nullable ClassBindings classBindings,
+			LoremIpsumConfig loremIpsumConfig,
 			@Nullable List<Exception> exceptions);
 }

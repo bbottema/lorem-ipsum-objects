@@ -1,7 +1,23 @@
+/*
+ * Copyright (C) 2019 Benny Bottema (benny@bennybottema.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.bbottema.loremipsumobjects.typefactories;
 
 import org.assertj.core.api.Condition;
 import org.bbottema.loremipsumobjects.ClassBindings;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.bbottema.loremipsumobjects.LoremIpsumObjectCreator;
 import org.bbottema.loremipsumobjects.helperutils.EnumClass;
 import org.bbottema.loremipsumobjects.helperutils.InheritedPrimitiveClass;
@@ -57,17 +73,18 @@ import static org.mockito.Mockito.when;
 
 public class ClassBasedFactoryTest {
 	
-	private ClassBindings classBindings;
+	private LoremIpsumConfig loremIpsumConfig;
 	
 	/**
 	 * Adds some default bindings useful for these tests, such as some {@link FixedInstanceFactory} instances and a {@link ConstructorBasedFactory}.
 	 */
 	@Before
 	public void setUp() throws SecurityException, NoSuchMethodException {
-		classBindings = new ClassBindings();
+		ClassBindings classBindings = new ClassBindings();
 		classBindings.bind(Integer.class, new ConstructorBasedFactory<>(Integer.class.getConstructor(Integer.TYPE)));
 		classBindings.bind(Long.class, new FixedInstanceFactory<>(Long.MAX_VALUE));
 		classBindings.bind(Double.class, new FixedInstanceFactory<>(Double.MIN_VALUE));
+		this.loremIpsumConfig = LoremIpsumConfig.builder().classBindings(classBindings).build();
 		
 		LoremIpsumGenerator mock = mock(LoremIpsumGenerator.class);
 		LoremIpsumGenerator.setInstance(mock);
@@ -103,8 +120,8 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testObjectBindings() {
-		assertThat(new ClassBasedFactory<>(Long.class).createLoremIpsumObject(classBindings)).isCloseTo(Long.MAX_VALUE, offset(0L));
-		assertThat(new ClassBasedFactory<>(Double.class).createLoremIpsumObject(classBindings)).isCloseTo(Double.MIN_VALUE, offset(0D));
+		assertThat(new ClassBasedFactory<>(Long.class).createLoremIpsumObject(loremIpsumConfig)).isCloseTo(Long.MAX_VALUE, offset(0L));
+		assertThat(new ClassBasedFactory<>(Double.class).createLoremIpsumObject(loremIpsumConfig)).isCloseTo(Double.MIN_VALUE, offset(0D));
 	}
 	
 	/**
@@ -112,7 +129,7 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testConstructorBindings() {
-		assertThat(new ClassBasedFactory<>(Integer.class).createLoremIpsumObject(classBindings).getClass()).isEqualTo(Integer.class);
+		assertThat(new ClassBasedFactory<>(Integer.class).createLoremIpsumObject(loremIpsumConfig).getClass()).isEqualTo(Integer.class);
 	}
 	
 	/**
@@ -121,11 +138,12 @@ public class ClassBasedFactoryTest {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testInterfaceBindings() {
-		assertThat(new ClassBasedFactory<>(List.class).createLoremIpsumObject(classBindings).getClass()).isEqualTo(ArrayList.class);
+		assertThat(new ClassBasedFactory<>(List.class).createLoremIpsumObject(loremIpsumConfig).getClass()).isEqualTo(ArrayList.class);
 		final ClassBindings classBindings = new ClassBindings();
 		classBindings.bind(List.class, new ClassBasedFactory<>(ArrayList.class));
 		classBindings.bind(List.class, new ClassBasedFactory<>(LinkedList.class));
-		assertThat(new ClassBasedFactory<>(List.class).createLoremIpsumObject(classBindings).getClass()).isEqualTo(LinkedList.class);
+		LoremIpsumConfig config = LoremIpsumConfig.builder().classBindings(classBindings).build();
+		assertThat(new ClassBasedFactory<>(List.class).createLoremIpsumObject(config).getClass()).isEqualTo(LinkedList.class);
 	}
 	
 	/**
@@ -134,12 +152,12 @@ public class ClassBasedFactoryTest {
 	@SuppressWarnings("InstantiatingObjectToGetClassObject")
 	@Test
 	public void testArrayCreation() {
-		@SuppressWarnings("unchecked") final Integer[] integers = new ClassBasedFactory<>((Class<Integer[]>) new Integer[]{}.getClass()).createLoremIpsumObject(classBindings);
+		@SuppressWarnings("unchecked") final Integer[] integers = new ClassBasedFactory<>((Class<Integer[]>) new Integer[]{}.getClass()).createLoremIpsumObject(loremIpsumConfig);
 		assertThat(integers).isNotNull();
 		for (final Integer i : integers) {
 			assertThat(i.getClass()).isSameAs(Integer.class);
 		}
-		@SuppressWarnings("unchecked") final int[] ints = new ClassBasedFactory<>((Class<int[]>) new int[]{}.getClass()).createLoremIpsumObject(classBindings);
+		@SuppressWarnings("unchecked") final int[] ints = new ClassBasedFactory<>((Class<int[]>) new int[]{}.getClass()).createLoremIpsumObject(loremIpsumConfig);
 		assertThat(ints).isNotNull();
 	}
 	
@@ -148,7 +166,7 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testStringCreation() {
-		final String dummy = new ClassBasedFactory<>(String.class).createLoremIpsumObject(classBindings);
+		final String dummy = new ClassBasedFactory<>(String.class).createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummy.getClass()).isEqualTo(String.class);
 	}
 	
@@ -157,8 +175,8 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testSimpleObjectCreation() {
-		assertThat(new ClassBasedFactory<>(Byte.class).createLoremIpsumObject(classBindings).getClass()).isEqualTo(Byte.class);
-		assertThat(new ClassBasedFactory<>(Long.class).createLoremIpsumObject(classBindings).getClass()).isEqualTo(Long.class);
+		assertThat(new ClassBasedFactory<>(Byte.class).createLoremIpsumObject(loremIpsumConfig).getClass()).isEqualTo(Byte.class);
+		assertThat(new ClassBasedFactory<>(Long.class).createLoremIpsumObject(loremIpsumConfig).getClass()).isEqualTo(Long.class);
 	}
 	
 	/**
@@ -170,7 +188,8 @@ public class ClassBasedFactoryTest {
 		final ClassBindings classBindings = new ClassBindings();
 		final LinkedList<Object> list = new LinkedList<>();
 		classBindings.bind(List.class, new FixedInstanceFactory<List>(list));
-		final List<?> dummy = new ClassBasedFactory<>(List.class).createLoremIpsumObject(classBindings);
+		LoremIpsumConfig config = LoremIpsumConfig.builder().classBindings(classBindings).build();
+		final List<?> dummy = new ClassBasedFactory<>(List.class).createLoremIpsumObject(config);
 		assertThat(dummy.getClass()).isEqualTo(LinkedList.class);
 		assertThat(dummy).isSameAs(list);
 	}
@@ -182,7 +201,8 @@ public class ClassBasedFactoryTest {
 	public void testDeferredSubTypeConstructorBinding() throws SecurityException, NoSuchMethodException {
 		final ClassBindings classBindings = new ClassBindings();
 		classBindings.bind(B.class, new ConstructorBasedFactory<>(C.class.getConstructor(int.class)));
-		final B dummy = new ClassBasedFactory<>(B.class).createLoremIpsumObject(classBindings);
+		LoremIpsumConfig config = LoremIpsumConfig.builder().classBindings(classBindings).build();
+		final B dummy = new ClassBasedFactory<>(B.class).createLoremIpsumObject(config);
 		assertThat(dummy.getClass()).isEqualTo(C.class);
 	}
 	
@@ -193,7 +213,8 @@ public class ClassBasedFactoryTest {
 	public void testDeferredSubTypeBinding() throws SecurityException {
 		final ClassBindings classBindings = new ClassBindings();
 		classBindings.bind(B.class, new ClassBasedFactory<>(C.class));
-		final B dummy = new ClassBasedFactory<>(B.class).createLoremIpsumObject(classBindings);
+		LoremIpsumConfig config = LoremIpsumConfig.builder().classBindings(classBindings).build();
+		final B dummy = new ClassBasedFactory<>(B.class).createLoremIpsumObject(config);
 		assertThat(dummy.getClass()).isEqualTo(C.class);
 	}
 	
@@ -203,8 +224,8 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testPrimitiveClassCreation() {
-		final PrimitiveClass primitive = new ClassBasedFactory<>(PrimitiveClass.class).createLoremIpsumObject(classBindings);
-		final InheritedPrimitiveClass inheritedPrimitive = new ClassBasedFactory<>(InheritedPrimitiveClass.class).createLoremIpsumObject(classBindings);
+		final PrimitiveClass primitive = new ClassBasedFactory<>(PrimitiveClass.class).createLoremIpsumObject(loremIpsumConfig);
+		final InheritedPrimitiveClass inheritedPrimitive = new ClassBasedFactory<>(InheritedPrimitiveClass.class).createLoremIpsumObject(loremIpsumConfig);
 		assertThat(primitive.getClass()).isEqualTo(PrimitiveClass.class);
 		assertThat(inheritedPrimitive.getClass()).isEqualTo(InheritedPrimitiveClass.class);
 		
@@ -219,7 +240,7 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testNormalClassCreation() {
-		NormalClass dummy = new ClassBasedFactory<>(NormalClass.class).createLoremIpsumObject(classBindings);
+		NormalClass dummy = new ClassBasedFactory<>(NormalClass.class).createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummy.getClass()).isEqualTo(NormalClass.class);
 		
 		testPrimitiveClass(dummy.getPrimitiveClass());
@@ -232,7 +253,7 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testLoopClassCreation() {
-		final LoopClass loopDummy = new ClassBasedFactory<>(LoopClass.class).createLoremIpsumObject(classBindings);
+		final LoopClass loopDummy = new ClassBasedFactory<>(LoopClass.class).createLoremIpsumObject(loremIpsumConfig);
 		assertThat(loopDummy.getClass()).isEqualTo(LoopClass.class);
 		assertThat(loopDummy.getLoopObject()).isSameAs(loopDummy);
 	}
@@ -242,7 +263,7 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testMultiConstructorClassCreation() {
-		final MultiConstructorClass dummy = new ClassBasedFactory<>(MultiConstructorClass.class).createLoremIpsumObject(classBindings);
+		final MultiConstructorClass dummy = new ClassBasedFactory<>(MultiConstructorClass.class).createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummy.getClass()).isEqualTo(MultiConstructorClass.class);
 		
 		assertThat(dummy.getA()).isEqualTo(111);
@@ -281,7 +302,7 @@ public class ClassBasedFactoryTest {
 	 */
 	@Test
 	public void testEnumClassCreation() {
-		final EnumClass ec = new ClassBasedFactory<>(EnumClass.class).createLoremIpsumObject(classBindings);
+		final EnumClass ec = new ClassBasedFactory<>(EnumClass.class).createLoremIpsumObject(loremIpsumConfig);
 		assertThat(ec.getEnumTester()).isNotNull();
 		assertThat(ec.getInternalEnum()).isNotNull();
 	}
@@ -298,7 +319,7 @@ public class ClassBasedFactoryTest {
 	public void testGenericMap() {
 		final Map<Integer, String> numberStringMap = new NumberStringMap();
 		@SuppressWarnings("unchecked") final ClassBasedFactory<Map<Integer, String>> factory = new ClassBasedFactory<>((Class<Map<Integer, String>>) numberStringMap.getClass());
-		final Map<Integer, String> ec = factory.createLoremIpsumObject(classBindings);
+		final Map<Integer, String> ec = factory.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(ec).isNotNull();
 		final Entry<Integer, String> firstItem = ec.entrySet().iterator().next();
 		assertThat(firstItem.getKey().getClass()).isSameAs(Integer.class);
@@ -317,7 +338,7 @@ public class ClassBasedFactoryTest {
 	public void testGenericList() {
 		final List<Integer> numbers = new NumberStringList();
 		@SuppressWarnings("unchecked")
-		List<Integer> ec = new ClassBasedFactory<>((Class<List<Integer>>) numbers.getClass()).createLoremIpsumObject(classBindings);
+		List<Integer> ec = new ClassBasedFactory<>((Class<List<Integer>>) numbers.getClass()).createLoremIpsumObject(loremIpsumConfig);
 		assertThat(ec).isNotNull();
 		assertThat(ec.get(0).getClass()).isSameAs(Integer.class);
 	}
@@ -330,7 +351,7 @@ public class ClassBasedFactoryTest {
 	public void testList() {
 		final List<Integer> numbers = new ArrayList<>();
 		@SuppressWarnings("unchecked") final ClassBasedFactory<List<Integer>> factory = new ClassBasedFactory<>((Class<List<Integer>>) numbers.getClass());
-		final List<Integer> ec = factory.createLoremIpsumObject(classBindings);
+		final List<Integer> ec = factory.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(ec).isNotNull();
 		assertThat(((Object) ec.get(0)).getClass()).isSameAs(String.class);
 	}
@@ -342,26 +363,26 @@ public class ClassBasedFactoryTest {
 	public void testNestedGenericList() {
 		// single nested list
 		final ClassBasedFactory<NestedSingleListClass> factorySingle = new ClassBasedFactory<>(NestedSingleListClass.class);
-		final NestedSingleListClass dummySingle = factorySingle.createLoremIpsumObject(classBindings);
+		final NestedSingleListClass dummySingle = factorySingle.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummySingle.getNumbers().getClass()).isSameAs(ArrayList.class);
 		assertThat(dummySingle.getNumbers().get(0).getClass()).isSameAs(Double.class);
 		
 		// double nested list
 		final ClassBasedFactory<NestedDoubleListClass> factoryDouble = new ClassBasedFactory<>(NestedDoubleListClass.class);
-		final NestedDoubleListClass dummyDouble = factoryDouble.createLoremIpsumObject(classBindings);
+		final NestedDoubleListClass dummyDouble = factoryDouble.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummyDouble.getListsOfNumbers().get(0).getClass()).isSameAs(ArrayList.class);
 		assertThat(dummyDouble.getListsOfNumbers().get(0).get(0).getClass()).isSameAs(Double.class);
 		
 		// triple nested list
 		final ClassBasedFactory<NestedTripleListClass> factoryTriple = new ClassBasedFactory<>(NestedTripleListClass.class);
-		final NestedTripleListClass dummyTriple = factoryTriple.createLoremIpsumObject(classBindings);
+		final NestedTripleListClass dummyTriple = factoryTriple.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummyTriple.getListsOflistsOfNumbers().get(0).getClass()).isSameAs(ArrayList.class);
 		assertThat(dummyTriple.getListsOflistsOfNumbers().get(0).get(0).getClass()).isSameAs(ArrayList.class);
 		assertThat(dummyTriple.getListsOflistsOfNumbers().get(0).get(0).get(0).getClass()).isSameAs(Double.class);
 		
 		// quadruple nested list
 		final ClassBasedFactory<NestedQuadrupleListClass> factoryQuadruple = new ClassBasedFactory<>(NestedQuadrupleListClass.class);
-		final NestedQuadrupleListClass dummyQuadruple = factoryQuadruple.createLoremIpsumObject(classBindings);
+		final NestedQuadrupleListClass dummyQuadruple = factoryQuadruple.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).getClass()).isSameAs(ArrayList.class);
 		assertThat(dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).getClass()).isSameAs(ArrayList.class);
 		assertThat(dummyQuadruple.getListsOfListsOflistsOfNumbers().get(0).get(0).get(0).getClass()).isSameAs(ArrayList.class);
@@ -375,7 +396,7 @@ public class ClassBasedFactoryTest {
 	public void testSingleSimpleNestedGenericMap() {
 		// single nested map
 		final ClassBasedFactory<NestedSingleSimpleMapClass> factorySingle = new ClassBasedFactory<>(NestedSingleSimpleMapClass.class);
-		final NestedSingleSimpleMapClass dummySingle = factorySingle.createLoremIpsumObject(classBindings);
+		final NestedSingleSimpleMapClass dummySingle = factorySingle.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummySingle.getMap().getClass()).isSameAs(HashMap.class);
 		final Entry<?, ?> firstEntrySingleMap = (Entry<?, ?>) dummySingle.getMap().entrySet().iterator().next();
 		assertThat(firstEntrySingleMap.getKey().getClass()).isSameAs(String.class);
@@ -389,7 +410,7 @@ public class ClassBasedFactoryTest {
 	public void testSingleNestedGenericMap() {
 		// single nested map
 		final ClassBasedFactory<NestedSingleMapClass> factorySingle = new ClassBasedFactory<>(NestedSingleMapClass.class);
-		final NestedSingleMapClass dummySingle = factorySingle.createLoremIpsumObject(classBindings);
+		final NestedSingleMapClass dummySingle = factorySingle.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummySingle.getNumbers().getClass()).isSameAs(HashMap.class);
 		final Entry<Double, LoopClass> firstEntrySingleMap = dummySingle.getNumbers().entrySet().iterator().next();
 		assertThat(firstEntrySingleMap.getKey().getClass()).isSameAs(Double.class);
@@ -403,7 +424,7 @@ public class ClassBasedFactoryTest {
 	public void testDoubleNestedGenericMap() {
 		// double nested map
 		final ClassBasedFactory<NestedDoubleMapClass> factoryDouble = new ClassBasedFactory<>(NestedDoubleMapClass.class);
-		final NestedDoubleMapClass dummyDouble = factoryDouble.createLoremIpsumObject(classBindings);
+		final NestedDoubleMapClass dummyDouble = factoryDouble.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummyDouble.getMapsOfNumbers().getClass()).isSameAs(HashMap.class);
 		final Entry<Map<Integer, NestedDoubleMapClass>, Map<Double, LoopClass>> firstEntry = dummyDouble.getMapsOfNumbers().entrySet().iterator().next();
 		
@@ -427,7 +448,7 @@ public class ClassBasedFactoryTest {
 	public void testDoubleNestedAsymmetricGenericMap() {
 		// double nested map
 		final ClassBasedFactory<NestedDoubleAssymetricMapClass> factoryDouble = new ClassBasedFactory<>(NestedDoubleAssymetricMapClass.class);
-		final NestedDoubleAssymetricMapClass dummyDouble = factoryDouble.createLoremIpsumObject(classBindings);
+		final NestedDoubleAssymetricMapClass dummyDouble = factoryDouble.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummyDouble.getMapsOfCharacters().getClass()).isSameAs(HashMap.class);
 		final Entry<Map<Integer, NestedDoubleMapClass>, Character> firstEntry = dummyDouble.getMapsOfCharacters().entrySet().iterator().next();
 		
@@ -447,7 +468,7 @@ public class ClassBasedFactoryTest {
 	public void testDoubleNestedGenericMapsAndLists() {
 		// double nested map
 		final ClassBasedFactory<NestedEverythingClass> factoryDouble = new ClassBasedFactory<>(NestedEverythingClass.class);
-		final NestedEverythingClass dummyDouble = factoryDouble.createLoremIpsumObject(classBindings);
+		final NestedEverythingClass dummyDouble = factoryDouble.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummyDouble.getMapsOfLists().getClass()).isSameAs(HashMap.class);
 		final Entry<Map<List<List<String>>, NestedDoubleMapClass>, List<Byte>> firstEntry = dummyDouble.getMapsOfLists().entrySet().iterator().next();
 		
@@ -470,7 +491,7 @@ public class ClassBasedFactoryTest {
 	public void testTripleNestedGenericMap() {
 		// triple nested map
 		final ClassBasedFactory<NestedTripleMapClass> factoryTriple = new ClassBasedFactory<>(NestedTripleMapClass.class);
-		final NestedTripleMapClass dummyTriple = factoryTriple.createLoremIpsumObject(classBindings);
+		final NestedTripleMapClass dummyTriple = factoryTriple.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(dummyTriple.getMapsOfMapsOfNumbers().getClass()).isSameAs(HashMap.class);
 		final Entry<Map<Integer, Map<Double, LoopClass>>, Map<Double, Map<Double, LoopClass>>> firstEntryTriple = dummyTriple.getMapsOfMapsOfNumbers().entrySet().iterator().next();
 		
@@ -547,7 +568,7 @@ public class ClassBasedFactoryTest {
 	public void testMyCustomTestClassList() {
 		final List<MyCustomTestClass> numbers = new MyCustomTestClassList();
 		@SuppressWarnings("unchecked") final ClassBasedFactory<List<MyCustomTestClass>> factory = new ClassBasedFactory<>((Class<List<MyCustomTestClass>>) numbers.getClass());
-		final List<MyCustomTestClass> ec = factory.createLoremIpsumObject(classBindings);
+		final List<MyCustomTestClass> ec = factory.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(ec).isNotNull();
 		assertThat(ec.get(0).getClass()).isSameAs(MyCustomTestClass.class);
 	}
@@ -560,7 +581,7 @@ public class ClassBasedFactoryTest {
 	public void testMap() {
 		final Map<Integer, Double> numbers = new HashMap<>();
 		@SuppressWarnings("unchecked") final ClassBasedFactory<Map<Integer, Double>> factory = new ClassBasedFactory<>((Class<Map<Integer, Double>>) numbers.getClass());
-		final Map<Integer, Double> ec = factory.createLoremIpsumObject(classBindings);
+		final Map<Integer, Double> ec = factory.createLoremIpsumObject(loremIpsumConfig);
 		assertThat(ec).isNotNull();
 		final Entry<Integer, Double> firstItem = ec.entrySet().iterator().next();
 		assertThat(((Object) firstItem.getKey()).getClass()).isSameAs(String.class);

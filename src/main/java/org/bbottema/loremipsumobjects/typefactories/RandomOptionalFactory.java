@@ -2,13 +2,11 @@ package org.bbottema.loremipsumobjects.typefactories;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bbottema.javareflection.MethodUtils;
-import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
-import org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,8 @@ import static java.util.Objects.requireNonNull;
 import static org.bbottema.javareflection.ClassUtils.findFirstMethodByName;
 import static org.bbottema.javareflection.ClassUtils.locateClass;
 import static org.bbottema.javareflection.model.MethodModifier.PUBLIC;
-import static org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper.*;
+import static org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper.determineGenericsMetaData;
+import static org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper.extractConcreteType;
 
 public class RandomOptionalFactory extends LoremIpsumObjectFactory<Object> {
 
@@ -30,15 +29,15 @@ public class RandomOptionalFactory extends LoremIpsumObjectFactory<Object> {
 	public Object _createLoremIpsumObject(
 			@Nullable final Type[] genericMetaData,
 			@Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
-			@Nullable final ClassBindings classBindings,
+			LoremIpsumConfig loremIpsumConfig,
 			@Nullable final List<Exception> exceptions) {
 		// static method Optional.of(value)
 		Method optionalOf = requireNonNull(findFirstMethodByName(CLASS_OPTIONAL, Object.class, of(PUBLIC), "of"));
 		return MethodUtils.invokeMethodSimple(optionalOf, null,
-				createLoremIpsumObjectForOptional(genericMetaData, knownInstances, classBindings, exceptions));
+				createLoremIpsumObjectForOptional(genericMetaData, knownInstances, loremIpsumConfig, exceptions));
 	}
 
-	private Object createLoremIpsumObjectForOptional(@Nullable Type[] genericMetaData, @Nullable Map<String, ClassUsageInfo<?>> knownInstances, @Nullable ClassBindings classBindings, @Nullable List<Exception> exceptions) {
+	private Object createLoremIpsumObjectForOptional(@Nullable Type[] genericMetaData, @Nullable Map<String, ClassUsageInfo<?>> knownInstances, LoremIpsumConfig loremIpsumConfig, @Nullable List<Exception> exceptions) {
 		Class clazz = String.class;
 		Type[] nextGenericsMetaData = null;
 
@@ -49,6 +48,6 @@ public class RandomOptionalFactory extends LoremIpsumObjectFactory<Object> {
 
 		//noinspection unchecked
 		return new ClassBasedFactory<Object>(clazz)
-				.createLoremIpsumObject(nextGenericsMetaData, knownInstances, classBindings, exceptions);
+				.createLoremIpsumObject(nextGenericsMetaData, knownInstances, loremIpsumConfig, exceptions);
 	}
 }

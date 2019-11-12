@@ -1,7 +1,7 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
-import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,9 +33,6 @@ public class MethodBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	}
 
 	/**
-	 * @param knownInstances Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the <code>Method</code>.
-	 * @param classBindings  Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the <code>Method</code>.
-	 * @param exceptions     Not used, but passed on to {@link ClassBasedFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} when constructing the parameters for the <code>Method</code>.
 	 * @return The result of a successful invocation of the given method or <code>null</code> in case of an error.
 	 */
 	@Nullable
@@ -43,17 +40,17 @@ public class MethodBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	@Override
 	public T _createLoremIpsumObject(@Nullable final Type[] genericMetaData,
 	                                 final Map<String, ClassUsageInfo<?>> knownInstances,
-	                                 final ClassBindings classBindings,
+	                                 final LoremIpsumConfig loremIpsumConfig,
 	                                 final List<Exception> exceptions) {
 		final Method m = method;
 		final Class<?>[] parameters = m.getParameterTypes();
 		final Object[] params = new Object[parameters.length];
 		for (int i = 0; i < params.length; i++) {
 			params[i] = new ClassBasedFactory<>((Class<Object>) parameters[i])
-					.createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
+					.createLoremIpsumObject(genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 		}
 		try {
-			return TimeLimitedCodeBlock.runWithTimeout(250, TimeUnit.MILLISECONDS, new Callable<T>() {
+			return TimeLimitedCodeBlock.runWithTimeout(loremIpsumConfig.getTimeoutMillis(), TimeUnit.MILLISECONDS, new Callable<T>() {
 				@Override @Nullable
 				public T call() throws Exception {
 					return (T) m.invoke(null, params);

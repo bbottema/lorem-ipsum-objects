@@ -1,7 +1,7 @@
 package org.bbottema.loremipsumobjects.typefactories;
 
-import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -27,9 +27,9 @@ public class FixedInstanceFactory<T> extends LoremIpsumObjectFactory<T> {
 	}
 
 	/**
-	 * @param knownInstances Not used.
-	 * @param classBindings  Not used.
-	 * @param exceptions     Not used.
+	 * @param knownInstances   Not used.
+	 * @param loremIpsumConfig Not used.
+	 * @param exceptions       Not used.
 	 * @return The instance that was passed into {@link #FixedInstanceFactory(Object)}.
 	 */
 	@Override
@@ -37,7 +37,7 @@ public class FixedInstanceFactory<T> extends LoremIpsumObjectFactory<T> {
 	public T _createLoremIpsumObject(
 			@Nullable final Type[] genericMetaData,
 			@Nullable final Map<String, ClassUsageInfo<?>> knownInstances,
-			@Nullable final ClassBindings classBindings,
+			final LoremIpsumConfig loremIpsumConfig,
 			@Nullable final List<Exception> exceptions) {
 		return instance;
 	}

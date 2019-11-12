@@ -9,9 +9,9 @@ import org.bbottema.javareflection.BeanUtils.Visibility;
 import org.bbottema.javareflection.model.FieldWrapper;
 import org.bbottema.loremipsumobjects.ClassBindings;
 import org.bbottema.loremipsumobjects.ClassUsageInfo;
+import org.bbottema.loremipsumobjects.LoremIpsumConfig;
 import org.bbottema.loremipsumobjects.typefactories.util.LoremIpsumGenerator;
 import org.bbottema.loremipsumobjects.typefactories.util.ReflectionCache;
-import org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper;
 import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock;
 import org.bbottema.loremipsumobjects.typefactories.util.TimeLimitedCodeBlock.RunnableWithException;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
 import static java.util.EnumSet.allOf;
 import static java.util.EnumSet.of;
-import static org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper.*;
+import static org.bbottema.loremipsumobjects.typefactories.util.ReflectionHelper.determineGenericsMetaData;
 
 /**
  * Creates a populated dummy object of a given class <code>T</code>. First tries to defer creation using <em>classBindings</em>, if no class
@@ -71,12 +71,12 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	 * avoid recursive loops.
 	 * <p>
 	 * Will first try to defer dummy object creation to a bound {@link LoremIpsumObjectFactory} and if found will defer dummy object creation to
-	 * {@link LoremIpsumObjectFactory#createLoremIpsumObject(ClassBindings)}.
+	 * {@link LoremIpsumObjectFactory#createLoremIpsumObject(LoremIpsumConfig)}.
 	 *
-	 * @param nextGenericsMetaData See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
-	 * @param knownInstances       See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
-	 * @param classBindings        See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
-	 * @param exceptions           See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
+	 * @param nextGenericsMetaData See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
+	 * @param knownInstances       See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
+	 * @param loremIpsumConfig     See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
+	 * @param exceptions           See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
 	 * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
 	 * @throws IllegalArgumentException Thrown if class could not be instantiated. Constructor invocation exceptions are logged separately.
 	 */
@@ -85,12 +85,12 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	@SuppressWarnings("unchecked")
 	public T _createLoremIpsumObject(@Nullable final Type[] nextGenericsMetaData,
 	                                 final Map<String, ClassUsageInfo<?>> knownInstances,
-	                                 final ClassBindings classBindings,
+	                                 final LoremIpsumConfig loremIpsumConfig,
 	                                 final List<Exception> exceptions) {
 		// list of classes, we already used for population. by remembering, we can avoid recursive looping
 		final String typeMarker = createTypeMarker(clazz, nextGenericsMetaData);
 		if (knownInstances.get(typeMarker) == null || !knownInstances.get(typeMarker).isPopulated()) {
-			final T ret = create(nextGenericsMetaData, knownInstances, classBindings, exceptions);
+			final T ret = create(nextGenericsMetaData, knownInstances, loremIpsumConfig, exceptions);
 
 			if (ret != null) {
 				return ret;
@@ -113,30 +113,30 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	 * avoid recursive loops.
 	 * <p>
 	 * Will first try to defer dummy object creation to a bound {@link LoremIpsumObjectFactory} and if found will defer dummy object creation to
-	 * {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)} .
+	 * {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)} .
 	 *
-	 * @param genericMetaData See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
-	 * @param knownInstances  See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
-	 * @param classBindings   See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
-	 * @param exceptions      See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
+	 * @param genericMetaData  See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
+	 * @param knownInstances   See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
+	 * @param loremIpsumConfig See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
+	 * @param exceptions       See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
 	 * @return The instantiated and populated object (can be a sub type, depending how the {@link ClassBindings} are configured).
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Nullable
 	private T create(@Nullable final Type[] genericMetaData,
 	                 final Map<String, ClassUsageInfo<?>> knownInstances,
-	                 final ClassBindings classBindings,
+	                 final LoremIpsumConfig loremIpsumConfig,
 	                 final List<Exception> exceptions) {
 		T ret = null;
 
 		// first try possibly bound dummy factory
-		final LoremIpsumObjectFactory<T> factory = classBindings.find(clazz);
+		final LoremIpsumObjectFactory<T> factory = loremIpsumConfig.getClassBindings().find(clazz);
 		if (factory != null) {
-			ret = factory.createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
+			ret = factory.createLoremIpsumObject(genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 		}
 
 		if (ret == null && clazz.isArray()) {
-			ret = new RandomArrayFactory<>(clazz).createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
+			ret = new RandomArrayFactory<>(clazz).createLoremIpsumObject(genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 		}
 
 		// if null, we need to create it ourself
@@ -149,7 +149,7 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 
 			// is the class an enum?
 			if (clazz.isEnum()) {
-				return (T) new RandomEnumFactory(clazz).createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
+				return (T) new RandomEnumFactory(clazz).createLoremIpsumObject(genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 			}
 
 			// load the constructors
@@ -168,12 +168,12 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			// check if we have a prefered Constructor and try it
 			final Constructor<T> preferedConstructor = (Constructor<T>) constructorCache.getPreferedConstructor(clazz);
 			if (preferedConstructor != null) {
-				ret = new ConstructorBasedFactory<>(preferedConstructor).createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
+				ret = new ConstructorBasedFactory<>(preferedConstructor).createLoremIpsumObject(genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 			}
 
 			if (ret == null) {
 				for (final Constructor<?> co : constructorsForClass) {
-					ret = new ConstructorBasedFactory<>((Constructor<T>) co).createLoremIpsumObject(genericMetaData, knownInstances, classBindings, exceptions);
+					ret = new ConstructorBasedFactory<>((Constructor<T>) co).createLoremIpsumObject(genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 					if (ret != null) {
 						constructorCache.setPreferedConstructor(clazz, co);
 						break;
@@ -186,7 +186,7 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 				usedInfo.setInstance(ret);
 				usedInfo.setPopulated(true);
 				try {
-					populateObject(ret, genericMetaData, knownInstances, classBindings, exceptions);
+					populateObject(ret, genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 				} catch (IllegalArgumentException e) {
 					exceptions.add(e);
 					return null;
@@ -266,9 +266,9 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	 * Populates given object with dummy value. The behavior can vary depending on the type of object, as follows:
 	 * <ul>
 	 * <li><strong>Collection</strong>: if the type is a subtype of {@link Collection}, a random number (2 or 3) of items will be added.
-	 * Will be deferred {@link #populateCollection(Collection, Type[], Map, ClassBindings, List)}.</li>
+	 * Will be deferred {@link #populateCollection(Collection, Type[], Map, LoremIpsumConfig, List)}.</li>
 	 * <li><strong>Map</strong>: if the type is a subtype of {@link Map}, a random number (2 or 3) of key/value entries will be added. Will
-	 * be deferred {@link #populateMap(Map, Type[], Map, ClassBindings, List)}.</li>
+	 * be deferred {@link #populateMap(Map, Type[], Map, LoremIpsumConfig, List)}.</li>
 	 * <li><strong>Other types</strong>: The bean-style <em>setter</em> methods will be retrieved from the object and will be invoked with a
 	 * new dummy value.</li>
 	 * </ul>
@@ -284,20 +284,20 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	 * href="http://en.wikipedia.org/wiki/Generics_in_Java#Problems_with_type_erasure">type erasure</a>. Only declared generic types in the
 	 * class or interface signature, as in the latter case, are discoverable in runtime, as well as generic type declared in a {@link Field}, {@link Method} or {@link Constructor}.
 	 *
-	 * @param subject        The object to populate with dummy values.
-	 * @param knownInstances A list of known instances to keep track of already processed classes (to avoid infinite loop).
-	 * @param classBindings  See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
-	 * @param exceptions     Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for arrays, collections
-	 *                       and maps.
-	 * @see #populateCollection(Collection, Type[], Map, ClassBindings, List)
-	 * @see #populateMap(Map, Type[], Map, ClassBindings, List)
+	 * @param subject          The object to populate with dummy values.
+	 * @param knownInstances   A list of known instances to keep track of already processed classes (to avoid infinite loop).
+	 * @param loremIpsumConfig See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
+	 * @param exceptions       Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for arrays, collections
+	 *                         and maps.
+	 * @see #populateCollection(Collection, Type[], Map, LoremIpsumConfig, List)
+	 * @see #populateMap(Map, Type[], Map, LoremIpsumConfig, List)
 	 */
 	@SuppressWarnings({"unchecked"})
-	private void populateObject(final T subject, @Nullable final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances, final ClassBindings classBindings, final List<Exception> exceptions) {
+	private void populateObject(final T subject, @Nullable final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances, final LoremIpsumConfig loremIpsumConfig, final List<Exception> exceptions) {
 		if (subject instanceof Collection) {
-			populateCollection((Collection<Object>) subject, genericMetaData, knownInstances, classBindings, exceptions);
+			populateCollection((Collection<Object>) subject, genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 		} else if (subject instanceof Map) {
-			populateMap((Map<Object, Object>) subject, genericMetaData, knownInstances, classBindings, exceptions);
+			populateMap((Map<Object, Object>) subject, genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 		} else {
 			// populate POJO using it's bean setters (which should always contain exactly one parameter)
 			// by creating a new dummy using a ClassBasedFactory for each Method's parameter and finally invoke the method itself
@@ -307,9 +307,9 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 				final Type[] nextGenericsMetaData = determineGenericsMetaData(genericMetaData, setter.getGenericParameterTypes()[0]);
 
 				// finally create the parameter with or without generics meta data
-				final Object argument = factory.createLoremIpsumObject(nextGenericsMetaData, knownInstances, classBindings, exceptions);
+				final Object argument = factory.createLoremIpsumObject(nextGenericsMetaData, knownInstances, loremIpsumConfig, exceptions);
 				try {
-					TimeLimitedCodeBlock.runWithTimeout(250, TimeUnit.MILLISECONDS, new RunnableWithException() {
+					TimeLimitedCodeBlock.runWithTimeout(loremIpsumConfig.getTimeoutMillis(), TimeUnit.MILLISECONDS, new RunnableWithException() {
 						@Override
 						public void run() throws Exception {
 							try {
@@ -339,21 +339,21 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	 * <li>By resorting to a <code>String</code> dummy object as a last resort, when we can't determine a type.</li>
 	 * </ol>
 	 *
-	 * @param subject         The collection to populate with dummy objects.
-	 * @param genericMetaData If not null, contains the generics meta data for the collection type as declared in the collections field.
-	 * @param knownInstances  A list of known instances to keep track of already processed classes (to avoid infinite loop).
-	 * @param classBindings   See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
-	 * @param exceptions      Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for arrays, collections
-	 *                        and maps.
+	 * @param subject          The collection to populate with dummy objects.
+	 * @param genericMetaData  If not null, contains the generics meta data for the collection type as declared in the collections field.
+	 * @param knownInstances   A list of known instances to keep track of already processed classes (to avoid infinite loop).
+	 * @param loremIpsumConfig See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
+	 * @param exceptions       Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for arrays, collections
+	 *                         and maps.
 	 */
-	private void populateCollection(final Collection<Object> subject, @Nullable final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances, final ClassBindings classBindings,
+	private void populateCollection(final Collection<Object> subject, @Nullable final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances, final LoremIpsumConfig loremIpsumConfig,
 	                                final List<Exception> exceptions) {
 		for (int i = 0; i < LoremIpsumGenerator.getInstance().getRandomInt(2) + 2; i++) {
 			// detect dummy class and generic info
 			final ClassAndGenericMetaData<?> classInfo = extractClassInfo(subject.getClass(), genericMetaData, 0);
 			// create dummy and add to list
 			@SuppressWarnings("unchecked") final ClassBasedFactory<?> factory = new ClassBasedFactory<>((Class<Object>) classInfo.getClazz());
-			final Object dummyObject = factory.createLoremIpsumObject(classInfo.getGenericMetaData(), knownInstances, classBindings, exceptions);
+			final Object dummyObject = factory.createLoremIpsumObject(classInfo.getGenericMetaData(), knownInstances, loremIpsumConfig, exceptions);
 			subject.add(dummyObject);
 		}
 	}
@@ -368,14 +368,14 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 	 * <li>By resorting to a <code>String</code> dummy object as a last resort, when we can't determine a type.</li>
 	 * </ol>
 	 *
-	 * @param subject         The map to populate with dummy entries.
-	 * @param genericMetaData If not null, contains the generics meta data for the map type as declared in the collections field.
-	 * @param knownInstances  A list of known instances to keep track of already processed classes (to avoid infinite loop).
-	 * @param classBindings   See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, ClassBindings, List)}.
-	 * @param exceptions      Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for the map
-	 *                        <em>keys</em> or <em>values</em>.
+	 * @param subject          The map to populate with dummy entries.
+	 * @param genericMetaData  If not null, contains the generics meta data for the map type as declared in the collections field.
+	 * @param knownInstances   A list of known instances to keep track of already processed classes (to avoid infinite loop).
+	 * @param loremIpsumConfig See {@link LoremIpsumObjectFactory#createLoremIpsumObject(Type[], Map, LoremIpsumConfig, List)}.
+	 * @param exceptions       Not used, but will be passed to {@link ClassBasedFactory} instances when producing dummies for the map
+	 *                         <em>keys</em> or <em>values</em>.
 	 */
-	private void populateMap(final Map<Object, Object> subject, @Nullable final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances, final ClassBindings classBindings,
+	private void populateMap(final Map<Object, Object> subject, @Nullable final Type[] genericMetaData, final Map<String, ClassUsageInfo<?>> knownInstances, final LoremIpsumConfig loremIpsumConfig,
 	                         final List<Exception> exceptions) {
 		for (int i = 0; i < LoremIpsumGenerator.getInstance().getRandomInt(2) + 2; i++) {
 			// detect dummy class and generic info
@@ -384,8 +384,8 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			// create dummies and add to map
 			@SuppressWarnings("unchecked") final ClassBasedFactory<?> dummyKeyFactory = new ClassBasedFactory<>((Class<Object>) keyClassInfo.getClazz());
 			@SuppressWarnings("unchecked") final ClassBasedFactory<?> dummyValueFactory = new ClassBasedFactory<>((Class<Object>) valueClassInfo.getClazz());
-			final Object dummyKey = dummyKeyFactory.createLoremIpsumObject(keyClassInfo.getGenericMetaData(), knownInstances, classBindings, exceptions);
-			final Object dummyValue = dummyValueFactory.createLoremIpsumObject(valueClassInfo.getGenericMetaData(), knownInstances, classBindings, exceptions);
+			final Object dummyKey = dummyKeyFactory.createLoremIpsumObject(keyClassInfo.getGenericMetaData(), knownInstances, loremIpsumConfig, exceptions);
+			final Object dummyValue = dummyValueFactory.createLoremIpsumObject(valueClassInfo.getGenericMetaData(), knownInstances, loremIpsumConfig, exceptions);
 			subject.put(dummyKey, dummyValue);
 		}
 	}
@@ -461,7 +461,7 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 		@Nullable
 		private Type[] genericMetaData;
 	}
-	
+
 	@SuppressFBWarnings(value = "SE_COMPARATOR_SHOULD_BE_SERIALIZABLE", justification = "comparator will never be serialized")
 	private static class ConstructorComparator implements Comparator<Constructor<?>> {
 		/**
@@ -473,7 +473,7 @@ public class ClassBasedFactory<T> extends LoremIpsumObjectFactory<T> {
 			final int lenCmp = Integer.compare(o1.getParameterTypes().length, o2.getParameterTypes().length);
 			return lenCmp != 0 ? lenCmp : signatureHash(o1).compareTo(signatureHash(o2));
 		}
-		
+
 		private String signatureHash(@NotNull final Constructor<?> o1) {
 			final StringBuilder s = new StringBuilder();
 			for (Class<?> parameterType : o1.getParameterTypes()) {
