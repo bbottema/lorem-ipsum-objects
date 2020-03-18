@@ -3,6 +3,7 @@ package org.bbottema.loremipsumobjects.typefactories.util;
 import de.svenjacobs.loremipsum.LoremIpsum;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Utility class that contains various methods to generate dummy data for primitive types.
@@ -25,6 +26,10 @@ public class LoremIpsumGenerator {
 
 	public boolean getRandomBoolean() {
 		return r.nextBoolean();
+	}
+
+	public UUID getRandomUuid() {
+		return UUID.randomUUID();
 	}
 
 	public int getRandomInt() {

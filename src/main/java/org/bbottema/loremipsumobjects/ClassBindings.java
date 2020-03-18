@@ -1,27 +1,13 @@
 package org.bbottema.loremipsumobjects;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.bbottema.loremipsumobjects.typefactories.ClassBasedFactory;
-import org.bbottema.loremipsumobjects.typefactories.ConstructorBasedFactory;
-import org.bbottema.loremipsumobjects.typefactories.LoremIpsumObjectFactory;
-import org.bbottema.loremipsumobjects.typefactories.MethodBasedFactory;
-import org.bbottema.loremipsumobjects.typefactories.RandomBigDecimalFactory;
-import org.bbottema.loremipsumobjects.typefactories.RandomBooleanFactory;
-import org.bbottema.loremipsumobjects.typefactories.RandomFactoryFactory;
-import org.bbottema.loremipsumobjects.typefactories.RandomOptionalFactory;
-import org.bbottema.loremipsumobjects.typefactories.RandomPrimitiveFactory;
-import org.bbottema.loremipsumobjects.typefactories.RandomStringFactory;
+import org.bbottema.loremipsumobjects.typefactories.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Objects.requireNonNull;
 import static org.bbottema.javareflection.ClassUtils.locateClass;
@@ -71,6 +57,7 @@ public class ClassBindings {
 		bind(Double.class, new RandomPrimitiveFactory<>(Double.TYPE));
 		bind(Number.class, new RandomFactoryFactory<Number>(Number.class, find(Long.TYPE), find(Integer.TYPE), find(Byte.TYPE), find(Short.TYPE), find(Double.TYPE), find(Float.TYPE)));
 		bind(String.class, new RandomStringFactory());
+		bind(UUID.class, new RandomUuidFactory());
 		bind(Boolean.class, new RandomBooleanFactory());
 		bind(List.class, new ClassBasedFactory<>(ArrayList.class));
 		bind(Map.class, new ClassBasedFactory<>(HashMap.class));
