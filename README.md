@@ -90,6 +90,7 @@ classBindings.bind(Short.TYPE, new RandomPrimitiveFactory<>(Short.TYPE));
 classBindings.bind(Double.TYPE, new RandomPrimitiveFactory<>(Double.TYPE));
 classBindings.bind(String.class, new RandomStringFactory());
 classBindings.bind(Boolean.class, new RandomBooleanFactory());
+classBindings.bind(LocalDate.class, new RandomLocalDateFactory());
 
 classBindings.bind(List.class, new ClassBasedFactory<>(ArrayList.class));
 classBindings.bind(Map.class, new ClassBasedFactory<>(HashMap.class));
