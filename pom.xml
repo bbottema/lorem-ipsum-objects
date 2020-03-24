@@ -12,10 +12,16 @@
     <artifactId>lorem-ipsum-objects</artifactId>
     <packaging>jar</packaging>
     <name>lorem-ipsum-objects</name>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
     <description>Generate random test-data</description>
     <url>https://github.com/bbottema/lorem-ipsum-objects</url>
     <inceptionYear>2019</inceptionYear>
+
+    <properties>
+        <java-reflection.version>3.13.0</java-reflection.version>
+        <lombok.version>1.18.12</lombok.version>
+        <powermock.version>2.0.6</powermock.version>
+    </properties>
 
     <scm>
         <connection>scm:git:git://github.com/bbottema/lorem-ipsum-objects.git</connection>
@@ -43,14 +49,14 @@
         <dependency>
             <groupId>com.github.bbottema</groupId>
             <artifactId>java-reflection</artifactId>
-            <version>3.13.0</version>
+            <version>${java-reflection.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -58,13 +64,13 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>2.0.6</version>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito2</artifactId>
-            <version>2.0.6</version>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
