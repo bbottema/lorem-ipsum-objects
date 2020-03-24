@@ -3,7 +3,6 @@ package org.bbottema.loremipsumobjects.typefactories.util;
 import de.svenjacobs.loremipsum.LoremIpsum;
 
 import java.time.LocalDate;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
