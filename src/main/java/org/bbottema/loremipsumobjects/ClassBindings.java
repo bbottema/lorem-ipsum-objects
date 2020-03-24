@@ -12,11 +12,13 @@ import org.bbottema.loremipsumobjects.typefactories.RandomOptionalFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomPrimitiveFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomStringFactory;
 import org.bbottema.loremipsumobjects.typefactories.RandomUuidFactory;
+import org.bbottema.loremipsumobjects.typefactories.RandomLocalDateFactory;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -74,6 +76,7 @@ public class ClassBindings {
 		bind(Number.class, new RandomFactoryFactory<Number>(Number.class, find(Long.TYPE), find(Integer.TYPE), find(Byte.TYPE), find(Short.TYPE), find(Double.TYPE), find(Float.TYPE)));
 		bind(String.class, new RandomStringFactory());
 		bind(UUID.class, new RandomUuidFactory());
+		bind(LocalDate.class, new RandomLocalDateFactory());
 		bind(Boolean.class, new RandomBooleanFactory());
 		bind(List.class, new ClassBasedFactory<>(ArrayList.class));
 		bind(Map.class, new ClassBasedFactory<>(HashMap.class));

@@ -2,8 +2,9 @@ package org.bbottema.loremipsumobjects.typefactories.util;
 
 import de.svenjacobs.loremipsum.LoremIpsum;
 
-import java.util.Random;
+import java.time.LocalDate;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Utility class that contains various methods to generate dummy data for primitive types.
@@ -13,7 +14,7 @@ public class LoremIpsumGenerator {
 	// we're using an instance here, so we can mock this instance in our junit tests
 	private static LoremIpsumGenerator instance = new LoremIpsumGenerator();
 
-	private final Random r = new Random();
+	private final ThreadLocalRandom r = ThreadLocalRandom.current();
 	private final LoremIpsum loremIpsum = new LoremIpsum();
 
 	public String getRandomString() {
@@ -30,6 +31,13 @@ public class LoremIpsumGenerator {
 
 	public UUID getRandomUuid() {
 		return UUID.randomUUID();
+	}
+
+	public LocalDate getRandomLocalDate() {
+		long minDay = LocalDate.of(1970, 1, 1).toEpochDay();
+		long maxDay = LocalDate.now().toEpochDay();
+		long randomDay = r.nextLong(minDay, maxDay);
+		return LocalDate.ofEpochDay(randomDay);
 	}
 
 	public int getRandomInt() {
