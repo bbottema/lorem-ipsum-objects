@@ -3,6 +3,8 @@ package org.bbottema.loremipsumobjects.typefactories.util;
 import de.svenjacobs.loremipsum.LoremIpsum;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -31,6 +33,10 @@ public class LoremIpsumGenerator {
 
 	public UUID getRandomUuid() {
 		return UUID.randomUUID();
+	}
+
+	public LocalDateTime getRandomLocalDateTime() {
+		return getRandomLocalDate().atTime(LocalTime.ofSecondOfDay(r.nextInt(24 * 60 * 60 + 1)));
 	}
 
 	public LocalDate getRandomLocalDate() {
