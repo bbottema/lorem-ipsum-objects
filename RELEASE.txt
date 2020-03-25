@@ -4,6 +4,14 @@ https://github.com/bbottema/lorem-ipsum-objects
 RELEASE NOTES lorem-ipsum-objects
 
 
+v4.1.0 (25-March-2020)
+
+- #15: Upgrade dependencies
+- #16: LocalDate illegal reflective access
+- #17: Update readme add UUID to default class bindings
+- #18: Localdatetime illegal reflective access
+
+
 v4.0.1 (18-March-2020)
 
 - #14: Better support for generating UUID's
