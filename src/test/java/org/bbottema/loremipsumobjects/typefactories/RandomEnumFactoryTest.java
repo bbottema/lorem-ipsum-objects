@@ -28,7 +28,7 @@ public class RandomEnumFactoryTest {
 
 	@Test
 	public void testCreateLoremIpsumObject() {
-		when(mock.getRandomInt(Visibility.values().length - 1))
+		when(mock.getRandomInt(Visibility.values().length))
 				.thenReturn(Visibility.DEFAULT.ordinal())
 				.thenReturn(Visibility.PRIVATE.ordinal())
 				.thenReturn(Visibility.PROTECTED.ordinal())
