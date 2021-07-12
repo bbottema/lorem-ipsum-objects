@@ -30,6 +30,6 @@ public class RandomEnumFactory<T extends Enum<?>> extends LoremIpsumObjectFactor
 			LoremIpsumConfig loremIpsumConfig,
 			@Nullable final List<Exception> exceptions) {
 		final T[] enums = clazz.getEnumConstants();
-		return enums[LoremIpsumGenerator.getInstance().getRandomInt(enums.length - 1)];
+		return enums[LoremIpsumGenerator.getInstance().getRandomInt(enums.length)];
 	}
 }
