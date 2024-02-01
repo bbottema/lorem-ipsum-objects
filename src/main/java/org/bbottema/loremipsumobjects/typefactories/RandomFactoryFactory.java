@@ -29,7 +29,7 @@ public class RandomFactoryFactory<T> extends LoremIpsumObjectFactory<T> {
 	@Nullable
 	@Override
 	@SuppressWarnings("unchecked")
-	T _createLoremIpsumObject(@Nullable Type[] genericMetaData, @Nullable Map<String, ClassUsageInfo<?>> knownInstances, LoremIpsumConfig loremIpsumConfig, @Nullable List<Exception> exceptions) {
+	protected T _createLoremIpsumObject(@Nullable Type[] genericMetaData, @Nullable Map<String, ClassUsageInfo<?>> knownInstances, LoremIpsumConfig loremIpsumConfig, @Nullable List<Exception> exceptions) {
 		return (T) factories.get(RANDOM.nextInt(factories.size()))
 				.createLoremIpsumObject(genericMetaData, knownInstances, loremIpsumConfig, exceptions);
 	}
