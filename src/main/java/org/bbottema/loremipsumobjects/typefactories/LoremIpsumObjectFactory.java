@@ -76,7 +76,7 @@ public abstract class LoremIpsumObjectFactory<T> {
 	}
 
 	@Nullable
-	abstract T _createLoremIpsumObject(
+	protected abstract T _createLoremIpsumObject(
 			@Nullable Type[] genericMetaData,
 			@Nullable Map<String, ClassUsageInfo<?>> knownInstances,
 			LoremIpsumConfig loremIpsumConfig,

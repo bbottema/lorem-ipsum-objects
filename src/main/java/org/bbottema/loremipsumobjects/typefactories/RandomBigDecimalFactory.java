@@ -22,6 +22,8 @@ public class RandomBigDecimalFactory extends LoremIpsumObjectFactory<BigDecimal>
 			final LoremIpsumConfig loremIpsumConfig,
 			@Nullable final List<Exception> exceptions) {
 		LoremIpsumGenerator instance = LoremIpsumGenerator.getInstance();
-		return BigDecimal.valueOf(instance.getRandomInt(), instance.getRandomInt(6));
+		int fixedBigdecimalScaleConfig = loremIpsumConfig.getFixedBigdecimalScale();
+		int scale = fixedBigdecimalScaleConfig < 0 ? instance.getRandomInt(6) : fixedBigdecimalScaleConfig;
+		return BigDecimal.valueOf(instance.getRandomInt(), scale);
 	}
 }

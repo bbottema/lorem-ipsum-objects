@@ -520,6 +520,26 @@ public class LoremIpsumObjectCreatorTest {
 	}
 
 	@Test
+	public void testLorumIpsumBigDecimalFixedScale() {
+		LoremIpsumObjectCreator loremIpsumObjectCreator = new LoremIpsumObjectCreator(LoremIpsumConfig.builder().fixedBigdecimalScale(0).build());
+
+		BigDecimal bigDecimal = loremIpsumObjectCreator.createLoremIpsumObject(BigDecimal.class);
+		assertThat(bigDecimal).isNotNull();
+		assertThat(bigDecimal).isEqualTo(new BigDecimal("111"));
+		System.out.println(bigDecimal);
+
+		loremIpsumObjectCreator = new LoremIpsumObjectCreator(LoremIpsumConfig.builder().fixedBigdecimalScale(1).build());
+		bigDecimal = loremIpsumObjectCreator.createLoremIpsumObject(BigDecimal.class);
+		assertThat(bigDecimal).isNotNull();
+		assertThat(bigDecimal).isEqualTo(new BigDecimal("11.1"));
+
+		loremIpsumObjectCreator = new LoremIpsumObjectCreator(LoremIpsumConfig.builder().fixedBigdecimalScale(2).build());
+		bigDecimal = loremIpsumObjectCreator.createLoremIpsumObject(BigDecimal.class);
+		assertThat(bigDecimal).isNotNull();
+		assertThat(bigDecimal).isEqualTo(new BigDecimal("1.11"));
+	}
+
+	@Test
 	public void testLombokHeavyProcessStatus() {
 		ProcessStatus processStatus = loremIpsumObjectCreator.createLoremIpsumObject(ProcessStatus.class);
 		assertThat(processStatus).isNotNull();

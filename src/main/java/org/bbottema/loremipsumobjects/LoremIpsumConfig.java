@@ -11,5 +11,6 @@ import lombok.Value;
 public class LoremIpsumConfig {
 	@Default private int retries = 0;
 	@Default private int timeoutMillis = 250;
+	@Default private int fixedBigdecimalScale = -1;
 	@Default private ClassBindings classBindings = new ClassBindings();
 }
