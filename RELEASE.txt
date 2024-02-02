@@ -4,6 +4,13 @@ https://github.com/bbottema/lorem-ipsum-objects
 RELEASE NOTES lorem-ipsum-objects
 
 
+v4.2.0 (02-February-2024)
+
+- #21: 1). Changed inheritance model a bit for easier subclassing 2). made decimal scale configurable for BigDecimals
+
+Thanks to @failnix for the contribution!
+
+
 v4.1.0 (25-March-2020)
 
 - #15: Upgrade dependencies
